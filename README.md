@@ -1,4 +1,6 @@
 # Promptly
 
-Tuto Video: Building your first Flutter App (1:03:41)
-Codelab resources: https://codelabs.developers.google.com/codelabs/flutter-codelab-first#5
+Steps to make it work so far:
+1. Activate the Python venv
+2. Launch the  app.py
+3. Launch the flutter app
