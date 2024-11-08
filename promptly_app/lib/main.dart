@@ -7,16 +7,22 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'LLM Interaction',
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: LLMInteractionPage(),
     );
   }
 }
 
 class LLMInteractionPage extends StatefulWidget {
+  const LLMInteractionPage({super.key});
+
   @override
   _LLMInteractionPageState createState() => _LLMInteractionPageState();
 }
@@ -46,21 +52,21 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('LLM Interaction')),
+      appBar: AppBar(title: const Text('LLM Interaction')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TextField(
               controller: _controller,
-              decoration: InputDecoration(labelText: 'Enter your message'),
+              decoration: const InputDecoration(labelText: 'Enter your message'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _sendRequest,
-              child: Text('Send'),
+              child: const Text('Send'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text('Response: $_response'),
           ],
         ),
@@ -68,3 +74,4 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
     );
   }
 }
+
