@@ -97,13 +97,14 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
             color: Colors.blueGrey[50],
             child: Column(
               children: [
-                ListTile(
-                  title: const Text('Conversations'),
-                  trailing: IconButton(
+                const SizedBox(height: 16),
+                Center(
+                  child: IconButton(
                     icon: const Icon(Icons.add),
                     onPressed: _addNewConversation,
                   ),
                 ),
+                const SizedBox(height: 16),
                 Expanded(
                   child: ListView.builder(
                     itemCount: _conversations.length,
@@ -160,20 +161,25 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
                       },
                     ),
                   ),
-                  TextFormField(
-                    controller: _controller,
-                    maxLines: null,
-                    decoration: const InputDecoration(
-                      labelText: 'Enter your message',
-                      border: OutlineInputBorder(),
-                    ),
-                    textInputAction: TextInputAction.send,
-                    onEditingComplete: _sendRequest,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _sendRequest,
-                    child: const Text('Send'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _controller,
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            labelText: 'Enter your message',
+                            border: OutlineInputBorder(),
+                          ),
+                          textInputAction: TextInputAction.send,
+                          onFieldSubmitted: (_) => _sendRequest(), // Trigger send on Enter
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.send, color: Colors.blue),
+                        onPressed: _sendRequest,
+                      ),
+                    ],
                   ),
                 ],
               ),
