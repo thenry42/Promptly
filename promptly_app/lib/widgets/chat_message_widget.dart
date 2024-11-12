@@ -17,7 +17,7 @@ class ChatMessageWidget extends StatelessWidget {
           color: message.sender == 'User' ? Colors.blue[100] : Colors.grey[300],
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Text('${message.sender}: ${message.message}'),
+        child: Text('${message.message}'),
       ),
     );
   }
