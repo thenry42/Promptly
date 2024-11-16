@@ -9,12 +9,12 @@ class ConversationPanel extends StatelessWidget {
   final Function(int) onSelectConversation;
 
   const ConversationPanel({
-    Key? key,
+    super.key,
     required this.conversations,
     required this.selectedConversationIndex,
     required this.onAddConversation,
     required this.onSelectConversation,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

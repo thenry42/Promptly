@@ -4,7 +4,7 @@ import '../models/chat_message.dart';
 class ChatMessageWidget extends StatelessWidget {
   final ChatMessage message;
 
-  const ChatMessageWidget({Key? key, required this.message}) : super(key: key);
+  const ChatMessageWidget({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class ChatMessageWidget extends StatelessWidget {
           color: message.sender == 'User' ? Colors.blue[100] : Colors.grey[300],
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Text('${message.message}'),
+        child: Text(message.message),
       ),
     );
   }

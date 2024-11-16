@@ -11,13 +11,13 @@ class ChatArea extends StatelessWidget {
   final VoidCallback onSendMessage;
 
   const ChatArea({
-    Key? key,
+    super.key,
     required this.conversations,
     required this.selectedConversationIndex,
     required this.controller,
     required this.isSending,
     required this.onSendMessage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
