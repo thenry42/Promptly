@@ -16,7 +16,7 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
   bool _isSending = false;
   int _selectedConversationIndex = 0;
 
-  List<Conversation> _conversations = [Conversation(title: 'Chat 1')];
+  final List<Conversation> _conversations = [];
 
   Future<void> _sendRequest() async {
     final messageText = _controller.text.trim(); // Trim whitespace from the message
@@ -53,10 +53,99 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
   }
 
   void _addNewConversation() {
-    setState(() {
-      _conversations.add(Conversation(title: 'Chat ${_conversations.length + 1}'));
-      _selectedConversationIndex = _conversations.length - 1;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String chatName = '';
+        bool isOnline = false;
+        String apiKey = '';
+
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('New Chat'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Chat Name Input
+                  TextField(
+                    decoration: const InputDecoration(
+                      labelText: 'Chat Name',
+                      hintText: 'Enter a name for the chat',
+                    ),
+                    onChanged: (value) {
+                      chatName = value;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  // Local or Online Toggle
+                  Row(
+                    children: [
+                      const Text('Local'),
+                      Switch(
+                        value: isOnline,
+                        onChanged: (value) {
+                          setDialogState(() {
+                            isOnline = value;
+                          });
+                        },
+                      ),
+                      const Text('Online'),
+                    ],
+                  ),
+                  if (isOnline) ...[
+                    const SizedBox(height: 10),
+                    // API Key Input
+                    TextField(
+                      decoration: const InputDecoration(
+                        labelText: 'API Key',
+                        hintText: 'Enter the API key',
+                      ),
+                      onChanged: (value) {
+                        apiKey = value;
+                      },
+                    ),
+                  ],
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the dialog without action
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (chatName.isEmpty) {
+                      // Validate that chat name is not empty
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Chat name cannot be empty')),
+                      );
+                      return;
+                    }
+
+                    setState(() {
+                      _conversations.add(
+                        Conversation(
+                          title: chatName,
+                          isOnline: isOnline,
+                          apiKey: isOnline ? apiKey : null, // Include API key if online
+                        ),
+                      );
+                      _selectedConversationIndex = _conversations.length - 1;
+                    });
+
+                    Navigator.pop(context); // Close the dialog
+                  },
+                  child: const Text('Create'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   void _selectConversation(int index) {

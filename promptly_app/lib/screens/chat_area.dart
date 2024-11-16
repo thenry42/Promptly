@@ -28,7 +28,7 @@ class ChatArea extends StatelessWidget {
         children: [
           Flexible(
             child: ListView.builder(
-              itemCount: conversations[selectedConversationIndex].messages.length + (isSending ? 1 : 0),
+              itemCount: (conversations.isNotEmpty && selectedConversationIndex < conversations.length) ? conversations[selectedConversationIndex].messages.length + (isSending ? 1 : 0) : 0,
               itemBuilder: (context, index) {
                 if (isSending && index == conversations[selectedConversationIndex].messages.length) {
                   return const LoadingIndicator();
