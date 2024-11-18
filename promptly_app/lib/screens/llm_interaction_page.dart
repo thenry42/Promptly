@@ -3,6 +3,7 @@ import '../models/conversation.dart';
 import '../models/chat_message.dart';
 import 'conversation_panel.dart';
 import 'chat_area.dart';
+import '../models/llm_list.dart'; // Import the LLM list
 
 class LLMInteractionPage extends StatefulWidget {
   const LLMInteractionPage({super.key});
@@ -21,17 +22,24 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
   Future<void> _sendRequest() async {
     final messageText = _controller.text.trim(); // Trim whitespace from the message
 
+    // Check if no conversations exist
+    if (_conversations.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No conversation selected. Please create a conversation first.')),
+      );
+      return; // Exit the function early
+    }
+
     // Check if message is empty after trimming
     if (messageText.isEmpty) {
-      // If message is empty or only whitespace, clear the input and return without sending
-      _controller.clear();
-      return;
+      _controller.clear(); // Clear the input field if the message is empty
+      return; // Exit the function early
     }
 
     setState(() {
       _isSending = true;
 
-      // Add the user's message to the conversation history using trimmed text
+      // Add the user's message to the conversation history
       _conversations[_selectedConversationIndex].messages.add(
         ChatMessage(sender: 'User', message: messageText),
       );
@@ -56,57 +64,36 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        String chatName = '';
-        bool isOnline = false;
-        String apiKey = '';
+        String? selectedLLM;
 
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
               title: const Text('New Chat'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Chat Name Input
-                  TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'Chat Name',
-                      hintText: 'Enter a name for the chat',
-                    ),
-                    onChanged: (value) {
-                      chatName = value;
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  // Local or Online Toggle
-                  Row(
-                    children: [
-                      const Text('Local'),
-                      Switch(
-                        value: isOnline,
-                        onChanged: (value) {
-                          setDialogState(() {
-                            isOnline = value;
-                          });
-                        },
-                      ),
-                      const Text('Online'),
-                    ],
-                  ),
-                  if (isOnline) ...[
-                    const SizedBox(height: 10),
-                    // API Key Input
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'API Key',
-                        hintText: 'Enter the API key',
-                      ),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.4,
+                child: Column(
+                  children: [
+                    const Text('Select a Language Model:'),
+                    DropdownButton<String>(
+                      isExpanded: true,
+                      value: selectedLLM,
+                      hint: const Text('Choose LLM'),
+                      items: llmList.map((llm) {
+                        return DropdownMenuItem<String>(
+                          value: llm['name'],
+                          child: Text(llm['name']!),
+                        );
+                      }).toList(),
                       onChanged: (value) {
-                        apiKey = value;
+                        setDialogState(() {
+                          selectedLLM = value;
+                        });
                       },
                     ),
                   ],
-                ],
+                ),
               ),
               actions: [
                 TextButton(
@@ -117,20 +104,23 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if (chatName.isEmpty) {
-                      // Validate that chat name is not empty
+                    if (selectedLLM == null) {
+                      // Ensure an LLM is selected before proceeding
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Chat name cannot be empty')),
+                        const SnackBar(content: Text('Please select an LLM')),
                       );
                       return;
                     }
 
                     setState(() {
+                      // Add the new conversation with the selected LLM
                       _conversations.add(
                         Conversation(
-                          title: chatName,
-                          isOnline: isOnline,
-                          apiKey: isOnline ? apiKey : null, // Include API key if online
+                          title: selectedLLM!,
+                          isOnline: llmList.firstWhere(
+                                (llm) => llm['name'] == selectedLLM,
+                              )['type'] ==
+                              'online', // Determine if it's online
                         ),
                       );
                       _selectedConversationIndex = _conversations.length - 1;
