@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/conversation.dart';
-import '../widgets/chat_message_widget.dart';
-import '../widgets/loading_indicator_widget.dart';
+import '../widgets/chat_message.dart';
+import '../widgets/loading_indicator.dart';
 
 class ChatArea extends StatelessWidget {
   final List<Conversation> conversations;
