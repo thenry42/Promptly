@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'LLM Interaction',
+      title: 'Promptly',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const LLMInteractionPage(),
     );

@@ -7,11 +7,11 @@ class ConversationListTile extends StatefulWidget {
   final VoidCallback onTap;
 
   const ConversationListTile({
-    Key? key,
+    super.key,
     required this.conversation,
     required this.isSelected,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   _ConversationListTileState createState() => _ConversationListTileState();

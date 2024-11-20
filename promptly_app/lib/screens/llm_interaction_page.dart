@@ -3,6 +3,8 @@ import '../models/conversation.dart';
 import '../models/chat_message.dart';
 import 'conversation_panel.dart';
 import 'chat_area.dart';
+import '../models/llm_list.dart'; // Import the LLM list
+import '../services/ollama_API.dart'; // Import the Ollama service
 
 class LLMInteractionPage extends StatefulWidget {
   const LLMInteractionPage({super.key});
@@ -15,23 +17,53 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
   final TextEditingController _controller = TextEditingController();
   bool _isSending = false;
   int _selectedConversationIndex = 0;
+  bool _isLoadingModels = true;
 
-  List<Conversation> _conversations = [Conversation(title: 'Chat 1')];
+  final List<Conversation> _conversations = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeOllamaModels();
+  }
+
+  Future<void> _initializeOllamaModels() async {
+    setState(() {
+      _isLoadingModels = true;
+    });
+
+    try {
+      await getOllamaModels();
+    } catch (e) {
+      print('Error initializing models: $e');
+    } finally {
+      setState(() {
+        _isLoadingModels = false;
+      });
+    }
+  }
 
   Future<void> _sendRequest() async {
-    final messageText = _controller.text.trim(); // Trim whitespace from the message
+    final messageText = _controller.text.trim();
+
+    // Check if no conversations exist
+    if (_conversations.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No conversation selected. Please create a conversation first.')),
+      );
+      return;
+    }
 
     // Check if message is empty after trimming
     if (messageText.isEmpty) {
-      // If message is empty or only whitespace, clear the input and return without sending
-      _controller.clear();
+      _controller.clear(); // Clear the input field if the message is empty
       return;
     }
 
     setState(() {
       _isSending = true;
 
-      // Add the user's message to the conversation history using trimmed text
+      // Add the user's message to the conversation history
       _conversations[_selectedConversationIndex].messages.add(
         ChatMessage(sender: 'User', message: messageText),
       );
@@ -39,24 +71,105 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
 
     _controller.clear(); // Clear the text area after sending a valid message
 
-    // Simulate a delay to mimic the bot thinking (for development)
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      // Automated response from bot for development purposes
-      final response = 'Automated Bot Response: Your message was "$messageText".';
-      _conversations[_selectedConversationIndex].messages.add(
-        ChatMessage(sender: 'Bot', message: response),
+    try {
+      final result = await generateOllamaCompletion(
+        model: _conversations[_selectedConversationIndex].title, 
+        prompt: messageText
       );
-      _isSending = false;
-    });
+      setState(() {
+        // Add Ollama's response to the conversation
+        _conversations[_selectedConversationIndex].messages.add(
+          ChatMessage(sender: 'Bot', message: result),
+        );
+        _isSending = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isSending = false;
+        _conversations[_selectedConversationIndex].messages.add(
+          ChatMessage(sender: 'Bot', message: 'Error: $e'),
+        );
+      });
+      print('Error: $e');
+    }
   }
-
+  
   void _addNewConversation() {
-    setState(() {
-      _conversations.add(Conversation(title: 'Chat ${_conversations.length + 1}'));
-      _selectedConversationIndex = _conversations.length - 1;
-    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String? selectedLLM;
+
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('New Chat'),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.4,
+                child: Column(
+                  children: [
+                    const Text('Select a Language Model:'),
+                    DropdownButton<String>(
+                      isExpanded: true,
+                      value: selectedLLM,
+                      hint: const Text('Choose LLM'),
+                      items: llmList.map((llm) {
+                        return DropdownMenuItem<String>(
+                          value: llm['name'],
+                          child: Text(llm['name']!),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setDialogState(() {
+                          selectedLLM = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close the dialog without action
+                  },
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (selectedLLM == null) {
+                      // Ensure an LLM is selected before proceeding
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please select an LLM')),
+                      );
+                      return;
+                    }
+
+                    setState(() {
+                      // Add the new conversation with the selected LLM
+                      _conversations.add(
+                        Conversation(
+                          title: selectedLLM!,
+                          isOnline: llmList.firstWhere(
+                                (llm) => llm['name'] == selectedLLM,
+                              )['type'] ==
+                              'online', // Determine if it's online
+                        ),
+                      );
+                      _selectedConversationIndex = _conversations.length - 1;
+                    });
+
+                    Navigator.pop(context); // Close the dialog
+                  },
+                  child: const Text('Create'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   void _selectConversation(int index) {
