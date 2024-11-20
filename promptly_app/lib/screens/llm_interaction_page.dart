@@ -4,6 +4,7 @@ import '../models/chat_message.dart';
 import 'conversation_panel.dart';
 import 'chat_area.dart';
 import '../models/llm_list.dart'; // Import the LLM list
+import '../services/ollama_API.dart'; // Import the Ollama service
 
 class LLMInteractionPage extends StatefulWidget {
   const LLMInteractionPage({super.key});
@@ -16,24 +17,47 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
   final TextEditingController _controller = TextEditingController();
   bool _isSending = false;
   int _selectedConversationIndex = 0;
+  bool _isLoadingModels = true;
 
   final List<Conversation> _conversations = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _initializeOllamaModels();
+  }
+
+  Future<void> _initializeOllamaModels() async {
+    setState(() {
+      _isLoadingModels = true;
+    });
+
+    try {
+      await getOllamaModels();
+    } catch (e) {
+      print('Error initializing models: $e');
+    } finally {
+      setState(() {
+        _isLoadingModels = false;
+      });
+    }
+  }
+
   Future<void> _sendRequest() async {
-    final messageText = _controller.text.trim(); // Trim whitespace from the message
+    final messageText = _controller.text.trim();
 
     // Check if no conversations exist
     if (_conversations.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No conversation selected. Please create a conversation first.')),
       );
-      return; // Exit the function early
+      return;
     }
 
     // Check if message is empty after trimming
     if (messageText.isEmpty) {
       _controller.clear(); // Clear the input field if the message is empty
-      return; // Exit the function early
+      return;
     }
 
     setState(() {
@@ -47,19 +71,29 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
 
     _controller.clear(); // Clear the text area after sending a valid message
 
-    // Simulate a delay to mimic the bot thinking (for development)
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      // Automated response from bot for development purposes
-      final response = 'Automated Bot Response: Your message was "$messageText".';
-      _conversations[_selectedConversationIndex].messages.add(
-        ChatMessage(sender: 'Bot', message: response),
+    try {
+      final result = await generateOllamaCompletion(
+        model: _conversations[_selectedConversationIndex].title, 
+        prompt: messageText
       );
-      _isSending = false;
-    });
+      setState(() {
+        // Add Ollama's response to the conversation
+        _conversations[_selectedConversationIndex].messages.add(
+          ChatMessage(sender: 'Bot', message: result),
+        );
+        _isSending = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isSending = false;
+        _conversations[_selectedConversationIndex].messages.add(
+          ChatMessage(sender: 'Bot', message: 'Error: $e'),
+        );
+      });
+      print('Error: $e');
+    }
   }
-
+  
   void _addNewConversation() {
     showDialog(
       context: context,

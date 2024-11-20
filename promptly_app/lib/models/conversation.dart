@@ -17,7 +17,7 @@ class Conversation {
 
   Conversation({
     required this.title,
-    this.isOnline = false,
+    this.isOnline = false, // Default to local conversation (like Ollama models)
     this.apiKey,
   }) : messages = [], isHovered = false;
 }
