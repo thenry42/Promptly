@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'screens/llm_interaction_page.dart';
-import 'package:markdown_widget/markdown_widget.dart';
 
 void main() {
   runApp(const MyApp());
