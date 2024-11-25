@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/conversation.dart';
 import '../widgets/conversation_list_tile.dart';
+import '../widgets/settingsWidget.dart'; // Import the settings dialog
 
 class ConversationPanel extends StatelessWidget {
   final List<Conversation> conversations;
@@ -61,7 +62,7 @@ class ConversationPanel extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () {
-                _showSettingsDialog(context);
+                SettingsDialog.show(context); // Call the static method
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
@@ -72,42 +73,6 @@ class ConversationPanel extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  void _showSettingsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Settings'),
-          content: const SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: Icon(Icons.color_lens),
-                  title: Text('Theme'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.notifications),
-                  title: Text('Notifications'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.info),
-                  title: Text('About'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
     );
   }
 }
