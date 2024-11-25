@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/conversation.dart';
-import '../models/chat_message.dart';
+import '../models/chatMessage.dart';
 import 'conversation_panel.dart';
 import 'chat_area.dart';
-import '../models/llm_list.dart'; // Import the LLM list
+import '../models/ollamaList.dart'; // Import the LLM list
 import '../services/ollama_API.dart'; // Import the Ollama service
 
 class LLMInteractionPage extends StatefulWidget {

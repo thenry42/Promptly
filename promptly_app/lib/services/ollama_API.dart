@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:ollama_dart/ollama_dart.dart';
 
 Future<String> generateOllamaCompletion({
@@ -16,7 +17,9 @@ Future<String> generateOllamaCompletion({
     
     return generatedResponse.response.toString();
   } catch (e) {
-    print('Error generating completion: $e');
+    if (kDebugMode) {
+      print('Error generating completion: $e');
+    }
     return '';
   }
 }
