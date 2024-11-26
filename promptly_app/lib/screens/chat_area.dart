@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/conversation.dart';
 import '../widgets/chatMessageWidget.dart';
 import '../widgets/loadingIndicatorWidget.dart';
+import '../widgets/colors.dart';
 
 class ChatArea extends StatelessWidget {
   final List<Conversation> conversations;
@@ -75,7 +76,7 @@ class ChatArea extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.send, color: Colors.blue),
+                icon: const Icon(Icons.send, color: AppColors.powderblue),
                 onPressed: (hasConversation && !isSending && onSendMessage != null)
                     ? onSendMessage
                     : null, // Disable button when not valid

@@ -4,6 +4,7 @@ It contains two properties:
   - [message]: The content of the message sent by the sender. */
 
 class ChatMessage {
+
   final String sender;
   final String message;
 

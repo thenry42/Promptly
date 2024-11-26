@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:promptly_app/widgets/colors.dart';
 import '../models/conversation.dart';
 import '../widgets/conversation_list_tile.dart';
 import '../widgets/settingsWidget.dart'; // Import the settings dialog
@@ -20,7 +21,7 @@ class ConversationPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blueGrey[50],
+      color: AppColors.darkbackground,
       child: Column(
         children: [
           const SizedBox(height: 16),
@@ -33,12 +34,12 @@ class ConversationPanel extends StatelessWidget {
           const SizedBox(height: 16),
           Expanded(
             child: conversations.isEmpty
-                ? Center(
+                ? const Center(
                     child: Text(
                       'No conversations yet.\nClick "+" to add a new chat.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: AppColors.lightpink,
                         fontSize: 16,
                       ),
                     ),
@@ -57,7 +58,6 @@ class ConversationPanel extends StatelessWidget {
                     },
                   ),
           ),
-          const Divider(), // Adds a visual separator before the settings button
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
@@ -68,7 +68,7 @@ class ConversationPanel extends StatelessWidget {
                 shape: const CircleBorder(),
                 padding: const EdgeInsets.all(16.0),
               ),
-              child: const Icon(Icons.settings),
+              child: const Icon(Icons.settings, color: AppColors.powderblue),
             ),
           ),
         ],

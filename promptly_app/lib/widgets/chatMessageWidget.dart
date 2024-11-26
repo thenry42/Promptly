@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:promptly_app/widgets/colors.dart';
 import '../models/chatMessage.dart';
 
 class ChatMessageWidget extends StatelessWidget {
@@ -14,7 +15,7 @@ class ChatMessageWidget extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: message.sender == 'User' ? Colors.blue[100] : Colors.grey[300],
+          color: message.sender == 'User' ? AppColors.powderblue : AppColors.lightpink,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(message.message),

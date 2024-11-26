@@ -9,6 +9,7 @@ It contains properties related to the conversation's details such as:
 import 'chatMessage.dart';
 
 class Conversation {
+
   String title;
   List<ChatMessage> messages;
   bool isHovered;
@@ -20,4 +21,5 @@ class Conversation {
     this.isOnline = false, // Default to local conversation (like Ollama models)
     this.apiKey,
   }) : messages = [], isHovered = false;
+
 }
