@@ -181,14 +181,13 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('LLM Interaction')),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Row(
             children: [
               // Left conversation panel with fixed width
               SizedBox(
-                width: 200,
+                width: 300,
                 child: ConversationPanel(
                   conversations: _conversations,
                   selectedConversationIndex: _selectedConversationIndex,

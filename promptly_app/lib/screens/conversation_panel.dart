@@ -59,7 +59,7 @@ class ConversationPanel extends StatelessWidget {
                   ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
               onPressed: () {
                 SettingsDialog.show(context); // Call the static method
