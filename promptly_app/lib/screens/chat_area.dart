@@ -66,6 +66,7 @@ class ChatArea extends StatelessWidget {
                   maxLines: null,
                   decoration: const InputDecoration(
                     labelText: 'Enter your message',
+                    labelStyle: TextStyle(color: AppColors.primary),
                     border: OutlineInputBorder(),
                     // Optional: Change the input field background to a lighter color
                     fillColor: AppColors.secondarylight,
