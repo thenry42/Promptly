@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:promptly_app/widgets/colors.dart';
 import '../models/conversation.dart';
 import '../widgets/conversation_list_tile.dart';
-import '../widgets/settingsWidget.dart'; // Import the settings dialog
+import '../widgets/settings_widget.dart'; // Import the settings dialog
 
 class ConversationPanel extends StatelessWidget {
   final List<Conversation> conversations;

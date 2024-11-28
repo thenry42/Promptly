@@ -11,7 +11,4 @@ class AppColors {
   static const Color lightpink = Color(0xFFdbc8f0);
   static const Color lightbackground = Color(0xFF25242a); // Example: Light Grey
   static const Color darkbackground = Color(0xFF1a191b); // Example: Light Grey
-
-  // Elles sont pas degueulasse ces couleurs ?
-
 }

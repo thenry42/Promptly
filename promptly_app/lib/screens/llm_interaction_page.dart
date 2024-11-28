@@ -1,10 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/conversation.dart';
-import '../models/chatMessage.dart';
+import '../models/chat_message.dart';
 import 'conversation_panel.dart';
 import 'chat_area.dart';
-import '../models/ollamaList.dart'; // Import the LLM list
-import '../services/ollama_API.dart'; // Import the Ollama service
+import '../models/ollama_list.dart'; // Import the LLM list
+import '../services/ollama_api.dart'; // Import the Ollama service
 
 class LLMInteractionPage extends StatefulWidget {
   const LLMInteractionPage({super.key});
@@ -35,7 +36,9 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
     try {
       await getOllamaModels();
     } catch (e) {
-      print('Error initializing models: $e');
+      if (kDebugMode) {
+        print('Error initializing models: $e');
+      }
     } finally {
       setState(() {
         _isLoadingModels = false;
@@ -90,7 +93,9 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
           ChatMessage(sender: 'Bot', message: 'Error: $e'),
         );
       });
-      print('Error: $e');
+      if (kDebugMode) {
+        print('Error: $e');
+      }
     }
   }
   
