@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:promptly_app/widgets/colors.dart';
 import '../models/conversation.dart';
 
 class ConversationListTile extends StatefulWidget {
@@ -31,14 +32,14 @@ class _ConversationListTileState extends State<ConversationListTile> {
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             color: _isHovered
-                ? Colors.blueGrey[100]
+                ? AppColors.secondarylight
                 : widget.isSelected
-                    ? Colors.blue[100]
+                    ? AppColors.secondarylight
                     : Colors.transparent,
             border: Border.all(
               color: widget.isSelected || _isHovered
-                  ? Colors.blueAccent
-                  : Colors.transparent,
+                  ? AppColors.secondarylight
+                  : AppColors.secondary,
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(8.0),
@@ -46,7 +47,7 @@ class _ConversationListTileState extends State<ConversationListTile> {
           child: Text(
             widget.conversation.title,
             style: TextStyle(
-              color: widget.isSelected ? Colors.blueAccent : Colors.black87,
+              color: widget.isSelected ? AppColors.primary : Colors.white,
               fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),

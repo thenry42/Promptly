@@ -25,7 +25,8 @@ class ChatArea extends StatelessWidget {
     // Determine if a conversation is active
     final bool hasConversation = conversations.isNotEmpty && selectedConversationIndex < conversations.length;
 
-    return Padding(
+    return Container(
+      color: AppColors.primarylight, // Set the background color to black
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -49,7 +50,7 @@ class ChatArea extends StatelessWidget {
               child: Center(
                 child: Text(
                   'No conversation selected. Please create or select a conversation.',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                  style: TextStyle(fontSize: 16, color: AppColors.secondarylight),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -66,6 +67,9 @@ class ChatArea extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'Enter your message',
                     border: OutlineInputBorder(),
+                    // Optional: Change the input field background to a lighter color
+                    fillColor: AppColors.secondarylight,
+                    filled: true,
                   ),
                   textInputAction: TextInputAction.send,
                   onFieldSubmitted: (_) {
@@ -76,7 +80,7 @@ class ChatArea extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.send, color: AppColors.powderblue),
+                icon: const Icon(Icons.send, color: AppColors.secondary),
                 onPressed: (hasConversation && !isSending && onSendMessage != null)
                     ? onSendMessage
                     : null, // Disable button when not valid

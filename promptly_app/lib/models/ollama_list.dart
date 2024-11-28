@@ -12,10 +12,11 @@ Future<List<Map<String, String>>> getOllamaModels() async {
     final List<Map<String, String>> modelList = response.models!
         .map((model) {
           String modelName = model.model.toString();
+          /*
           if (modelName.contains(':')) {
             modelName = modelName.substring(0, modelName.indexOf(':'));
           }
-          
+          */
           return {
             'name': modelName,
             'type': 'local',
