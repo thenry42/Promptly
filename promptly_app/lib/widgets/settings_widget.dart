@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:promptly_app/models/open_ai_list.dart';
+
+String openAiKey = '';
+String claudeKey = '';
 
 class SettingsDialog {
-  /// Temporary storage for session-specific API keys.
-  static String openAiKey = '';
-  static String claudeKey = '';
 
   /// Displays the main settings dialog.
   static void show(BuildContext context) {
@@ -100,6 +101,8 @@ class SettingsDialog {
 
                 debugPrint('OpenAI Key: $openAiKey');
                 debugPrint('Claude Key: $claudeKey');
+
+                getOpenAIModels();
 
                 Navigator.of(context).pop(); // Close dialog
               },

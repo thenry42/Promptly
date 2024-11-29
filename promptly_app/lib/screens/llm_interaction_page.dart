@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:promptly_app/models/open_ai_list.dart';
 import '../models/conversation.dart';
 import '../models/chat_message.dart';
 import 'conversation_panel.dart';
@@ -35,6 +36,7 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
 
     try {
       await getOllamaModels();
+      await getOpenAIModels();
     } catch (e) {
       if (kDebugMode) {
         print('Error initializing models: $e');

@@ -64,9 +64,13 @@ class ChatArea extends StatelessWidget {
                   controller: controller,
                   enabled: hasConversation && !isSending, // Disable when no conversation or sending
                   maxLines: null,
+                  style: const TextStyle(
+                    color: AppColors.primary
+                  ),
                   decoration: const InputDecoration(
                     labelText: 'Enter your message',
                     labelStyle: TextStyle(color: AppColors.primary),
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
                     border: OutlineInputBorder(),
                     // Optional: Change the input field background to a lighter color
                     fillColor: AppColors.secondarylight,
