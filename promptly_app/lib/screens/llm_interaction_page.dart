@@ -1,12 +1,15 @@
+import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:ollama_dart/ollama_dart.dart';
 import 'package:promptly_app/models/open_ai_list.dart';
 import '../models/conversation.dart';
 import '../models/chat_message.dart';
 import 'conversation_panel.dart';
 import 'chat_area.dart';
 import '../models/ollama_list.dart'; // Import the LLM list
-import '../services/ollama_api.dart'; // Import the Ollama service
+import '../services/ollama_completion.dart'; // Import the Ollama service
+import '../services/chat_completion.dart';
 
 class LLMInteractionPage extends StatefulWidget {
   const LLMInteractionPage({super.key});
@@ -27,6 +30,7 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
   void initState() {
     super.initState();
     _initializeOllamaModels();
+    _initializeOpenAiModels();
   }
 
   Future<void> _initializeOllamaModels() async {
@@ -36,10 +40,9 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
 
     try {
       await getOllamaModels();
-      await getOpenAIModels();
     } catch (e) {
       if (kDebugMode) {
-        print('Error initializing models: $e');
+        print('Error initializing ollama models: $e');
       }
     } finally {
       setState(() {
@@ -48,6 +51,24 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
     }
   }
 
+  Future<void> _initializeOpenAiModels() async {
+    setState(() {
+      _isLoadingModels = true;
+    });
+
+    try {
+      await getOpenAIModels();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing OpenAI models: $e');
+      }
+    } finally {
+      setState(() {
+        _isLoadingModels = false;
+      });
+    }
+  }
+  
   Future<void> _sendRequest() async {
     final messageText = _controller.text.trim();
 
@@ -77,12 +98,26 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
     _controller.clear(); // Clear the text area after sending a valid message
 
     try {
-      final result = await generateOllamaCompletion(
+
+      Object type = [];
+
+      final selectedLLM = _conversations[_selectedConversationIndex].title;
+      final parts = selectedLLM.split(':');
+      final modelType = parts[0]; // "ollama" or "openai"
+
+      if (modelType == 'ollama') {
+        type = Model; // Ollama model
+      } else if (modelType == 'openai') {
+        type = OpenAIModelModel; // OpenAI model
+      }
+
+      final result = await generateChatCompletion(
         model: _conversations[_selectedConversationIndex].title, 
-        prompt: messageText
+        prompt: messageText,
+        type: type,
       );
       setState(() {
-        // Add Ollama's response to the conversation
+        // Add Model's response to the conversation
         _conversations[_selectedConversationIndex].messages.add(
           ChatMessage(sender: 'Bot', message: result),
         );
@@ -107,6 +142,12 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
       builder: (BuildContext context) {
         String? selectedLLM;
 
+        // spread operator
+        final allModels = [
+          ...ollamaModels.map((model) => {'type': 'ollama', 'model': model.model}),
+          ...openAIModels.map((model) => {'type': 'openai', 'model': model.id}),
+        ];
+
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
@@ -121,11 +162,15 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
                       isExpanded: true,
                       value: selectedLLM,
                       hint: const Text('Choose LLM'),
-                      items: llmList.map((llm) {
+                      items: allModels.map((llm) {
                         return DropdownMenuItem<String>(
-                          value: llm['name'],
-                          child: Text(llm['name']!),
-                        );
+                          value: '${llm['type']}:${llm['model']}',
+                          child: Text(
+                          llm['type'] == 'ollama'
+                              ? 'Ollama:${llm['model']}'
+                              : 'OpenAI:${llm['model']}',
+                        ),
+                      );
                       }).toList(),
                       onChanged: (value) {
                         setDialogState(() {
@@ -156,13 +201,7 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
                     setState(() {
                       // Add the new conversation with the selected LLM
                       _conversations.add(
-                        Conversation(
-                          title: selectedLLM!,
-                          isOnline: llmList.firstWhere(
-                                (llm) => llm['name'] == selectedLLM,
-                              )['type'] ==
-                              'online', // Determine if it's online
-                        ),
+                        Conversation(title: selectedLLM!)
                       );
                       _selectedConversationIndex = _conversations.length - 1;
                     });

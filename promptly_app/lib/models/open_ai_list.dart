@@ -9,6 +9,15 @@ Future<List<OpenAIModelModel>> getOpenAIModels() async {
   if (openAIModels.isEmpty) {
     try {
 
+      if (openAiKey.isEmpty)
+      {
+        if (kDebugMode)
+        {
+          print('OpenAI API key missing');
+        }
+        return [];
+      }
+
       OpenAI.apiKey = openAiKey;
 
       List<OpenAIModelModel> models = await OpenAI.instance.model.list();
