@@ -99,8 +99,8 @@ class SettingsDialog {
                 openAiKey = tempOpenAiKey;
                 claudeKey = tempClaudeKey;
 
-                debugPrint('OpenAI Key: $openAiKey');
-                debugPrint('Claude Key: $claudeKey');
+                debugPrint('User Input OpenAI Key: $openAiKey');
+                debugPrint('User Input Claude Key: $claudeKey');
 
                 getOpenAIModels();
 

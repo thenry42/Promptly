@@ -8,7 +8,6 @@ import '../models/chat_message.dart';
 import 'conversation_panel.dart';
 import 'chat_area.dart';
 import '../models/ollama_list.dart'; // Import the LLM list
-import '../services/ollama_completion.dart'; // Import the Ollama service
 import '../services/chat_completion.dart';
 
 class LLMInteractionPage extends StatefulWidget {
