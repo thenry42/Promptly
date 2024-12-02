@@ -74,6 +74,9 @@ class SettingsDialog {
                   tempOpenAiKey = value; // Update OpenAI key
                 },
                 controller: TextEditingController(text: openAiKey),
+                obscureText: true,
+                obscuringCharacter: '•',
+                expands: false,
               ),
               const SizedBox(height: 16),
               TextField(
@@ -85,6 +88,9 @@ class SettingsDialog {
                   tempClaudeKey = value; // Update Claude key
                 },
                 controller: TextEditingController(text: claudeKey),
+                obscureText: true,
+                obscuringCharacter: '•',
+                expands: false,
               ),
             ],
           ),
@@ -94,15 +100,15 @@ class SettingsDialog {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 // Save keys to session variables
                 openAiKey = tempOpenAiKey;
                 claudeKey = tempClaudeKey;
 
-                debugPrint('User Input OpenAI Key: $openAiKey');
-                debugPrint('User Input Claude Key: $claudeKey');
+                //debugPrint('User Input OpenAI Key: $openAiKey');
+                //debugPrint('User Input Claude Key: $claudeKey');
 
-                getOpenAIModels();
+                await getOpenAIModels();
 
                 Navigator.of(context).pop(); // Close dialog
               },

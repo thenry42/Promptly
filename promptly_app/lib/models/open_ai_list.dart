@@ -47,17 +47,13 @@ Future<List<OpenAIModelModel>> getOpenAIModels() async {
 Future<String?> getEnvKey() async
 {
   String? res;
-
-  print('alors');
-  await dotenv.load();
-  print('peut etre');
-  res = dotenv.env['OPEN_AI_API_KEY'];
-
-  if (res == null) {
-    print('Problem');
-  } else {
-    print(res);
+  
+  if (openAiKey.isEmpty)
+  {
+    await dotenv.load();
+    res = dotenv.env['OPEN_AI_API_KEY'];
+    openAiKey = res!;
+    return res;
   }
-
-  return res;
+  return null;
 }
