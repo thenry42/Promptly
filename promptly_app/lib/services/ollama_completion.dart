@@ -9,13 +9,13 @@ Future<String> generateOllamaCompletion({
   final client = OllamaClient();
 
   var tmp = model.split(':');
-  var new_model = tmp[1] + ':' + tmp[2]; 
+  var newModel = '${tmp[1]}:${tmp[2]}'; 
 
   try {
 
     final generatedResponse = await client.generateCompletion(
       request: GenerateCompletionRequest(
-        model: new_model,
+        model: newModel,
         prompt: prompt,
       ),
     );

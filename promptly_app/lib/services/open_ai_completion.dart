@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:dart_openai/dart_openai.dart';
-import 'chat_completion.dart';
 
 Future<String> generateOpenAICompletion({
   required String model,
