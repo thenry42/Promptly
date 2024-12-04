@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/conversation.dart';
 import '../widgets/chat_message_widget.dart';
 import '../widgets/loading_indicator_widget.dart';
-import '../widgets/colors.dart';
+//import '../widgets/colors.dart';
 
 class ChatArea extends StatelessWidget {
   final List<Conversation> conversations;
@@ -26,7 +26,7 @@ class ChatArea extends StatelessWidget {
     final bool hasConversation = conversations.isNotEmpty && selectedConversationIndex < conversations.length;
 
     return Container(
-      color: AppColors.primarylight, // Set the background color to black
+      color: Theme.of(context).colorScheme.surface,
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,11 +46,11 @@ class ChatArea extends StatelessWidget {
               ),
             )
           else
-            const Expanded(
+            Expanded(
               child: Center(
                 child: Text(
                   'No conversation selected. Please create or select a conversation.',
-                  style: TextStyle(fontSize: 16, color: AppColors.secondarylight),
+                  style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onSurface),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -64,16 +64,16 @@ class ChatArea extends StatelessWidget {
                   controller: controller,
                   enabled: hasConversation && !isSending, // Disable when no conversation or sending
                   maxLines: null,
-                  style: const TextStyle(
-                    color: AppColors.primary
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Enter your message',
-                    labelStyle: TextStyle(color: AppColors.primary),
+                    labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                     floatingLabelBehavior: FloatingLabelBehavior.never,
                     border: OutlineInputBorder(),
                     // Optional: Change the input field background to a lighter color
-                    fillColor: AppColors.secondarylight,
+                    fillColor: Theme.of(context).colorScheme.surface,
                     filled: true,
                   ),
                   textInputAction: TextInputAction.send,
@@ -85,7 +85,7 @@ class ChatArea extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.send, color: AppColors.secondary),
+                icon: Icon(Icons.send, color: Theme.of(context).colorScheme.onSurface),
                 onPressed: (hasConversation && !isSending && onSendMessage != null)
                     ? onSendMessage
                     : null, // Disable button when not valid

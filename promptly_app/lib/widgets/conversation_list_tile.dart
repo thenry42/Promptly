@@ -32,14 +32,14 @@ class _ConversationListTileState extends State<ConversationListTile> {
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             color: _isHovered
-                ? AppColors.secondarylight
+                ? Theme.of(context).colorScheme.secondary.withOpacity(0.1)
                 : widget.isSelected
-                    ? AppColors.secondarylight
+                    ? Theme.of(context).colorScheme.secondary
                     : Colors.transparent,
             border: Border.all(
               color: widget.isSelected || _isHovered
-                  ? AppColors.secondarylight
-                  : AppColors.secondary,
+                  ? Theme.of(context).colorScheme.secondary
+                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(8.0),
@@ -47,7 +47,7 @@ class _ConversationListTileState extends State<ConversationListTile> {
           child: Text(
             widget.conversation.title,
             style: TextStyle(
-              color: widget.isSelected ? AppColors.primary : Colors.white,
+              color: widget.isSelected ? Theme.of(context).colorScheme.primary : Colors.white,
               fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.normal,
             ),
           ),

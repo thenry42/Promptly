@@ -21,7 +21,7 @@ class ConversationPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.primary,
+      color: Theme.of(context).colorScheme.primary,
       child: Column(
         children: [
           const SizedBox(height: 16),
@@ -36,12 +36,12 @@ class ConversationPanel extends StatelessWidget {
           const SizedBox(height: 16),
           Expanded(
             child: conversations.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'No conversations yet.\nClick "+" to add a new chat.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: AppColors.primarylight,
+                        color: Theme.of(context).colorScheme.onPrimary,
                         fontSize: 16,
                       ),
                     ),
@@ -70,7 +70,7 @@ class ConversationPanel extends StatelessWidget {
                 shape: const CircleBorder(),
                 padding: const EdgeInsets.all(16.0),
               ),
-              child: const Icon(Icons.settings, color: AppColors.secondary),
+              child: Icon(Icons.settings, color: Theme.of(context).colorScheme.primary),
             ),
           ),
         ],

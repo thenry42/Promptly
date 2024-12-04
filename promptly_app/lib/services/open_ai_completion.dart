@@ -23,7 +23,7 @@ Future<String> generateOpenAICompletion({
       messages: [
         userMessage
       ],
-    );
+    ).timeout(const Duration(seconds: 200));
 
     if (chatCompletion.choices.isNotEmpty && chatCompletion.choices[0].message.content!.isNotEmpty) {
       return chatCompletion.choices[0].message.content![0].text.toString();
