@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:ollama_dart/ollama_dart.dart';
-import 'chat_completion.dart';
 
 Future<String> generateOllamaCompletion({
   required String model,
