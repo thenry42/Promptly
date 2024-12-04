@@ -18,9 +18,9 @@ class ChatMessageWidget extends StatelessWidget {
           color: message.sender == 'User' ? Theme.of(context).colorScheme.onSecondary : Theme.of(context).colorScheme.onPrimary,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Text(
+        child: SelectableText(
           message.message,
-          style: const TextStyle(color: Colors.white), // Set the text color to white 
+          style: const TextStyle(color: Colors.white),
           ),
       ),
     );
