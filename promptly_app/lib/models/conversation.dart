@@ -1,5 +1,3 @@
-import 'chat_message.dart';
-
 /* Conversation class that represents a chat conversation. 
 It contains properties related to the conversation's details such as:
   - [title]: The name or title of the conversation.
@@ -8,16 +6,20 @@ It contains properties related to the conversation's details such as:
   - [isOnline]: A boolean indicating whether the conversation is online (uses an API key) or local.
   - [apiKey]: The API key used for online conversations, optional for local ones. */
 
+import 'chat_message.dart';
+
 class Conversation {
+
   String title;
-  List<ChatMessage> messages;
-  bool isHovered;
+  List<ChatMessage> messages = []; // Default value inline
+  bool isHovered = false; // Default value inline
   bool isOnline;
   String? apiKey;
 
+  // Constructor required inside the class in dart (different from cpp)
   Conversation({
     required this.title,
-    this.isOnline = false, // Default to local conversation (like Ollama models)
+    this.isOnline = false,
     this.apiKey,
-  }) : messages = [], isHovered = false;
+  });
 }

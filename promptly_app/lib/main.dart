@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Promptly',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(colorScheme: const ColorScheme.dark()),
       home: const LLMInteractionPage(),
     );
   }

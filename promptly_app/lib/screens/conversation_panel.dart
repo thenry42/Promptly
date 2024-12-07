@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:promptly_app/widgets/colors.dart';
 import '../models/conversation.dart';
 import '../widgets/conversation_list_tile.dart';
+import '../widgets/settings_widget.dart'; // Import the settings dialog
 
 class ConversationPanel extends StatelessWidget {
   final List<Conversation> conversations;
@@ -19,13 +21,15 @@ class ConversationPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blueGrey[50],
+      color: Theme.of(context).colorScheme.primary,
       child: Column(
         children: [
           const SizedBox(height: 16),
           Center(
             child: IconButton(
-              icon: const Icon(Icons.add),
+              icon: const Icon(
+                Icons.add,
+                color: Colors.white),
               onPressed: onAddConversation,
             ),
           ),
@@ -37,7 +41,7 @@ class ConversationPanel extends StatelessWidget {
                       'No conversations yet.\nClick "+" to add a new chat.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.onPrimary,
                         fontSize: 16,
                       ),
                     ),
@@ -56,58 +60,21 @@ class ConversationPanel extends StatelessWidget {
                     },
                   ),
           ),
-          const Divider(), // Adds a visual separator before the settings button
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
               onPressed: () {
-                _showSettingsDialog(context);
+                SettingsDialog.show(context); // Call the static method
               },
               style: ElevatedButton.styleFrom(
                 shape: const CircleBorder(),
                 padding: const EdgeInsets.all(16.0),
               ),
-              child: const Icon(Icons.settings),
+              child: Icon(Icons.settings, color: Theme.of(context).colorScheme.primary),
             ),
           ),
         ],
       ),
-    );
-  }
-
-  void _showSettingsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Settings'),
-          content: const SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: Icon(Icons.color_lens),
-                  title: Text('Theme'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.notifications),
-                  title: Text('Notifications'),
-                ),
-                ListTile(
-                  leading: Icon(Icons.info),
-                  title: Text('About'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

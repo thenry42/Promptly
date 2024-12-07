@@ -4,7 +4,9 @@ It contains two properties:
   - [message]: The content of the message sent by the sender. */
 
 class ChatMessage {
-  String sender;
-  String message;
+
+  final String sender;
+  final String message;
+
   ChatMessage({required this.sender, required this.message});
 }

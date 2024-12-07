@@ -1,10 +1,14 @@
+import 'package:dart_openai/dart_openai.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:ollama_dart/ollama_dart.dart';
+import 'package:promptly_app/models/open_ai_list.dart';
 import '../models/conversation.dart';
 import '../models/chat_message.dart';
 import 'conversation_panel.dart';
 import 'chat_area.dart';
-import '../models/llm_list.dart'; // Import the LLM list
-import '../services/ollama_API.dart'; // Import the Ollama service
+import '../models/ollama_list.dart'; // Import the LLM list
+import '../services/chat_completion.dart';
 
 class LLMInteractionPage extends StatefulWidget {
   const LLMInteractionPage({super.key});
@@ -25,6 +29,7 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
   void initState() {
     super.initState();
     _initializeOllamaModels();
+    _initializeOpenAiModels();
   }
 
   Future<void> _initializeOllamaModels() async {
@@ -35,7 +40,9 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
     try {
       await getOllamaModels();
     } catch (e) {
-      print('Error initializing models: $e');
+      if (kDebugMode) {
+        print('Error initializing ollama models: $e');
+      }
     } finally {
       setState(() {
         _isLoadingModels = false;
@@ -43,6 +50,24 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
     }
   }
 
+  Future<void> _initializeOpenAiModels() async {
+    setState(() {
+      _isLoadingModels = true;
+    });
+
+    try {
+      await getOpenAIModels();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing OpenAI models: $e');
+      }
+    } finally {
+      setState(() {
+        _isLoadingModels = false;
+      });
+    }
+  }
+  
   Future<void> _sendRequest() async {
     final messageText = _controller.text.trim();
 
@@ -72,12 +97,26 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
     _controller.clear(); // Clear the text area after sending a valid message
 
     try {
-      final result = await generateOllamaCompletion(
+
+      Object type = [];
+
+      final selectedLLM = _conversations[_selectedConversationIndex].title;
+      final parts = selectedLLM.split(':');
+      final modelType = parts[0]; // "ollama" or "openai"
+
+      if (modelType == 'ollama') {
+        type = Model; // Ollama model
+      } else if (modelType == 'openai') {
+        type = OpenAIModelModel; // OpenAI model
+      }
+
+      final result = await generateChatCompletion(
         model: _conversations[_selectedConversationIndex].title, 
-        prompt: messageText
+        prompt: messageText,
+        type: type,
       );
       setState(() {
-        // Add Ollama's response to the conversation
+        // Add Model's response to the conversation
         _conversations[_selectedConversationIndex].messages.add(
           ChatMessage(sender: 'Bot', message: result),
         );
@@ -90,7 +129,9 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
           ChatMessage(sender: 'Bot', message: 'Error: $e'),
         );
       });
-      print('Error: $e');
+      if (kDebugMode) {
+        print('Error: $e');
+      }
     }
   }
   
@@ -99,6 +140,12 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
       context: context,
       builder: (BuildContext context) {
         String? selectedLLM;
+
+        // spread operator
+        final allModels = [
+          ...ollamaModels.map((model) => {'type': 'ollama', 'model': model.model}),
+          ...openAIModels.map((model) => {'type': 'openai', 'model': model.id}),
+        ];
 
         return StatefulBuilder(
           builder: (context, setDialogState) {
@@ -114,11 +161,15 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
                       isExpanded: true,
                       value: selectedLLM,
                       hint: const Text('Choose LLM'),
-                      items: llmList.map((llm) {
+                      items: allModels.map((llm) {
                         return DropdownMenuItem<String>(
-                          value: llm['name'],
-                          child: Text(llm['name']!),
-                        );
+                          value: '${llm['type']}:${llm['model']}',
+                          child: Text(
+                          llm['type'] == 'ollama'
+                              ? 'Ollama:${llm['model']}'
+                              : 'OpenAI:${llm['model']}',
+                        ),
+                      );
                       }).toList(),
                       onChanged: (value) {
                         setDialogState(() {
@@ -149,13 +200,7 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
                     setState(() {
                       // Add the new conversation with the selected LLM
                       _conversations.add(
-                        Conversation(
-                          title: selectedLLM!,
-                          isOnline: llmList.firstWhere(
-                                (llm) => llm['name'] == selectedLLM,
-                              )['type'] ==
-                              'online', // Determine if it's online
-                        ),
+                        Conversation(title: selectedLLM!)
                       );
                       _selectedConversationIndex = _conversations.length - 1;
                     });
@@ -181,14 +226,13 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('LLM Interaction')),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Row(
             children: [
               // Left conversation panel with fixed width
               SizedBox(
-                width: 200,
+                width: 300,
                 child: ConversationPanel(
                   conversations: _conversations,
                   selectedConversationIndex: _selectedConversationIndex,
