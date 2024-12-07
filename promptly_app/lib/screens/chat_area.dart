@@ -71,7 +71,7 @@ class ChatArea extends StatelessWidget {
                     labelText: 'Enter your message',
                     labelStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                     floatingLabelBehavior: FloatingLabelBehavior.never,
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     // Optional: Change the input field background to a lighter color
                     fillColor: Theme.of(context).colorScheme.surface,
                     filled: true,

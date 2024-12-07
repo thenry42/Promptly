@@ -1,7 +1,10 @@
-import 'package:dart_openai/dart_openai.dart';
+import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropic;
+import 'package:dart_openai/dart_openai.dart' as openai;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:ollama_dart/ollama_dart.dart';
+import 'package:highlight/languages/vala.dart';
+import 'package:ollama_dart/ollama_dart.dart' as ollama;
+import 'package:promptly_app/models/anthropic_list.dart';
 import 'package:promptly_app/models/open_ai_list.dart';
 import '../models/conversation.dart';
 import '../models/chat_message.dart';
@@ -30,6 +33,7 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
     super.initState();
     _initializeOllamaModels();
     _initializeOpenAiModels();
+    _initializeAnthropicModels();
   }
 
   Future<void> _initializeOllamaModels() async {
@@ -60,6 +64,24 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
     } catch (e) {
       if (kDebugMode) {
         print('Error initializing OpenAI models: $e');
+      }
+    } finally {
+      setState(() {
+        _isLoadingModels = false;
+      });
+    }
+  }
+  
+  Future<void> _initializeAnthropicModels() async {
+    setState(() {
+      _isLoadingModels = true;
+    });
+
+    try {
+      await getAnthropicModels();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error initializing Anthropic models: $e');
       }
     } finally {
       setState(() {
@@ -105,9 +127,11 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
       final modelType = parts[0]; // "ollama" or "openai"
 
       if (modelType == 'ollama') {
-        type = Model; // Ollama model
+        type = ollama.Model; // Ollama model
       } else if (modelType == 'openai') {
-        type = OpenAIModelModel; // OpenAI model
+        type = openai.OpenAIModelModel; // OpenAI model
+      } else if (modelType == 'anthropic') {
+        type = anthropic.Model;
       }
 
       final result = await generateChatCompletion(
@@ -145,6 +169,7 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
         final allModels = [
           ...ollamaModels.map((model) => {'type': 'ollama', 'model': model.model}),
           ...openAIModels.map((model) => {'type': 'openai', 'model': model.id}),
+          ...anthropicModels.map((model) => {'type': 'anthropic', 'model': model.value}),
         ];
 
         return StatefulBuilder(
@@ -161,16 +186,7 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
                       isExpanded: true,
                       value: selectedLLM,
                       hint: const Text('Choose LLM'),
-                      items: allModels.map((llm) {
-                        return DropdownMenuItem<String>(
-                          value: '${llm['type']}:${llm['model']}',
-                          child: Text(
-                          llm['type'] == 'ollama'
-                              ? 'Ollama:${llm['model']}'
-                              : 'OpenAI:${llm['model']}',
-                        ),
-                      );
-                      }).toList(),
+                      items: allModels.map((llm) => getDropdownItem(llm)).toList(),
                       onChanged: (value) {
                         setDialogState(() {
                           selectedLLM = value;
@@ -214,6 +230,27 @@ class _LLMInteractionPageState extends State<LLMInteractionPage> {
           },
         );
       },
+    );
+  }
+
+  DropdownMenuItem<String> getDropdownItem(Map<String, Object?> llm) {
+    String label;
+    switch (llm['type']) {
+      case 'ollama':
+        label = 'Ollama: ${llm['model']}';
+        break;
+      case 'openai':
+        label = 'OpenAI: ${llm['model']}';
+        break;
+      case 'anthropic':
+        label = 'Anthropic: ${llm['model']}';
+        break;
+      default:
+        label = 'Unknown: ${llm['model']}';
+    }
+    return DropdownMenuItem<String>(
+      value: '${llm['type']}:${llm['model']}',
+      child: Text(label),
     );
   }
 

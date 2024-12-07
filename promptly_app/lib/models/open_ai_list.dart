@@ -13,7 +13,7 @@ Future<List<OpenAIModelModel>> getOpenAIModels() async {
       if (openAiKey.isEmpty)
       {
         // Retrieve API KEY from .env
-        OpenAI.apiKey = (await getEnvKey())!;
+        OpenAI.apiKey = (await getOpenAIKey())!;
       } else {
         // Retrieve API KEY from user input
         OpenAI.apiKey = openAiKey; 
@@ -31,7 +31,7 @@ Future<List<OpenAIModelModel>> getOpenAIModels() async {
   return openAIModels;
 }
 
-Future<String?> getEnvKey() async
+Future<String?> getOpenAIKey() async
 {
   String? res;
   
