@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:promptly_app/widgets/colors.dart';
 import '../models/conversation.dart';
 
 class ConversationListTile extends StatefulWidget {
