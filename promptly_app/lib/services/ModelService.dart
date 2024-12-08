@@ -1,5 +1,6 @@
 import 'Ollama.dart';
 import 'OpenAI.dart';
+import 'Anthropic.dart';
 
 class ModelService {
   Future<void> initializeOllamaModels() async {
@@ -13,6 +14,14 @@ class ModelService {
   Future<void> initializeOpenAiModels() async {
     try {
       await getOpenAIModels();
+    } catch (e) {
+      print('Error initializing OpenAI models: $e');
+    }
+  }
+
+  Future<void> initializeAnthropicModels() async {
+    try {
+      await getAnthropicKey();
     } catch (e) {
       print('Error initializing OpenAI models: $e');
     }

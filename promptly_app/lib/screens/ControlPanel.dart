@@ -34,6 +34,7 @@ class ControlPanel extends StatelessWidget {
             ),
             child: Icon(Icons.add, color: Theme.of(context).colorScheme.onSurface),
           ),
+          const SizedBox(height: 20),
           Expanded(
             child: ListView.builder(
               itemCount: chats.length,

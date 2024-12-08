@@ -37,6 +37,7 @@ class _HomePageState extends State<HomePage> {
     try {
       await _modelService.initializeOllamaModels();
       await _modelService.initializeOpenAiModels();
+      await _modelService.initializeAnthropicModels();
     } catch (e) {
       if (kDebugMode) {
         print('Error initializing models: $e');
