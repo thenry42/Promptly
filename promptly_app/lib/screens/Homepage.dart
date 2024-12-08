@@ -124,6 +124,35 @@ class _HomePageState extends State<HomePage> {
                 height: 120,
                 child: Column(
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            // Action for the first button
+                            print('Ollama selected');
+                          },
+                          child: Text('Ollama'),
+                        ),
+                        SizedBox(width: 20), // Space between buttons
+                        ElevatedButton(
+                          onPressed: () {
+                            // Action for the second button
+                            print('Anthropic selected');
+                          },
+                          child: Text('Anthropic'),
+                        ),
+                        SizedBox(width: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            // Action for the third button
+                            print('Open AI selected');
+                          },
+                          child: Text('Open AI'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
                     DropdownButton<String>(
                       isExpanded: true,
                       value: selectedLLM,
