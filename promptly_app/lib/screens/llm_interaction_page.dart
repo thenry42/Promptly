@@ -2,7 +2,6 @@ import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropic;
 import 'package:dart_openai/dart_openai.dart' as openai;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:highlight/languages/vala.dart';
 import 'package:ollama_dart/ollama_dart.dart' as ollama;
 import 'package:promptly_app/models/anthropic_list.dart';
 import 'package:promptly_app/models/open_ai_list.dart';

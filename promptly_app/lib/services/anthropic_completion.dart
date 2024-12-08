@@ -8,7 +8,7 @@ Future<String> generateAnthropicCompletion({
 }) async {
 
   var tmp = model.split(':');
-  var newModel = '${tmp[1]}';
+  var newModel = tmp[1];
   final client = anthropic.AnthropicClient(apiKey: claudeKey);
 
   try {

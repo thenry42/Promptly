@@ -16,9 +16,9 @@ Future<List<anthropic.Model>> getAnthropicModels() async {
         claudeKey = (await getAnthropicKey())!;
       }
 
-      anthropicModels.add(anthropic.Model.modelId('claude-3-5-sonnet-latest'));
-      anthropicModels.add(anthropic.Model.modelId('claude-3-5-haiku-latest'));
-      anthropicModels.add(anthropic.Model.modelId('claude-3-opus-latest'));
+      anthropicModels.add(const anthropic.Model.modelId('claude-3-5-sonnet-latest'));
+      anthropicModels.add(const anthropic.Model.modelId('claude-3-5-haiku-latest'));
+      anthropicModels.add(const anthropic.Model.modelId('claude-3-opus-latest'));
 
     } catch (e) {
       if (kDebugMode) {
