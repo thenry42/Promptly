@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:promptly_app/models/open_ai_list.dart';
-
-String openAiKey = '';
-String claudeKey = '';
+import 'package:promptly_app/services/OpenAI.dart';
+import 'package:promptly_app/services/Anthropic.dart';
 
 class SettingsDialog {
-
-  /// Displays the main settings dialog.
   static void show(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Settings'),
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+          title: const Center(child: Text('Settings')),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -25,21 +22,20 @@ class SettingsDialog {
                     _showApiKeysDialog(context); // Open the API Keys dialog
                   },
                 ),
-                const ListTile(
-                  leading: Icon(Icons.color_lens),
-                  title: Text('Theme'),
-                ),
-                const ListTile(
-                  leading: Icon(Icons.info),
-                  title: Text('About'),
-                ),
               ],
             ),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
+            Center(
+              child: TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: TextButton.styleFrom(
+                  shape: const CircleBorder(),
+                  padding: const EdgeInsets.all(20),
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                ),
+                child: Icon(Icons.cancel, color: Theme.of(context).colorScheme.onSurface),
+              ),
             ),
           ],
         );
@@ -49,9 +45,6 @@ class SettingsDialog {
 
   /// Displays the API Key management dialog.
   static void _showApiKeysDialog(BuildContext context) {
-    String tempOpenAiKey = openAiKey; // Local temporary storage for OpenAI key
-    String tempClaudeKey = claudeKey; // Local temporary storage for Claude key
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -71,9 +64,9 @@ class SettingsDialog {
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (value) {
-                  tempOpenAiKey = value; // Update OpenAI key
+                  OPEN_AI_API_KEY = value; // Update OpenAI key
                 },
-                controller: TextEditingController(text: openAiKey),
+                controller: TextEditingController(text: OPEN_AI_API_KEY),
                 obscureText: true,
                 obscuringCharacter: '•',
                 expands: false,
@@ -85,9 +78,9 @@ class SettingsDialog {
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (value) {
-                  tempClaudeKey = value; // Update Claude key
+                  ANTHROPIC_API_KEY = value; // Update Claude key
                 },
-                controller: TextEditingController(text: claudeKey),
+                controller: TextEditingController(text: ANTHROPIC_API_KEY),
                 obscureText: true,
                 obscuringCharacter: '•',
                 expands: false,
@@ -101,15 +94,7 @@ class SettingsDialog {
             ),
             TextButton(
               onPressed: () async {
-                // Save keys to session variables
-                openAiKey = tempOpenAiKey;
-                claudeKey = tempClaudeKey;
-
-                //debugPrint('User Input OpenAI Key: $openAiKey');
-                //debugPrint('User Input Claude Key: $claudeKey');
-
                 await getOpenAIModels();
-
                 Navigator.of(context).pop(); // Close dialog
               },
               child: const Text('Save'),

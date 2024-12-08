@@ -1,5 +1,5 @@
+import '../models/ChatMessage.dart';
 import 'package:flutter/material.dart';
-import '../models/chat_message.dart';
 
 class ChatMessageWidget extends StatelessWidget {
   final ChatMessage message;

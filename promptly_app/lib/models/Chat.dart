@@ -6,9 +6,9 @@ It contains properties related to the conversation's details such as:
   - [isOnline]: A boolean indicating whether the conversation is online (uses an API key) or local.
   - [apiKey]: The API key used for online conversations, optional for local ones. */
 
-import 'chat_message.dart';
+import 'ChatMessage.dart';
 
-class Conversation {
+class Chat {
 
   String title;
   List<ChatMessage> messages = []; // Default value inline
@@ -17,7 +17,7 @@ class Conversation {
   String? apiKey;
 
   // Constructor required inside the class in dart (different from cpp)
-  Conversation({
+  Chat({
     required this.title,
     this.isOnline = false,
     this.apiKey,

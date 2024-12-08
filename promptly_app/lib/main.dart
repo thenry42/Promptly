@@ -1,5 +1,6 @@
+import 'widgets/Colors.dart';
+import 'screens/Homepage.dart';
 import 'package:flutter/material.dart';
-import 'screens/llm_interaction_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,8 +14,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Promptly',
-      theme: ThemeData(colorScheme: const ColorScheme.dark()),
-      home: const LLMInteractionPage(),
+      theme: ThemeData(colorScheme: AppTheme.myColorScheme),
+      //home: const LLMInteractionPage(),
+      home: const HomePage(),
     );
   }
 }
