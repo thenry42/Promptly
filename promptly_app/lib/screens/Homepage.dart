@@ -118,12 +118,12 @@ class _HomePageState extends State<HomePage> {
             ];
 
             return AlertDialog(
-              title: const Text('New Chat'),
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+              title: const Center(child: Text('New Chat')),
               content: SizedBox(
                 height: 120,
                 child: Column(
                   children: [
-                    const Text('Select a LLM'),
                     DropdownButton<String>(
                       isExpanded: true,
                       value: selectedLLM,

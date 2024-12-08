@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
-import '../models/ChatMessage.dart';
 import '../models/Chat.dart';
-import '../widgets/ChatMessageWidget.dart';
+import 'package:flutter/material.dart';
 import '../widgets/LoadingIndicator.dart';
+import '../widgets/ChatMessageWidget.dart';
 
 class ChattingArea extends StatelessWidget {
   final List<Chat> chats;
@@ -56,60 +55,60 @@ class ChattingArea extends StatelessWidget {
                   ),
           ),
           const SizedBox(height: 8),
-
           // Message input and send button
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: controller,
-                  enabled: hasChat && !isSending,
-                  maxLines: null,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 20,
-                    ),
-                    labelText: 'Enter your message',
-                    labelStyle: TextStyle(
+          if (hasChat)
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: controller,
+                    enabled: hasChat && !isSending,
+                    maxLines: null,
+                    style: TextStyle(
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                    ),
-                    fillColor: Theme.of(context).colorScheme.surfaceContainerHigh,
-                    filled: true,
-                    suffixIcon: Padding(
-                      padding: EdgeInsets.only(right: 10),
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.send_rounded,
-                          color: Theme.of(context).colorScheme.onSurface,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 20,
+                      ),
+                      labelText: 'Enter your message',
+                      labelStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                      ),
+                      fillColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                      filled: true,
+                      suffixIcon: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.send_rounded,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                          onPressed: () {
+                            if (controller.text.trim().isNotEmpty) {
+                              onSendMessage(controller.text);
+                              controller.clear();
+                            }
+                          },
                         ),
-                        onPressed: () {
-                          if (controller.text.trim().isNotEmpty) {
-                            onSendMessage(controller.text);
-                            controller.clear();
-                          }
-                        },
                       ),
                     ),
+                    textInputAction: TextInputAction.send,
+                    onFieldSubmitted: (value) {
+                      if (value.trim().isNotEmpty) {
+                        onSendMessage(value);
+                        controller.clear();
+                      }
+                    },
                   ),
-                  textInputAction: TextInputAction.send,
-                  onFieldSubmitted: (value) {
-                    if (value.trim().isNotEmpty) {
-                      onSendMessage(value);
-                      controller.clear();
-                    }
-                  },
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );

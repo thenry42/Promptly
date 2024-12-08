@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:promptly_app/services/OpenAI.dart';
 import 'package:promptly_app/services/Anthropic.dart';
