@@ -70,5 +70,5 @@ Future<String> generateOpenAICompletion({
       print('Error generating completion: $e');
     }
   }
-  return '';
+  return 'FATAL ERROR';
 }

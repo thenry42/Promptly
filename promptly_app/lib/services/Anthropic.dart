@@ -48,6 +48,6 @@ Future<String> generateAnthropicCompletion({
     if (kDebugMode) {
       print('Error generating completion: $e');
     }
-    return '';
+    return 'FATAL ERROR';
   }
 }

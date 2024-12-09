@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
 
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            final allModels = [
+            final List<Map<String, Object?>> allModels = [
               ...ollamaModels.map((model) => 
                   {'type': 'ollama', 'model': model.model}),
               ...openAIModels.map((model) => 

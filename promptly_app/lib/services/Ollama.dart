@@ -46,6 +46,6 @@ Future<String> generateOllamaCompletion({
     if (kDebugMode) {
       print('Error generating completion: $e');
     }
-    return '';
+    return 'FATAL ERROR';
   }
 }
