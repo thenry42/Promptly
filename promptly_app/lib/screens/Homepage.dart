@@ -27,7 +27,6 @@ class _HomePageState extends State<HomePage> {
   int _selectedChatIndex = -1; // Start with no chat selected
   final List<Chat> _chats = [];
   final ModelService _modelService = ModelService();
-  bool _isSending = false;
 
   @override
   void initState() {
