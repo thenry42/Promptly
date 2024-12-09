@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:promptly_app/services/Anthropic.dart';
@@ -105,6 +107,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         String? selectedLLM;
+        List<Map<String, Object?>> selectedList = [];
 
         return StatefulBuilder(
           builder: (context, setDialogState) {
@@ -129,38 +132,54 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            // Action for the first button
-                            print('Ollama selected');
+                            setDialogState(() {
+                              selectedList = allModels.where((model) => model['type'] == 'ollama').toList();
+                              selectedLLM = null;
+                            });
                           },
                           child: Text('Ollama'),
                         ),
-                        SizedBox(width: 20), // Space between buttons
+                        const SizedBox(width: 20), // Space between buttons
                         ElevatedButton(
                           onPressed: () {
-                            // Action for the second button
-                            print('Anthropic selected');
+                            setDialogState(() {
+                              selectedList = allModels.where((model) => model['type'] == 'anthropic').toList();
+                              selectedLLM = null;
+                            });
                           },
                           child: Text('Anthropic'),
                         ),
-                        SizedBox(width: 20),
+                        const SizedBox(width: 20),
                         ElevatedButton(
                           onPressed: () {
-                            // Action for the third button
-                            print('Open AI selected');
+                            setDialogState(() {
+                              selectedList = allModels.where((model) => model['type'] == 'openai').toList(); 
+                              selectedLLM = null;
+                            });
                           },
                           child: Text('Open AI'),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
+                    if (selectedList.isNotEmpty)
                     DropdownButton<String>(
+                      icon: SizedBox(),
+                      underline: SizedBox(),
+                      borderRadius: BorderRadius.circular(30),
                       isExpanded: true,
                       value: selectedLLM,
-                      hint: const Text('Choose LLM'),
-                      items: allModels
+                      hint: const Padding (
+                        padding: EdgeInsets.only(left: 20),
+                        child: Text('Choose LLM'),
+                      ),
+                      items: selectedList
                           .map((llm) => DropdownMenuItem<String>(
                                 value: '${llm['type']}:${llm['model']}',
-                                child: Text('${llm['type']}: ${llm['model']}'),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 20),
+                                  child: Text('${llm['type']}: ${llm['model']}'),
+                                ),
                               ))
                           .toList(),
                       onChanged: (value) {
