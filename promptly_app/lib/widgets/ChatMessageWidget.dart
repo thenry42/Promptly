@@ -14,13 +14,17 @@ class ChatMessageWidget extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: message.sender == 'User' ? Theme.of(context).colorScheme.onSecondary : Theme.of(context).colorScheme.onPrimary,
-          borderRadius: BorderRadius.circular(8),
+          color: Theme.of(context).colorScheme.tertiary,
+          borderRadius: BorderRadius.circular(16),
         ),
         child: SelectableText(
           message.message,
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onTertiary,
+            fontSize: 16.0,
+            fontWeight: FontWeight.w600,
           ),
+        ),
       ),
     );
   }

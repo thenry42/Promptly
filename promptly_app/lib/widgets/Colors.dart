@@ -9,5 +9,7 @@ class AppTheme {
     surfaceContainerHigh: Color(0xFF2B2930),
     surfaceContainerHighest: Color(0xFF36343B),
     onSurface: Color(0xFFE6E0E9),
+    tertiary: Color(0xFFEFB8C8),
+    onTertiary: Color(0xFF492532),
   );
 }

@@ -178,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                                 value: '${llm['type']}:${llm['model']}',
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 20),
-                                  child: Text('${llm['type']}: ${llm['model']}'),
+                                  child: Text('${llm['model']}'),
                                 ),
                               ))
                           .toList(),
