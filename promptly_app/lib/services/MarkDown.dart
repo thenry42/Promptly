@@ -1,133 +1,150 @@
-/* THIS FILE CAN BE USED AS A TEST MAIN.DART
-
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/theme_map.dart';
+import 'package:flutter_highlight/themes/a11y-dark.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() => runApp(MyApp());
+class MarkdownMessage extends StatelessWidget {
+  final String message;
+  final bool isUserMessage;
 
-final title = 'Flutter Highlight Gallery';
+  const MarkdownMessage({
+    Key? key,
+    required this.message,
+    required this.isUserMessage,
+  }) : super(key: key);
 
-class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: title,
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  String language = 'dart';
-  String theme = 'a11y-dark';
-
-  // Predefined code snippets for supported languages
-  final Map<String, String> codeSnippets = {
-    'dart': '''void main() {
-  print("Hello, Dart!");
-}''',
-    'python': '''def greet():
-    print("Hello, Python!")''',
-    'javascript': '''function greet() {
-  console.log("Hello, JavaScript!");
-}''',
-    'java': '''public class Main {
-  public static void main(String[] args) {
-    System.out.println("Hello, Java!");
-  }
-}''',
-  };
-
-  Widget _buildMenuContent(String text) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12),
-      child: Row(children: <Widget>[
-        Text(text, style: TextStyle(fontSize: 16)),
-        Icon(Icons.arrow_drop_down)
-      ]),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        actions: <Widget>[
-          PopupMenuButton(
-            child: _buildMenuContent(language),
-            itemBuilder: (context) {
-              return codeSnippets.keys.map((key) {
-                return CheckedPopupMenuItem(
-                  value: key,
-                  child: Text(key),
-                  checked: language == key,
-                );
-              }).toList();
-            },
-            onSelected: (selected) {
-              if (selected != null) {
-                setState(() {
-                  language = selected;
-                });
-              }
-            },
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment:
+            isUserMessage ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+            ),
+            padding: const EdgeInsets.all(12.0),
+            decoration: BoxDecoration(
+              color: isUserMessage
+                  ? Theme.of(context).colorScheme.tertiary
+                  : Theme.of(context).colorScheme.tertiary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: SelectableMarkdown(message: message),
           ),
-          PopupMenuButton<String>(
-            child: _buildMenuContent(theme),
-            itemBuilder: (context) {
-              return themeMap.keys.map((key) {
-                return CheckedPopupMenuItem(
-                  value: key,
-                  child: Text(key),
-                  checked: theme == key,
-                );
-              }).toList();
-            },
-            onSelected: (selected) {
-              if (selected != null) {
-                setState(() {
-                  theme = selected;
-                });
-              }
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.code),
-            tooltip: 'Source Code',
-            onPressed: () {
-              launch('https://github.com/pd4d10/highlight');
-            },
-          )
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            HighlightView(
-              // Retrieve code snippet based on the selected language
-              codeSnippets[language] ?? 'Code snippet not available.',
-              language: language,
-              theme: themeMap[theme] ?? {},
-              padding: EdgeInsets.all(12),
-              textStyle: const TextStyle(
-                  fontFamily:
-                      'SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace'),
-            )
-          ],
+    );
+  }
+}
+
+class SelectableMarkdown extends StatelessWidget {
+  final String message;
+
+  const SelectableMarkdown({
+    Key? key,
+    required this.message,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MarkdownBody(
+      data: message,
+      selectable: true,
+      builders: {
+        'code': CustomCodeBuilder(),
+      },
+      styleSheet: MarkdownStyleSheet(
+        // Text styles
+        p: TextStyle(
+          color: Theme.of(context).colorScheme.onTertiary,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+        h1: TextStyle(
+          color: Theme.of(context).colorScheme.onTertiary,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+        h2: TextStyle(
+          color: Theme.of(context).colorScheme.onTertiary,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+        h3: TextStyle(
+          color: Theme.of(context).colorScheme.onTertiary,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+        blockquote: TextStyle(
+          color: Theme.of(context).colorScheme.onTertiary,
+          fontSize: 16,
+          fontStyle: FontStyle.italic,
+          height: 1,
+        ),
+        code: TextStyle(
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
+          fontFamily: 'monospace',
+          fontSize: 14,
+          height: 1,
+        ),
+        // List styles
+        listBullet: TextStyle(
+          color: Theme.of(context).colorScheme.onTertiary,
+          fontSize: 16,
+        ),
+      ),
+      onTapLink: (text, href, title) async {
+        if (href != null) {
+          final url = Uri.parse(href);
+          if (await canLaunchUrl(url)) {
+            await launchUrl(url);
+          }
+        }
+      },
+    );
+  }
+}
+
+class CustomCodeBuilder extends MarkdownElementBuilder {
+  @override
+  Widget? visitElementAfter(element, TextStyle? preferredStyle) {
+    var language = '';
+    
+    // Extract language from code fence if present
+    if (element.attributes['class'] != null) {
+      var languageClass = element.attributes['class'] as String;
+      if (languageClass.startsWith('language-')) {
+        language = languageClass.substring(9);
+      }
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: HighlightView(
+          // The original code
+          element.textContent,
+          // Specify language
+          language: language.isEmpty ? 'plaintext' : language,
+          // Use theme
+          theme: a11yDarkTheme,
+          // Padding
+          padding: const EdgeInsets.all(12),
+          // Text style
+          textStyle: const TextStyle(
+            fontFamily: 'monospace',
+            fontSize: 14,
+          ),
         ),
       ),
     );
   }
 }
-
-*/
