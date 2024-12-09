@@ -51,7 +51,7 @@ class _HomePageState extends State<HomePage> {
     if (_selectedChatIndex < 0 || message.isEmpty) return;
 
     setState(() {
-      _isSending = true;
+      _chats[_selectedChatIndex].isSending = true;
       _chats[_selectedChatIndex].messages.add(
         ChatMessage(sender: 'User', message: message),
       );
@@ -84,14 +84,14 @@ class _HomePageState extends State<HomePage> {
       );
 
       setState(() {
-        _isSending = false;
+        _chats[_selectedChatIndex].isSending = false;
         _chats[_selectedChatIndex].messages.add(
           ChatMessage(sender: 'Bot', message: result),
         );
       });
     } catch (e) {
       setState(() {
-        _isSending = false;
+        _chats[_selectedChatIndex].isSending = false;
         _chats[_selectedChatIndex].messages.add(
           ChatMessage(sender: 'Bot', message: 'Error: $e'),
         );
@@ -234,7 +234,6 @@ class _HomePageState extends State<HomePage> {
               selectedChatIndex: _selectedChatIndex,
               onSendMessage: _sendMessage,
               controller: _controller,
-              isSending: _isSending,
             ),
           ),
         ],

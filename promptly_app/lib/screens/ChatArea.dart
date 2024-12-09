@@ -7,7 +7,6 @@ class ChattingArea extends StatelessWidget {
   final List<Chat> chats;
   final int selectedChatIndex;
   final TextEditingController controller;
-  final bool isSending;
   final Function(String) onSendMessage;
 
   const ChattingArea({
@@ -15,13 +14,13 @@ class ChattingArea extends StatelessWidget {
     required this.chats,
     required this.selectedChatIndex,
     required this.controller,
-    required this.isSending,
     required this.onSendMessage,
   });
 
   @override
   Widget build(BuildContext context) {
     final bool hasChat = chats.isNotEmpty && selectedChatIndex < chats.length;
+    final currentChat = hasChat ? chats[selectedChatIndex] : null;
 
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainer,
@@ -33,13 +32,13 @@ class ChattingArea extends StatelessWidget {
           Expanded(
             child: hasChat
                 ? ListView.builder(
-                    itemCount: chats[selectedChatIndex].messages.length + (isSending ? 1 : 0),
+                    itemCount: currentChat!.messages.length + (currentChat.isSending ? 1 : 0),
                     itemBuilder: (context, index) {
-                      if (isSending && index == chats[selectedChatIndex].messages.length) {
+                      if (currentChat.isSending && index == currentChat.messages.length) {
                         return const LoadingIndicator();
                       }
                       return ChatMessageWidget(
-                        message: chats[selectedChatIndex].messages[index],
+                        message: currentChat.messages[index],
                       );
                     },
                   )
@@ -62,7 +61,6 @@ class ChattingArea extends StatelessWidget {
                 Expanded(
                   child: TextFormField(
                     controller: controller,
-                    enabled: hasChat && !isSending,
                     maxLines: null,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSurface,
