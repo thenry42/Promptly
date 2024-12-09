@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/LoadingIndicator.dart';
 import '../widgets/ChatMessageWidget.dart';
 
-class ChattingArea extends StatelessWidget {
+class ChattingArea extends StatefulWidget {
   final List<Chat> chats;
   final int selectedChatIndex;
   final TextEditingController controller;
@@ -18,9 +18,41 @@ class ChattingArea extends StatelessWidget {
   });
 
   @override
+  _ChattingAreaState createState() => _ChattingAreaState();
+
+}
+
+class _ChattingAreaState extends State<ChattingArea> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void didUpdateWidget(ChattingArea oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Check if the selected chat or its messages have changed
+    if (widget.selectedChatIndex != oldWidget.selectedChatIndex ||
+        widget.chats[widget.selectedChatIndex].messages.length !=
+            oldWidget.chats[oldWidget.selectedChatIndex].messages.length) {
+      _scrollToBottom();
+    }
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool hasChat = chats.isNotEmpty && selectedChatIndex < chats.length;
-    final currentChat = hasChat ? chats[selectedChatIndex] : null;
+    final bool hasChat = widget.chats.isNotEmpty && widget.selectedChatIndex < widget.chats.length;
+    final currentChat = hasChat ? widget.chats[widget.selectedChatIndex] : null;
 
     return Container(
       color: Theme.of(context).colorScheme.surfaceContainer,
@@ -60,7 +92,7 @@ class ChattingArea extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextFormField(
-                    controller: controller,
+                    controller: widget.controller,
                     maxLines: null,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSurface,
@@ -88,9 +120,10 @@ class ChattingArea extends StatelessWidget {
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
                           onPressed: () {
-                            if (controller.text.trim().isNotEmpty) {
-                              onSendMessage(controller.text);
-                              controller.clear();
+                            if (widget.controller.text.trim().isNotEmpty) {
+                              widget.onSendMessage(widget.controller.text);
+                              widget.controller.clear();
+                              _scrollToBottom();
                             }
                           },
                         ),
@@ -99,8 +132,9 @@ class ChattingArea extends StatelessWidget {
                     textInputAction: TextInputAction.send,
                     onFieldSubmitted: (value) {
                       if (value.trim().isNotEmpty) {
-                        onSendMessage(value);
-                        controller.clear();
+                        widget.onSendMessage(value);
+                        widget.controller.clear();
+                        _scrollToBottom();
                       }
                     },
                   ),
@@ -111,4 +145,12 @@ class ChattingArea extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 }
+
+// make this chat area auto scroll

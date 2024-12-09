@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Promptly',
       theme: ThemeData(colorScheme: AppTheme.myColorScheme),
-      //home: const LLMInteractionPage(),
       home: const HomePage(),
     );
   }

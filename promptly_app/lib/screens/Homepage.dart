@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:promptly_app/services/Anthropic.dart';
@@ -138,7 +136,7 @@ class _HomePageState extends State<HomePage> {
                               selectedLLM = null;
                             });
                           },
-                          child: Text('Ollama'),
+                          child: const Text('Ollama'),
                         ),
                         const SizedBox(width: 20), // Space between buttons
                         ElevatedButton(
@@ -148,7 +146,7 @@ class _HomePageState extends State<HomePage> {
                               selectedLLM = null;
                             });
                           },
-                          child: Text('Anthropic'),
+                          child: const Text('Anthropic'),
                         ),
                         const SizedBox(width: 20),
                         ElevatedButton(
@@ -158,15 +156,15 @@ class _HomePageState extends State<HomePage> {
                               selectedLLM = null;
                             });
                           },
-                          child: Text('Open AI'),
+                          child: const Text('Open AI'),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
                     if (selectedList.isNotEmpty)
                     DropdownButton<String>(
-                      icon: SizedBox(),
-                      underline: SizedBox(),
+                      icon: const SizedBox(),
+                      underline: const SizedBox(),
                       borderRadius: BorderRadius.circular(30),
                       isExpanded: true,
                       value: selectedLLM,
@@ -193,21 +191,36 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (selectedLLM != null) {
-                      setState(() {
-                        _chats.add(Chat(title: selectedLLM!));
-                        _selectedChatIndex = _chats.length - 1;
-                      });
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text('Create'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(), // Close dialog
+                      style: TextButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(20),
+                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                      ),
+                      child: Icon(Icons.cancel, color: Theme.of(context).colorScheme.onSurface),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        if (selectedLLM != null) {
+                        setState(() {
+                          _chats.add(Chat(title: selectedLLM!));
+                          _selectedChatIndex = _chats.length - 1;
+                        });
+                        Navigator.pop(context);
+                      }
+                      },
+                      style: TextButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(20),
+                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                      ),
+                      child: Icon(Icons.check, color: Theme.of(context).colorScheme.onSurface),
+                    ),
+                  ],
                 ),
               ],
             );

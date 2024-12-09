@@ -23,13 +23,23 @@ class ChatList extends StatelessWidget {
           color: isSelected
               ? Theme.of(context).colorScheme.surfaceContainerHighest // Selected chat background color
               : Theme.of(context).colorScheme.surfaceContainerHigh, // Unselected chat, no background color
+          borderRadius: BorderRadius.circular(30),
         ),
-        child: Text(
-          chat.title,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, // Bold when selected
-          ),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 0),
+              child: Text(
+                chat.title,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, // Bold when selected
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: null,
+              ),
+            ),
+          ],
         ),
       ),
     );

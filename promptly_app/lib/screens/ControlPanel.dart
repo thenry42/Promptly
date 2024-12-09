@@ -41,8 +41,8 @@ class ControlPanel extends StatelessWidget {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(
-                    vertical: 4.0,
-                    horizontal: 8.0,
+                    vertical: 4,
+                    horizontal: 10,
                   ),
                   child: ChatList(
                     chat: chats[index],
