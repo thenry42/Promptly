@@ -49,15 +49,17 @@ class _HomePageState extends State<HomePage> {
   Future<void> _sendMessage(String message) async {
     if (_selectedChatIndex < 0 || message.isEmpty) return;
 
+    final int originalChatIndex = _selectedChatIndex;
+
     setState(() {
-      _chats[_selectedChatIndex].isSending = true;
-      _chats[_selectedChatIndex].messages.add(
+      _chats[originalChatIndex].isSending = true;
+      _chats[originalChatIndex].messages.add(
         ChatMessage(sender: 'User', message: message),
       );
     });
 
     try {
-      final selectedLLM = _chats[_selectedChatIndex].title;
+      final selectedLLM = _chats[originalChatIndex].title;
       final parts = selectedLLM.split(':');
       final modelType = parts[0];
       Object type;
@@ -83,15 +85,15 @@ class _HomePageState extends State<HomePage> {
       );
 
       setState(() {
-        _chats[_selectedChatIndex].isSending = false;
-        _chats[_selectedChatIndex].messages.add(
+        _chats[originalChatIndex].isSending = false;
+        _chats[originalChatIndex].messages.add(
           ChatMessage(sender: 'Bot', message: result),
         );
       });
     } catch (e) {
       setState(() {
-        _chats[_selectedChatIndex].isSending = false;
-        _chats[_selectedChatIndex].messages.add(
+        _chats[originalChatIndex].isSending = false;
+        _chats[originalChatIndex].messages.add(
           ChatMessage(sender: 'Bot', message: 'Error: $e'),
         );
       });
