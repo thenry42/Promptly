@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:promptly_app/services/OpenAI.dart';
-import 'package:promptly_app/services/Anthropic.dart';
+import 'package:promptly_app/srcs/OpenAI.dart';
+import 'package:promptly_app/srcs/Anthropic.dart';
 
 class SettingsDialog {
   static void show(BuildContext context) {

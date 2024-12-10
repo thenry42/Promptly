@@ -1,7 +1,6 @@
-import '../models/Chat.dart';
+import 'Chat.dart';
 import 'package:flutter/material.dart';
-import '../widgets/LoadingIndicator.dart';
-import '../widgets/ChatMessageWidget.dart';
+import 'LoadingIndicator.dart';
 
 class ChattingArea extends StatefulWidget {
   final List<Chat> chats;

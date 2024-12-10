@@ -1,5 +1,5 @@
-import 'widgets/Colors.dart';
-import 'screens/Homepage.dart';
+import 'srcs/Colors.dart';
+import 'srcs/Homepage.dart';
 import 'package:flutter/material.dart';
 
 void main() {
