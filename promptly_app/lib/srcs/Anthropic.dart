@@ -1,3 +1,4 @@
+import 'Chat.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropic;
@@ -22,26 +23,28 @@ Future<void> getAnthropicKey() async {
 Future<String> generateAnthropicCompletion({
   required String model,
   required String prompt,
+  required List<ChatMessage> messageList,
 }) async {
-
-  var tmp = model.split(':');
-  var newModel = tmp[1];
+  
+  var newModel = model.replaceFirst('anthropic:', ''); 
   final client = anthropic.AnthropicClient(apiKey: ANTHROPIC_API_KEY);
 
   try {
+
+    final List<anthropic.Message> messages = messageList.map((msg) {
+      return anthropic.Message(
+        role: msg.sender == 'User' ? anthropic.MessageRole.user : anthropic.MessageRole.assistant,
+        content: anthropic.MessageContent.text(msg.message),
+      );
+    }).toList();
 
     final res = await client.createMessage(
       request: anthropic.CreateMessageRequest(
         model: anthropic.Model.modelId(newModel),
         maxTokens: 1024,
-        messages: [
-            anthropic.Message(
-              role: anthropic.MessageRole.user,
-              content: anthropic.MessageContent.text(prompt),
-            ),
-          ],
-        ),
-      );
+        messages: messages,
+      ),
+    );
 
     return (res.content.text);
   } catch (e) {

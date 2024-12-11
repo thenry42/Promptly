@@ -1,6 +1,7 @@
 import 'Ollama.dart';
 import 'OpenAI.dart';
 import 'Anthropic.dart';
+import 'Chat.dart';
 import 'package:ollama_dart/ollama_dart.dart' as ollama;
 import 'package:dart_openai/dart_openai.dart' as openai;
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropic;
@@ -8,17 +9,18 @@ import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropic;
 Future<String> generateChatCompletion({
   required String model,
   required String prompt,
-  required Object type
+  required Object type,
+  required List<ChatMessage> messageList,
 }) async {
 
   String response = '';
 
   if (type == ollama.Model) {
-    response = await generateOllamaCompletion(model: model, prompt: prompt);
+    response = await generateOllamaCompletion(model: model, prompt: prompt, messageList: messageList);
   } else if (type == openai.OpenAIModelModel) {
-    response = await generateOpenAICompletion(model: model, prompt: prompt);
+    response = await generateOpenAICompletion(model: model, prompt: prompt, messageList: messageList);
   } else if (type == anthropic.Model) {
-    response = await generateAnthropicCompletion(model: model, prompt: prompt);
+    response = await generateAnthropicCompletion(model: model, prompt: prompt, messageList: messageList);
   } else {
     throw Exception('Unsupported model type');
   }

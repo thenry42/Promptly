@@ -79,6 +79,7 @@ class _HomePageState extends State<HomePage> {
         model: selectedLLM,
         prompt: message,
         type: type,
+        messageList: _chats[originalChatIndex].messages,
       );
 
       setState(() {

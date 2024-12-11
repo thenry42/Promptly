@@ -1,3 +1,4 @@
+import 'Chat.dart';
 import 'package:flutter/foundation.dart';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -38,28 +39,30 @@ Future<List<OpenAIModelModel>> getOpenAIModels() async {
 Future<String> generateOpenAICompletion({
   required String model,
   required String prompt,
+  required List<ChatMessage> messageList,
 }) async {
 
   String newModel = model.replaceFirst('openai:', ''); 
 
-  final userMessage = OpenAIChatCompletionChoiceMessageModel(
-  content: [
-    OpenAIChatCompletionChoiceMessageContentItemModel.text(prompt),
-  ],
-  role: OpenAIChatMessageRole.user,
-  );
-
   try {
-    
-    // the actual request.
+
+    final List<OpenAIChatCompletionChoiceMessageModel> messages = messageList.map((msg) {
+      return OpenAIChatCompletionChoiceMessageModel(
+        content: [
+          OpenAIChatCompletionChoiceMessageContentItemModel.text(msg.message),
+        ],
+        role: msg.sender == 'User' ? OpenAIChatMessageRole.user : OpenAIChatMessageRole.assistant,
+      );
+    }).toList();
+
+    // Make the request with full message history
     OpenAIChatCompletionModel chatCompletion = await OpenAI.instance.chat.create(
       model: newModel,
-      messages: [
-        userMessage
-      ],
+      messages: messages,
     ).timeout(const Duration(seconds: 200));
 
-    if (chatCompletion.choices.isNotEmpty && chatCompletion.choices[0].message.content!.isNotEmpty) {
+    if (chatCompletion.choices.isNotEmpty && 
+        chatCompletion.choices[0].message.content!.isNotEmpty) {
       return chatCompletion.choices[0].message.content![0].text.toString();
     } else {
       return 'No answer available.';

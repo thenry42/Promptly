@@ -1,3 +1,4 @@
+import 'Chat.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ollama_dart/ollama_dart.dart';
 
@@ -26,22 +27,35 @@ Future<List<Model>> getOllamaModels() async {
 Future<String> generateOllamaCompletion({
   required String model,
   required String prompt,
+  required List<ChatMessage> messageList,
 }) async {
-  final client = OllamaClient();
 
-  var tmp = model.split(':');
-  var newModel = '${tmp[1]}:${tmp[2]}'; 
+  final client = OllamaClient();
+  var newModel = model.replaceFirst('ollama:', '');
 
   try {
 
-    final generatedResponse = await client.generateCompletion(
-      request: GenerateCompletionRequest(
+    final messages = messageList.map((msg) => Message(
+      role: msg.sender == 'User' ? MessageRole.user : MessageRole.assistant,
+      content: msg.message,
+    )).toList();
+
+    /*
+    // THE USER MESSAGE IS ALREADY ADDED IN THE MESSAGE LIST
+    messages.add(Message(
+      role: MessageRole.user,
+      content: prompt,
+    ));
+    */
+
+    final generatedResponse = await client.generateChatCompletion(
+      request: GenerateChatCompletionRequest(
         model: newModel,
-        prompt: prompt,
+        messages: messages,
       ),
     );
     
-    return generatedResponse.response.toString();
+    return generatedResponse.message.content;
   } catch (e) {
     if (kDebugMode) {
       print('Error generating completion: $e');
