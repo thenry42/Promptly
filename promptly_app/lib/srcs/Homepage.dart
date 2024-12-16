@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
       });
       if (kDebugMode) {
         print('Error: $e');
-      }
+      } 
     }
   }
 
@@ -147,7 +147,7 @@ class _HomePageState extends State<HomePage> {
                               color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.bold,
                             ),
-                          ),
+                          ), 
                         ),
                         const SizedBox(width: 20), // Space between buttons
                         ElevatedButton.icon(

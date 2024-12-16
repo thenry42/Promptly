@@ -63,6 +63,7 @@ class _ChattingAreaState extends State<ChattingArea> {
           Expanded(
             child: hasChat
                 ? ListView.builder(
+                    controller: _scrollController,
                     itemCount: currentChat!.messages.length + (currentChat.isSending ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (currentChat.isSending && index == currentChat.messages.length) {
@@ -109,10 +110,10 @@ class _ChattingAreaState extends State<ChattingArea> {
                       border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(30)),
                       ),
-                      fillColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                      fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       filled: true,
                       suffixIcon: Padding(
-                        padding: EdgeInsets.only(right: 10),
+                        padding: const EdgeInsets.only(right: 10),
                         child: IconButton(
                           icon: Icon(
                             Icons.send_rounded,
@@ -151,5 +152,3 @@ class _ChattingAreaState extends State<ChattingArea> {
     super.dispose();
   }
 }
-
-// make this chat area auto scroll

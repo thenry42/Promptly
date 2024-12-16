@@ -19,7 +19,7 @@ class ControlPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 350,
+      width: 250,
       color: Theme.of(context).colorScheme.surfaceContainer,
       child: Column(
         children: [
@@ -34,7 +34,7 @@ class ControlPanel extends StatelessWidget {
             child: Icon(Icons.add, color: Theme.of(context).colorScheme.onSurface),
           ),
           const SizedBox(height: 20),
-          Expanded(
+          Flexible(
             child: ListView.builder(
               itemCount: chats.length,
               itemBuilder: (context, index) {
@@ -97,16 +97,18 @@ class ChatList extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 0),
-              child: Text(
-                chat.title,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, // Bold when selected
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 0),
+                child: Text(
+                  chat.title,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal, // Bold when selected
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: null,
               ),
             ),
           ],
