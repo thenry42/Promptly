@@ -123,40 +123,73 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
               title: const Center(child: Text('New Chat')),
               content: SizedBox(
-                height: 120,
+                height: 400,
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ElevatedButton(
+                        ElevatedButton.icon(
                           onPressed: () {
                             setDialogState(() {
                               selectedList = allModels.where((model) => model['type'] == 'ollama').toList();
                               selectedLLM = null;
                             });
                           },
-                          child: const Text('Ollama'),
+                          icon: Image.asset(
+                            'assets/ollama.png',
+                            height: 64,
+                            width: 64,
+                          ),
+                          label: Text(
+                            'Ollama',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 20), // Space between buttons
-                        ElevatedButton(
+                        ElevatedButton.icon(
                           onPressed: () {
                             setDialogState(() {
                               selectedList = allModels.where((model) => model['type'] == 'anthropic').toList();
                               selectedLLM = null;
                             });
                           },
-                          child: const Text('Anthropic'),
+                          icon: Image.asset(
+                            'assets/anthropic.png',
+                            height: 64,
+                            width: 64,
+                          ),
+                          label: Text(
+                            'Anthropic',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ), 
                         ),
                         const SizedBox(width: 20),
-                        ElevatedButton(
+                        ElevatedButton.icon(
                           onPressed: () {
                             setDialogState(() {
                               selectedList = allModels.where((model) => model['type'] == 'openai').toList(); 
                               selectedLLM = null;
                             });
                           },
-                          child: const Text('Open AI'),
+                          icon: Image.asset(
+                            'assets/openai.png',
+                            height: 64,
+                            width: 64,
+                          ),
+                          label: Text(
+                            'Open AI',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
