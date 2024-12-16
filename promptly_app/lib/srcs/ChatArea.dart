@@ -54,7 +54,7 @@ class _ChattingAreaState extends State<ChattingArea> {
     final currentChat = hasChat ? widget.chats[widget.selectedChatIndex] : null;
 
     return Container(
-      color: Theme.of(context).colorScheme.surfaceContainer,
+      color: Theme.of(context).colorScheme.surfaceContainerHigh,
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

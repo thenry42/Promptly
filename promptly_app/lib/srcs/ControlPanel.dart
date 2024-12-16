@@ -20,7 +20,7 @@ class ControlPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 250,
-      color: Theme.of(context).colorScheme.surfaceContainerHigh,
+      color: Theme.of(context).colorScheme.surfaceContainer,
       child: Column(
         children: [
           const SizedBox(height: 20),
@@ -29,7 +29,7 @@ class ControlPanel extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
               padding: const EdgeInsets.all(20),
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
             ),
             child: Icon(Icons.add, color: Theme.of(context).colorScheme.onSurface),
           ),
