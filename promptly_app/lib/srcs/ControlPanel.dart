@@ -19,7 +19,7 @@ class ControlPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 250,
+      width: 350,
       color: Theme.of(context).colorScheme.surfaceContainer,
       child: Column(
         children: [
