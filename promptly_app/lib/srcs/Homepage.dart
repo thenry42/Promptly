@@ -101,12 +101,63 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _showModelSelectionDialog(BuildContext context, List<Map<String, Object?>> models, String provider, Function(String) onSelect) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Select $provider Model'),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: 300,
+            height: 400,
+            child: ListView.builder(
+              itemCount: models.length,
+              itemBuilder: (context, index) {
+                final model = models[index];
+                final modelValue = '${model['type']}:${model['model']}';
+                
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      '${model['model']}',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    onTap: () {
+                      onSelect(modelValue);
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _addNewChat() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         String? selectedLLM;
-        List<Map<String, Object?>> selectedList = [];
 
         return StatefulBuilder(
           builder: (context, setDialogState) {
@@ -119,11 +170,17 @@ class _HomePageState extends State<HomePage> {
                   {'type': 'anthropic', 'model': model.value}),
             ];
 
+            void selectModel(String model) {
+              setDialogState(() {
+                selectedLLM = model;
+              });
+            }
+
             return AlertDialog(
               backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
               title: const Center(child: Text('New Chat')),
               content: SizedBox(
-                height: 400,
+                height: 200,
                 child: Column(
                   children: [
                     Row(
@@ -140,10 +197,8 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               onPressed: () {
-                                setDialogState(() {
-                                  selectedList = allModels.where((model) => model['type'] == 'ollama').toList();
-                                  selectedLLM = null;
-                                });
+                                final ollamaList = allModels.where((model) => model['type'] == 'ollama').toList();
+                                _showModelSelectionDialog(context, ollamaList, 'Ollama', selectModel);
                               },
                               child: Image.asset(
                                 'assets/ollama.png',
@@ -173,10 +228,8 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               onPressed: () {
-                                setDialogState(() {
-                                  selectedList = allModels.where((model) => model['type'] == 'anthropic').toList();
-                                  selectedLLM = null;
-                                });
+                                final anthropicList = allModels.where((model) => model['type'] == 'anthropic').toList();
+                                _showModelSelectionDialog(context, anthropicList, 'Anthropic', selectModel);
                               },
                               child: Image.asset(
                                 'assets/anthropic.png',
@@ -206,10 +259,8 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               onPressed: () {
-                                setDialogState(() {
-                                  selectedList = allModels.where((model) => model['type'] == 'openai').toList();
-                                  selectedLLM = null;
-                                });
+                                final openaiList = allModels.where((model) => model['type'] == 'openai').toList();
+                                _showModelSelectionDialog(context, openaiList, 'OpenAI', selectModel);
                               },
                               child: Image.asset(
                                 'assets/openai.png',
@@ -229,33 +280,37 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    if (selectedList.isNotEmpty)
-                      DropdownButton<String>(
-                        icon: const SizedBox(),
-                        underline: const SizedBox(),
-                        borderRadius: BorderRadius.circular(30),
-                        isExpanded: true,
-                        value: selectedLLM,
-                        hint: const Padding(
-                          padding: EdgeInsets.only(left: 20),
-                          child: Text('Choose LLM'),
+                    if (selectedLLM != null) ...[
+                      const SizedBox(height: 20),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        items: selectedList
-                            .map((llm) => DropdownMenuItem<String>(
-                                  value: '${llm['type']}:${llm['model']}',
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 20),
-                                    child: Text('${llm['model']}'),
-                                  ),
-                                ))
-                            .toList(),
-                        onChanged: (value) {
-                          setDialogState(() {
-                            selectedLLM = value;
-                          });
-                        },
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Selected: ${selectedLLM!.split(":")[1]}',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onSurface,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                setDialogState(() {
+                                  selectedLLM = null;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
                       ),
+                    ],
                   ],
                 ),
               ),
@@ -273,21 +328,24 @@ class _HomePageState extends State<HomePage> {
                       child: Icon(Icons.cancel, color: Theme.of(context).colorScheme.onSurface),
                     ),
                     TextButton(
-                      onPressed: () async {
-                        if (selectedLLM != null) {
-                          setState(() {
-                            _chats.add(Chat(title: selectedLLM!));
-                            _selectedChatIndex = _chats.length - 1;
-                          });
-                          Navigator.pop(context);
-                        }
+                      onPressed: selectedLLM == null ? null : () {
+                        setState(() {
+                          _chats.add(Chat(title: selectedLLM!));
+                          _selectedChatIndex = _chats.length - 1;
+                        });
+                        Navigator.pop(context);
                       },
                       style: TextButton.styleFrom(
                         shape: const CircleBorder(),
                         padding: const EdgeInsets.all(20),
                         backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
                       ),
-                      child: Icon(Icons.check, color: Theme.of(context).colorScheme.onSurface),
+                      child: Icon(
+                        Icons.check,
+                        color: selectedLLM == null 
+                          ? Theme.of(context).colorScheme.onSurface.withOpacity(0.5)
+                          : Theme.of(context).colorScheme.onSurface,
+                      ),
                     ),
                   ],
                 ),

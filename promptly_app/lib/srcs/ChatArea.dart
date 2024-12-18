@@ -29,10 +29,12 @@ class _ChattingAreaState extends State<ChattingArea> {
     super.didUpdateWidget(oldWidget);
 
     // Check if the selected chat or its messages have changed
-    if (widget.selectedChatIndex != oldWidget.selectedChatIndex ||
-        widget.chats[widget.selectedChatIndex].messages.length !=
-            oldWidget.chats[oldWidget.selectedChatIndex].messages.length) {
-      _scrollToBottom();
+    if (widget.chats.isNotEmpty) {
+      if (widget.selectedChatIndex != oldWidget.selectedChatIndex ||
+          widget.chats[widget.selectedChatIndex].messages.length !=
+              oldWidget.chats[oldWidget.selectedChatIndex].messages.length) {
+        _scrollToBottom();
+      }
     }
   }
 
