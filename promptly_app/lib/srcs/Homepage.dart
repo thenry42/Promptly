@@ -129,97 +129,133 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            setDialogState(() {
-                              selectedList = allModels.where((model) => model['type'] == 'ollama').toList();
-                              selectedLLM = null;
-                            });
-                          },
-                          icon: Image.asset(
-                            'assets/ollama.png',
-                            height: 64,
-                            width: 64,
-                          ),
-                          label: Text(
-                            'Ollama',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontWeight: FontWeight.bold,
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                                padding: const EdgeInsets.all(16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () {
+                                setDialogState(() {
+                                  selectedList = allModels.where((model) => model['type'] == 'ollama').toList();
+                                  selectedLLM = null;
+                                });
+                              },
+                              child: Image.asset(
+                                'assets/ollama.png',
+                                height: 64,
+                                width: 64,
+                              ),
                             ),
-                          ), 
-                        ),
-                        const SizedBox(width: 20), // Space between buttons
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            setDialogState(() {
-                              selectedList = allModels.where((model) => model['type'] == 'anthropic').toList();
-                              selectedLLM = null;
-                            });
-                          },
-                          icon: Image.asset(
-                            'assets/anthropic.png',
-                            height: 64,
-                            width: 64,
-                          ),
-                          label: Text(
-                            'Anthropic',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontWeight: FontWeight.bold,
+                            const SizedBox(height: 8),
+                            Text(
+                              'Ollama',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ), 
+                          ],
                         ),
                         const SizedBox(width: 20),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            setDialogState(() {
-                              selectedList = allModels.where((model) => model['type'] == 'openai').toList(); 
-                              selectedLLM = null;
-                            });
-                          },
-                          icon: Image.asset(
-                            'assets/openai.png',
-                            height: 64,
-                            width: 64,
-                          ),
-                          label: Text(
-                            'Open AI',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontWeight: FontWeight.bold,
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                                padding: const EdgeInsets.all(16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () {
+                                setDialogState(() {
+                                  selectedList = allModels.where((model) => model['type'] == 'anthropic').toList();
+                                  selectedLLM = null;
+                                });
+                              },
+                              child: Image.asset(
+                                'assets/anthropic.png',
+                                height: 64,
+                                width: 64,
+                              ),
                             ),
-                          ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Anthropic',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 20),
+                        Column(
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
+                                padding: const EdgeInsets.all(16),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () {
+                                setDialogState(() {
+                                  selectedList = allModels.where((model) => model['type'] == 'openai').toList();
+                                  selectedLLM = null;
+                                });
+                              },
+                              child: Image.asset(
+                                'assets/openai.png',
+                                height: 64,
+                                width: 64,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Open AI',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
                     if (selectedList.isNotEmpty)
-                    DropdownButton<String>(
-                      icon: const SizedBox(),
-                      underline: const SizedBox(),
-                      borderRadius: BorderRadius.circular(30),
-                      isExpanded: true,
-                      value: selectedLLM,
-                      hint: const Padding (
-                        padding: EdgeInsets.only(left: 20),
-                        child: Text('Choose LLM'),
+                      DropdownButton<String>(
+                        icon: const SizedBox(),
+                        underline: const SizedBox(),
+                        borderRadius: BorderRadius.circular(30),
+                        isExpanded: true,
+                        value: selectedLLM,
+                        hint: const Padding(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Text('Choose LLM'),
+                        ),
+                        items: selectedList
+                            .map((llm) => DropdownMenuItem<String>(
+                                  value: '${llm['type']}:${llm['model']}',
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 20),
+                                    child: Text('${llm['model']}'),
+                                  ),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setDialogState(() {
+                            selectedLLM = value;
+                          });
+                        },
                       ),
-                      items: selectedList
-                          .map((llm) => DropdownMenuItem<String>(
-                                value: '${llm['type']}:${llm['model']}',
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 20),
-                                  child: Text('${llm['model']}'),
-                                ),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setDialogState(() {
-                          selectedLLM = value;
-                        });
-                      },
-                    ),
                   ],
                 ),
               ),
@@ -228,7 +264,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextButton(
-                      onPressed: () => Navigator.of(context).pop(), // Close dialog
+                      onPressed: () => Navigator.of(context).pop(),
                       style: TextButton.styleFrom(
                         shape: const CircleBorder(),
                         padding: const EdgeInsets.all(20),
@@ -239,12 +275,12 @@ class _HomePageState extends State<HomePage> {
                     TextButton(
                       onPressed: () async {
                         if (selectedLLM != null) {
-                        setState(() {
-                          _chats.add(Chat(title: selectedLLM!));
-                          _selectedChatIndex = _chats.length - 1;
-                        });
-                        Navigator.pop(context);
-                      }
+                          setState(() {
+                            _chats.add(Chat(title: selectedLLM!));
+                            _selectedChatIndex = _chats.length - 1;
+                          });
+                          Navigator.pop(context);
+                        }
                       },
                       style: TextButton.styleFrom(
                         shape: const CircleBorder(),
