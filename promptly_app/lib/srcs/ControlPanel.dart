@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'Chat.dart';
 import 'Settings.dart';
+import 'ModelService.dart';
 
 class ControlPanel extends StatelessWidget {
   final List<Chat> chats;
@@ -103,7 +104,7 @@ class _ModelInfoDialogState extends State<ModelInfoDialog> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Model Settings'),
+          const Text('Model Information'),
           IconButton(
             icon: const Icon(Icons.close),
             onPressed: () => Navigator.of(context).pop(),
@@ -117,33 +118,14 @@ class _ModelInfoDialogState extends State<ModelInfoDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _InfoSection(
-              title: 'Model Information',
               children: [
                 _InfoRow(label: 'Provider', value: modelType),
                 _InfoRow(label: 'Model', value: modelName),
+                _InfoRow(label: 'Context window', value: getContextWindow(modelName)),
+                _InfoRow(label: 'Temperature', value: getTemp(modelName)),
               ],
             ),
             const SizedBox(height: 20),
-            _InfoSection(
-              title: 'Model Settings',
-              children: [
-                _SliderSetting(
-                  label: 'Temperature',
-                  value: 0.7,
-                  onChanged: (value) {
-                    // Handle temperature change
-                  },
-                ),
-                const SizedBox(height: 12),
-                _SliderSetting(
-                  label: 'Max Tokens',
-                  value: 0.8,
-                  onChanged: (value) {
-                    // Handle max tokens change
-                  },
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -152,11 +134,9 @@ class _ModelInfoDialogState extends State<ModelInfoDialog> {
 }
 
 class _InfoSection extends StatelessWidget {
-  final String title;
   final List<Widget> children;
 
   const _InfoSection({
-    required this.title,
     required this.children,
   });
 
@@ -165,13 +145,6 @@ class _InfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
         const SizedBox(height: 12),
         ...children,
       ],
@@ -202,56 +175,6 @@ class _InfoRow extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _SliderSetting extends StatefulWidget {
-  final String label;
-  final double value;
-  final ValueChanged<double> onChanged;
-
-  const _SliderSetting({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
-
-  @override
-  State<_SliderSetting> createState() => _SliderSettingState();
-}
-
-class _SliderSettingState extends State<_SliderSetting> {
-  late double _value;
-
-  @override
-  void initState() {
-    super.initState();
-    _value = widget.value;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(widget.label),
-            Text(_value.toStringAsFixed(1)),
-          ],
-        ),
-        Slider(
-          value: _value,
-          onChanged: (value) {
-            setState(() {
-              _value = value;
-            });
-            widget.onChanged(value);
-          },
-        ),
-      ],
     );
   }
 }
@@ -292,7 +215,7 @@ class ChatList extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.tune, size: 20),
+                icon: const Icon(Icons.info, size: 20),
                 onPressed: () => ModelInfoDialog.show(context, chat.title),
                 color: Theme.of(context).colorScheme.onSurface,
               ),

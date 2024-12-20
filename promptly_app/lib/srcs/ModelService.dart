@@ -27,3 +27,11 @@ class ModelService {
     }
   }
 }
+
+String getContextWindow(String modelName) {
+  return ('XXX');
+}
+
+String getTemp(String modelName) {
+  return ('YYY');
+}

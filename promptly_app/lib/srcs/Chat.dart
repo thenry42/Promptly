@@ -8,12 +8,13 @@ class Chat {
   bool isHovered = false; // Default value inline
   bool isOnline;
   bool isSending;
-  Object? modelType;
+  Object modelType;
   String? modelName;
 
   // Constructor required inside the class in dart (different from cpp)
   Chat({
     required this.title,
+    required this.modelType,
     this.isOnline = false,
     this.isSending = false,
   });
@@ -31,9 +32,9 @@ class ChatMessageWidget extends StatelessWidget {
   final ChatMessage message;
   
   const ChatMessageWidget({
-    Key? key,
+    super.key,
     required this.message,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

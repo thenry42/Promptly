@@ -57,28 +57,11 @@ class _HomePageState extends State<HomePage> {
 
     try {
       final selectedLLM = _chats[originalChatIndex].title;
-      final parts = selectedLLM.split(':');
-      final modelType = parts[0];
-      Object type;
-
-      switch (modelType) {
-        case 'ollama':
-          type = ollama.Model;
-          break;
-        case 'openai':
-          type = openai.OpenAIModelModel;
-          break;
-        case 'anthropic':
-          type = anthropic.Model;
-          break;
-        default:
-          throw Exception('Unknown model type');
-      }
 
       final result = await generateChatCompletion(
         model: selectedLLM,
         prompt: message,
-        type: type,
+        type: _chats[originalChatIndex].modelType,
         messageList: _chats[originalChatIndex].messages,
       );
 
@@ -163,17 +146,44 @@ class _HomePageState extends State<HomePage> {
           builder: (context, setDialogState) {
             final List<Map<String, Object?>> allModels = [
               ...ollamaModels.map((model) => 
-                  {'type': 'ollama', 'model': model.model}),
+                  { 'type': 'ollama',
+                    'model': model.model,
+                    'modelType': ollama.Model,
+                  }),
               ...openAIModels.map((model) => 
-                  {'type': 'openai', 'model': model.id}),
+                  { 'type': 'openai',
+                    'model': model.id,
+                    'modelType': openai.OpenAIEditModel,
+                  }),
               ...anthropicModels.map((model) => 
-                  {'type': 'anthropic', 'model': model.value}),
+                  { 'type': 'anthropic',
+                    'model': model.value,
+                    'modelType': anthropic.Model,
+                  }),
             ];
 
             void selectModel(String model) {
               setDialogState(() {
                 selectedLLM = model;
               });
+            }
+
+            Object modelSwitch(String model) {
+              Object type;
+              switch (model) {
+                case 'ollama':
+                  type = ollama.Model;
+                  break;
+                case 'openai':
+                  type = openai.OpenAIModelModel;
+                  break;
+                case 'anthropic':
+                  type = anthropic.Model;
+                  break;
+                default:
+                  throw Exception('Unknown model type');
+                }
+              return type;
             }
 
             return AlertDialog(
@@ -329,8 +339,10 @@ class _HomePageState extends State<HomePage> {
                     ),
                     TextButton(
                       onPressed: selectedLLM == null ? null : () {
+                        final parts = selectedLLM!.split(':');
+                        final modelType = modelSwitch(parts[0]);
                         setState(() {
-                          _chats.add(Chat(title: selectedLLM!));
+                          _chats.add(Chat(title: selectedLLM!, modelType: modelType));
                           _selectedChatIndex = _chats.length - 1;
                         });
                         Navigator.pop(context);
