@@ -191,8 +191,37 @@ class ChatList extends StatelessWidget {
     required this.onTap,
   });
 
+  Widget _getProviderIcon(String provider) {
+    switch (provider.toLowerCase()) {
+      case 'anthropic':
+        return Image.asset(
+          'assets/anthropic.png',
+          width: 24,
+          height: 24,
+        );
+      case 'openai':
+        return Image.asset(
+          'assets/openai.png',
+          width: 24,
+          height: 24,
+        );
+      case 'ollama':
+        return Image.asset(
+          'assets/ollama.png',
+          width: 24,
+          height: 24,
+        );
+      default:
+        return const Icon(Icons.smart_toy, size: 24);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final modelParts = chat.title.split(':');
+    final provider = modelParts[0];
+    final modelName = modelParts[1];
+
     return Material(
       color: isSelected
           ? Theme.of(context).colorScheme.surfaceContainerHighest
@@ -205,9 +234,11 @@ class ChatList extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
+              _getProviderIcon(provider),  // Add the provider icon
+              const SizedBox(width: 12),   // Add spacing between icon and text
               Expanded(
                 child: Text(
-                  chat.title.split(':')[1], // Show only the model name
+                  modelName, // Show only the model name
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: isSelected ? FontWeight.bold : null,
