@@ -201,20 +201,34 @@ class _ControlPanelState extends State<ControlPanel> with SingleTickerProviderSt
                     ),
                   ),
                 ),
-                if (selectedProvider != null) ...[
-                  const SizedBox(height: 10),
-                  Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                      ),
-                      child: _getProviderIcon(selectedProvider),
-                    ),
+                
+                const SizedBox(height: 10),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: widget.chats.length,
+                    itemBuilder: (context, index) {
+                      final modelParts = widget.chats[index].title.split(':');
+                      final provider = modelParts[0];
+                      
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Center(
+                          child: ElevatedButton(
+                            onPressed: () => widget.onSelectChat(index),
+                            style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(20),
+                              backgroundColor: widget.selectedChatIndex == index
+                                ? Theme.of(context).colorScheme.surfaceContainerHighest
+                                : Theme.of(context).colorScheme.surfaceContainer,
+                            ),
+                            child: _getProviderIcon(provider),
+                          ),
+                        ),
+                      ); 
+                    }
                   ),
-                ],
-                const Spacer(),
+                ),
                 Center(
                   child: ElevatedButton(
                     onPressed: () => SettingsDialog.show(context),
@@ -364,18 +378,21 @@ class ChatList extends StatelessWidget {
           'assets/anthropic.png',
           width: 24,
           height: 24,
+          fit: BoxFit.contain,
         );
       case 'openai':
         return Image.asset(
           'assets/openai.png',
           width: 24,
           height: 24,
+          fit: BoxFit.contain,
         );
       case 'ollama':
         return Image.asset(
           'assets/ollama.png',
           width: 24,
           height: 24,
+          fit: BoxFit.contain,
         );
       default:
         return const Icon(Icons.smart_toy, size: 24);
