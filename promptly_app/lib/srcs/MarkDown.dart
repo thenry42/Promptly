@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/themes/a11y-dark.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MarkdownMessage extends StatelessWidget {
@@ -43,9 +41,9 @@ class SelectableMarkdown extends StatelessWidget {
   final String message;
 
   const SelectableMarkdown({
-    Key? key,
+    super.key,
     required this.message,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +51,7 @@ class SelectableMarkdown extends StatelessWidget {
       data: message,
       selectable: true,
       builders: {
-        'code': CustomCodeBuilder(),
+        'code': CustomCodeBuilder(context),
       },
       styleSheet: MarkdownStyleSheet(
         // Text styles
@@ -87,13 +85,6 @@ class SelectableMarkdown extends StatelessWidget {
           fontStyle: FontStyle.italic,
           height: 1.5,
         ),
-        code: TextStyle(
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-          color: Theme.of(context).colorScheme.onSurface,
-          fontFamily: 'Menlo',
-          fontSize: 13,
-          height: 1.5,
-        ),
         // List styles
         listBullet: TextStyle(
           color: Theme.of(context).colorScheme.onSurface,
@@ -104,6 +95,14 @@ class SelectableMarkdown extends StatelessWidget {
         h2Padding: const EdgeInsets.only(top: 20, bottom: 10),
         h3Padding: const EdgeInsets.only(top: 16, bottom: 8),
         blockquotePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        blockquoteDecoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        codeblockDecoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(12),
+        ),
         tablePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         tableColumnWidth: const FlexColumnWidth(),
         tableBorder: TableBorder.all(
@@ -124,10 +123,15 @@ class SelectableMarkdown extends StatelessWidget {
 }
 
 class CustomCodeBuilder extends MarkdownElementBuilder {
+  final BuildContext context;
+
+  CustomCodeBuilder(this.context);
+
   @override
   Widget? visitElementAfter(element, TextStyle? preferredStyle) {
     var language = '';
 
+    // Extract the language from the class attribute
     if (element.attributes['class'] != null) {
       var languageClass = element.attributes['class'] as String;
       if (languageClass.startsWith('language-')) {
@@ -135,56 +139,95 @@ class CustomCodeBuilder extends MarkdownElementBuilder {
       }
     }
 
+    // Use SelectableText.rich to render styled and selectable text
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 0),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey[850],
-        borderRadius: BorderRadius.circular(4),
+        borderRadius: BorderRadius.circular(12),
+        color: Theme.of(context).colorScheme.surfaceContainer,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (language.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(left: 12, top: 4, bottom: 4),
-              child: Text(
-                language,
-                style: TextStyle(
-                  color: Colors.grey[400],
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: HighlightView(
-              element.textContent,
-              language: language.isEmpty ? 'plaintext' : language,
-              theme: _customHighlightTheme,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              textStyle: const TextStyle(
-                fontFamily: 'Menlo',
-                fontSize: 13,
-                height: 1.5,
-              ),
-            ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SelectableText.rich(
+          _buildHighlightedText(element.textContent, language),
+          style: TextStyle(
+            fontFamily: 'Menlo',
+            fontSize: 13,
+            height: 1.5,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
           ),
-        ],
+        ),
       ),
     );
   }
 
-  // Custom syntax highlighting theme
-  static final _customHighlightTheme = Map<String, TextStyle>.from(a11yDarkTheme)
-    ..addAll({
-      'root': TextStyle(
-        backgroundColor: Colors.grey[850],
-        color: Colors.grey[200],
-      ),
-      'keyword': const TextStyle(color: Color(0xFFFF79C6)),
-      'string': const TextStyle(color: Color(0xFF50FA7B)),
-      'comment': TextStyle(color: Colors.grey[500]),
-      'number': const TextStyle(color: Color(0xFF8BE9FD)),
-    });
+  /// Builds a highlighted TextSpan based on the content and detected language.
+  TextSpan _buildHighlightedText(String text, String language) {
+    // Use a mock highlighting function to apply styles
+    final spans = _highlightSyntax(text, language);
+    return TextSpan(children: spans);
+  }
+  
+  List<TextSpan> _highlightSyntax(String text, String language) {
+    // Define keywords and styles for the language
+    final keywords = ['if', 'for', 'while', 'return', 'class', 'function'];
+    final keywordStyle = TextStyle(color: Color(0xFFFF79C6), fontWeight: FontWeight.bold);
+    final stringStyle = TextStyle(color: Color(0xFF50FA7B));
+    final commentStyle = TextStyle(color: Colors.grey[500], fontStyle: FontStyle.italic);
+
+    final spans = <TextSpan>[];
+
+    // Tokenize text but retain spaces and symbols
+    final tokens = RegExp(r'(\s+|[;,.()\[\]{}])').allMatches(text).toList();
+    int lastIndex = 0;
+
+    for (final match in tokens) {
+      // Add the preceding text (before the match) as a span
+      if (match.start > lastIndex) {
+        final segment = text.substring(lastIndex, match.start);
+        spans.add(_styleSegment(segment, keywords, keywordStyle, stringStyle, commentStyle));
+      }
+
+      // Add the matched delimiter as a span
+      spans.add(TextSpan(text: match.group(0), style: const TextStyle(color: Colors.white)));
+
+      // Update lastIndex to continue processing
+      lastIndex = match.end;
+    }
+
+    // Add any remaining text after the last match
+    if (lastIndex < text.length) {
+      final segment = text.substring(lastIndex);
+      spans.add(_styleSegment(segment, keywords, keywordStyle, stringStyle, commentStyle));
+    }
+
+    return spans;
+  }
+
+  TextSpan _styleSegment(
+    String segment,
+    List<String> keywords,
+    TextStyle keywordStyle,
+    TextStyle stringStyle,
+    TextStyle commentStyle,
+  ) {
+    // Check for keywords
+    if (keywords.contains(segment)) {
+      return TextSpan(text: segment, style: keywordStyle);
+    }
+
+    // Check for strings (simplified)
+    if (segment.startsWith('"') || segment.startsWith("'")) {
+      return TextSpan(text: segment, style: stringStyle);
+    }
+
+    // Check for comments (basic single-line detection)
+    if (segment.startsWith('//')) {
+      return TextSpan(text: segment, style: commentStyle);
+    }
+
+    // Default: plain text
+    return TextSpan(text: segment, style: const TextStyle(color: Colors.white));
+  }
 }

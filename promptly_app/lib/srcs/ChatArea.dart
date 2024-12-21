@@ -123,6 +123,7 @@ class _ChattingAreaState extends State<ChattingArea> {
                 Expanded(
                   child: TextFormField(
                     controller: widget.controller,
+                    scrollPhysics: const BouncingScrollPhysics(),
                     maxLines: null,
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onSurface,
