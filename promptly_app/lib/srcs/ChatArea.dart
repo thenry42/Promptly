@@ -1,6 +1,7 @@
 import 'Chat.dart';
 import 'package:flutter/material.dart';
 import 'LoadingIndicator.dart';
+import 'dart:math';
 
 class ChattingArea extends StatefulWidget {
   final List<Chat> chats;
@@ -23,29 +24,48 @@ class ChattingArea extends StatefulWidget {
 
 class _ChattingAreaState extends State<ChattingArea> {
   final ScrollController _scrollController = ScrollController();
+  bool _isInitialLoad = true;
 
   @override
   void didUpdateWidget(ChattingArea oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    if (widget.selectedChatIndex != oldWidget.selectedChatIndex) {
+      _isInitialLoad = true;
+    }
 
     // Check if the selected chat or its messages have changed
     if (widget.chats.isNotEmpty) {
       if (widget.selectedChatIndex != oldWidget.selectedChatIndex ||
           widget.chats[widget.selectedChatIndex].messages.length !=
               oldWidget.chats[oldWidget.selectedChatIndex].messages.length) {
-        _scrollToBottom();
+        _scrollToBottom(instant: _isInitialLoad);
+        _isInitialLoad = false;
       }
     }
   }
 
-  void _scrollToBottom() {
+  void _scrollToBottom({bool instant = false}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+
+        final maxScrollExtent = _scrollController.position.maxScrollExtent;
+        final currentScrollExtent = _scrollController.position.pixels;
+
+        if (instant) {
+          _scrollController.jumpTo(maxScrollExtent);
+          return;
+        }
+
+        const duration = Duration(milliseconds: 1000);
+        
+        if (currentScrollExtent < maxScrollExtent) {
+          _scrollController.animateTo(
+            maxScrollExtent,
+            duration: duration,
+            curve: Curves.easeInOut,
+          );
+        }
       }
     });
   }
@@ -71,6 +91,14 @@ class _ChattingAreaState extends State<ChattingArea> {
                       if (currentChat.isSending && index == currentChat.messages.length) {
                         return const LoadingIndicator();
                       }
+
+                      if (index == currentChat.messages.length - 1) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _scrollToBottom(instant: _isInitialLoad);
+                          _isInitialLoad = false;
+                        });
+                      }
+
                       return ChatMessageWidget(
                         message: currentChat.messages[index],
                       );
