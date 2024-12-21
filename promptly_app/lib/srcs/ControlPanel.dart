@@ -221,6 +221,7 @@ class _ControlPanelState extends State<ControlPanel> with SingleTickerProviderSt
                               backgroundColor: widget.selectedChatIndex == index
                                 ? Theme.of(context).colorScheme.surfaceContainerHighest
                                 : Theme.of(context).colorScheme.surfaceContainer,
+                                shadowColor: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(1),
                             ),
                             child: _getProviderIcon(provider),
                           ),
@@ -348,10 +349,21 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label),
-          Text(
-            value,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: 8), // Add spacing between label and value
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+              textAlign: TextAlign.right, // Align the value to the right
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
