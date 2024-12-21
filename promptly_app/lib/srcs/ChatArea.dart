@@ -1,7 +1,6 @@
-import 'Chat.dart';
 import 'package:flutter/material.dart';
+import 'Chat.dart';
 import 'LoadingIndicator.dart';
-import 'dart:math';
 
 class ChattingArea extends StatefulWidget {
   final List<Chat> chats;
@@ -19,7 +18,6 @@ class ChattingArea extends StatefulWidget {
 
   @override
   _ChattingAreaState createState() => _ChattingAreaState();
-
 }
 
 class _ChattingAreaState extends State<ChattingArea> {
@@ -34,7 +32,6 @@ class _ChattingAreaState extends State<ChattingArea> {
       _isInitialLoad = true;
     }
 
-    // Check if the selected chat or its messages have changed
     if (widget.chats.isNotEmpty) {
       if (widget.selectedChatIndex != oldWidget.selectedChatIndex ||
           widget.chats[widget.selectedChatIndex].messages.length !=
@@ -48,7 +45,6 @@ class _ChattingAreaState extends State<ChattingArea> {
   void _scrollToBottom({bool instant = false}) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
-
         final maxScrollExtent = _scrollController.position.maxScrollExtent;
         final currentScrollExtent = _scrollController.position.pixels;
 
@@ -81,7 +77,6 @@ class _ChattingAreaState extends State<ChattingArea> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Chat messages or "No chat selected" message
           Expanded(
             child: hasChat
                 ? ListView.builder(
@@ -101,6 +96,13 @@ class _ChattingAreaState extends State<ChattingArea> {
 
                       return ChatMessageWidget(
                         message: currentChat.messages[index],
+                        chatUseMarkdown: currentChat.useMarkdown,
+                        onToggleFormat: () {
+                          setState(() {
+                            final message = currentChat.messages[index];
+                            message.useMarkdown = !message.useMarkdown;
+                          });
+                        },
                       );
                     },
                   )
@@ -116,7 +118,6 @@ class _ChattingAreaState extends State<ChattingArea> {
                   ),
           ),
           const SizedBox(height: 8),
-          // Message input and send button
           if (hasChat)
             Row(
               children: [
