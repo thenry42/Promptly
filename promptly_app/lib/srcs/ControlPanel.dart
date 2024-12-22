@@ -138,7 +138,7 @@ class _ControlPanelState extends State<ControlPanel> with SingleTickerProviderSt
                   ],
                 ),
                 const SizedBox(height: 20),
-                Flexible(
+                Expanded(
                   child: ListView.builder(
                     itemCount: widget.chats.length,
                     itemBuilder: (context, index) {
@@ -438,12 +438,17 @@ class ChatList extends StatelessWidget {
                     color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: isSelected ? FontWeight.bold : null,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               IconButton(
                 icon: const Icon(Icons.info, size: 20),
                 onPressed: () => ModelInfoDialog.show(context, chat.title),
                 color: Theme.of(context).colorScheme.onSurface,
+                constraints: const BoxConstraints(
+                  minWidth: 40,
+                  minHeight: 40,
+                ),
               ),
             ],
           ),
