@@ -293,7 +293,6 @@ class _ModelInfoDialogState extends State<ModelInfoDialog> {
         ],
       ),
       content: SizedBox(
-        width: 400,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
