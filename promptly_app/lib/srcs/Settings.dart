@@ -134,6 +134,7 @@ class SettingsDialog {
                 TextButton(
                   onPressed: () async {
                     await getOpenAIModels();
+                    // ignore: use_build_context_synchronously
                     Navigator.of(context).pop(); // Close dialog
                   },
                   style: TextButton.styleFrom(

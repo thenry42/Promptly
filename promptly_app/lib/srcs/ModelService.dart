@@ -1,13 +1,16 @@
 import 'Ollama.dart';
 import 'OpenAI.dart';
 import 'Anthropic.dart';
+import 'package:flutter/foundation.dart';
 
 class ModelService {
   Future<void> initializeOllamaModels() async {
     try {
       await getOllamaModels();
     } catch (e) {
-      print('Error initializing Ollama models: $e');
+      if (kDebugMode) {
+        print('Error initializing Ollama models: $e');
+      }
     }
   }
 
@@ -15,7 +18,9 @@ class ModelService {
     try {
       await getOpenAIModels();
     } catch (e) {
-      print('Error initializing OpenAI models: $e');
+      if (kDebugMode) {
+        print('Error initializing OpenAI models: $e');
+      }
     }
   }
 
@@ -23,7 +28,9 @@ class ModelService {
     try {
       await getAnthropicKey();
     } catch (e) {
-      print('Error initializing OpenAI models: $e');
+      if (kDebugMode) {
+        print('Error initializing OpenAI models: $e');
+      }
     }
   }
 }
