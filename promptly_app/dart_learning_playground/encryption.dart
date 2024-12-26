@@ -42,7 +42,7 @@ String aesDecryption(Uint8List key, String encryptedText, Uint8List ivBytes) {
 // Function to persist data: salt, iv, and encrypted text
 String persistEncryptedData(Uint8List key, String userInput) {
   final salt = generateSalt(32);
-  final keyDerived = derivedKey(userInput, salt, 10000, 32);
+  final keyDerived = derivedKey(userInput, salt, 100000, 32);
   final ivBytes = generateRandomIV(16);
 
   final encryptedText = aesEncryption(keyDerived, userInput, ivBytes);
@@ -66,7 +66,7 @@ String retrieveEncryptedData(String jsonData, String userInput) {
   final String ciphertext = parsedData['ciphertext'];
 
   final ivBytes = base64.decode(ivBase64);
-  final keyDerived = derivedKey(userInput, salt, 10000, 32);
+  final keyDerived = derivedKey(userInput, salt, 100000, 32);
 
   // Decrypt the data using the derived key and IV
   return aesDecryption(keyDerived, ciphertext, ivBytes);
