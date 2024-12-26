@@ -87,12 +87,6 @@ class _ControlPanelState extends State<ControlPanel> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    // Get the selected chat's provider if a chat is selected
-    String? selectedProvider;
-    if (widget.selectedChatIndex >= 0 && widget.selectedChatIndex < widget.chats.length) {
-      final modelParts = widget.chats[widget.selectedChatIndex].title.split(':');
-      selectedProvider = modelParts[0];
-    }
 
     return AnimatedBuilder(
       animation: _widthAnimation,

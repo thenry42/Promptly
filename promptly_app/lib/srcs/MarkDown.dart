@@ -7,10 +7,10 @@ class MarkdownMessage extends StatelessWidget {
   final bool isUserMessage;
 
   const MarkdownMessage({
-    Key? key,
+    super.key,
     required this.message,
     required this.isUserMessage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
