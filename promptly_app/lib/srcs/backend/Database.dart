@@ -1,6 +1,7 @@
 import 'package:sqlite3/sqlite3.dart';
 
-int main()
+// EXAMPLE
+int dbmain()
 {
   final db = sqlite3.openInMemory();
 

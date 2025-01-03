@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// TO DO:
+// Remake all that based on the backend files
+
+class MarkdownMessage
+{
+  
+}
+
+/*
 class MarkdownMessage extends StatelessWidget {
   final String message;
   final bool isUserMessage;
@@ -231,3 +240,4 @@ class CustomCodeBuilder extends MarkdownElementBuilder {
     return TextSpan(text: segment, style: const TextStyle(color: Colors.white));
   }
 }
+*/
