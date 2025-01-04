@@ -9,7 +9,7 @@ void main() {
 
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     setWindowTitle('Promptly');
-    setWindowMinSize(const Size(960, 540));
+    setWindowMinSize(const Size(480, 270));
     setWindowMaxSize(const Size(2560, 1440));
   }
 
@@ -24,7 +24,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Promptly',
-      theme: ThemeData(colorScheme: AppTheme.myColorScheme),
+      theme: ThemeData(
+        colorScheme: AppTheme.myColorScheme,
+        scaffoldBackgroundColor: AppTheme.myColorScheme.surfaceContainer,
+      ),
       home: const SafeArea(
         child: MainWindow(),
       ),
