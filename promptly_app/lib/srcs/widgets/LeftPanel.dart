@@ -55,7 +55,7 @@ class _LeftPanelState extends State<LeftPanel> {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Flexible(
             child: NewChatButton(
@@ -64,6 +64,7 @@ class _LeftPanelState extends State<LeftPanel> {
               },
             ),
           ),
+          const SizedBox(width: 8),
           Flexible(
             child: TogglePanelButton(
               onPressed: _togglePanel,
