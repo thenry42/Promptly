@@ -1,6 +1,6 @@
 
 
-class GLOBALS
+class MetaData
 {
   String? anthropicKey;
   String? openAIKey;
