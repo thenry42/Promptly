@@ -6,4 +6,5 @@ class ChatMessage
   late final DateTime timestamp;
   bool useMarkdown = true;
   bool useRaw = false;
+  bool usePlainText = false;
 }

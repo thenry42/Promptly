@@ -5,8 +5,9 @@ import 'ChatMessage.dart';
 class OpenAI
 {
   final String apiKey;
-
   List<openai.OpenAIModelModel> models = [];
+  int? maxTokens;
+  bool supportToolCalling = false;
 
   OpenAI({required this.apiKey});
 

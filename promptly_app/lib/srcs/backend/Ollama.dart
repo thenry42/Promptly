@@ -4,7 +4,9 @@ import 'ChatMessage.dart';
 
 class Ollama
 {
+  int? maxTokens;
   List<ollama.Model> models = [];
+  bool supportToolCalling = false;
 
   Future<List<ollama.Model>> getOllamaModels() async {
     try {

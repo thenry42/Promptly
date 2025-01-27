@@ -4,7 +4,9 @@ import 'package:promptly_app/srcs/backend/ChatMessage.dart';
 
 class Anthropic
 {
+  int? maxTokens;
   final String apiKey;
+  bool supportToolCalling = false;
 
   // For the time being, the list of Anthropic model is hard-coded
   List<anthropicsdk.Model> models = const [

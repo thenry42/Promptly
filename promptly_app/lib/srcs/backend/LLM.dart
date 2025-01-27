@@ -8,7 +8,6 @@ class LLM
   late String description;
   late Object model;
   late String modelName;
-  late int maxTokens;
   late Icon icon;
   List<ChatMessage> messages = [];
 
