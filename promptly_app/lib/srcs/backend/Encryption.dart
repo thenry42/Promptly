@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:highlight/languages/plaintext.dart';
 import 'package:pointycastle/export.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
@@ -9,13 +10,13 @@ class Encryption {
   static const int _iterations = 10000;
   static const int _ivLength = 16;
   
-  // ignore: unused_field
+  final String _masterKey;
   late Uint8List _key;
-  
-  // Initialize with a key if provided
-  Encryption([Uint8List? key]) {
+
+  // Constructor to initialize with a master key
+  Encryption(this._masterKey, [Uint8List? key]) {
     _key = key ?? Uint8List(_keyLength);
-  }
+  } 
 
   String generateSalt(int len) {
     final random = Random.secure();
@@ -52,11 +53,11 @@ class Encryption {
     return decrypted;
   }
 
-  String persistEncryptedData(String userInput) {
+  String persistEncryptedData(String plainText) {
     final salt = generateSalt(_keyLength);
-    final keyDerived = derivedKey(userInput, salt, _iterations, _keyLength);
+    final keyDerived = derivedKey(_masterKey, salt, _iterations, _keyLength);
     final ivBytes = generateRandomIV(_ivLength);
-    final encryptedText = aesEncryption(keyDerived, userInput, ivBytes);
+    final encryptedText = aesEncryption(keyDerived, plainText, ivBytes);
 
     final Map<String, String> encryptedData = {
       'salt': salt,
@@ -66,14 +67,14 @@ class Encryption {
     return json.encode(encryptedData);
   }
 
-  String retrieveEncryptedData(String jsonData, String userInput) {
+  String retrieveEncryptedData(String jsonData) {
     final Map<String, dynamic> parsedData = json.decode(jsonData);
     final String salt = parsedData['salt'];
     final String ivBase64 = parsedData['iv'];
     final String ciphertext = parsedData['ciphertext'];
     
     final ivBytes = base64.decode(ivBase64);
-    final keyDerived = derivedKey(userInput, salt, _iterations, _keyLength);
+    final keyDerived = derivedKey(_masterKey, salt, _iterations, _keyLength);
     return aesDecryption(keyDerived, ciphertext, ivBytes);
   }
 }

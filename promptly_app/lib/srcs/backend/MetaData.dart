@@ -11,7 +11,7 @@ class MetaData {
   String? anthropicKey;
   String? openAIKey;
   List<Chat> chatList = [];
-  final Encryption _encryption = Encryption();
+  final Encryption _encryption = Encryption(_masterKey);
 
   // Singleton pattern
   static final MetaData _instance = MetaData._internal();
@@ -33,7 +33,6 @@ class MetaData {
       if (encryptedAnthropic != null) {
         instance.anthropicKey = instance._encryption.retrieveEncryptedData(
           encryptedAnthropic,
-          _masterKey
         );
       }
       
@@ -42,7 +41,6 @@ class MetaData {
       if (encryptedOpenAI != null) {
         instance.openAIKey = instance._encryption.retrieveEncryptedData(
           encryptedOpenAI,
-          _masterKey
         );
       }
     } catch (e) {
