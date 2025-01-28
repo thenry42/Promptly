@@ -6,7 +6,7 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 
 class Encryption {
   static const int _keyLength = 32;
-  static const int _iterations = 100000;
+  static const int _iterations = 10000;
   static const int _ivLength = 16;
   
   // ignore: unused_field

@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:window_size/window_size.dart';
 import 'srcs/backend/Colors.dart';
 import 'srcs/widgets/MainWindow.dart';
+import 'srcs/backend/MetaData.dart' as metadata;
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await metadata.MetaData.getKeysFromStorage();
 
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     setWindowTitle('Promptly');

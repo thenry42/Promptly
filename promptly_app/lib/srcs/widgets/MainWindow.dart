@@ -1,9 +1,24 @@
+// MainWindow.dart
 import 'package:flutter/material.dart';
 import 'ChatPanel.dart';
 import 'LeftPanel.dart';
+import 'SettingsDialog.dart';
 
-class MainWindow extends StatelessWidget {
+class MainWindow extends StatefulWidget {
   const MainWindow({super.key});
+
+  @override
+  State<MainWindow> createState() => _MainWindowState();
+}
+
+class _MainWindowState extends State<MainWindow> {
+  bool _isLeftPanelVisible = true;
+
+  void _toggleLeftPanel() {
+    setState(() {
+      _isLeftPanelVisible = !_isLeftPanelVisible;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,16 +30,33 @@ class MainWindow extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             color: Theme.of(context).colorScheme.surfaceContainer,
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Expanded(
-                flex: 1,
-                child: LeftPanel(),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: _isLeftPanelVisible ? MediaQuery.of(context).size.width * 0.2 : 0,
+                child: _isLeftPanelVisible 
+                    ? LeftPanel(
+                        onNewChat: () {
+                          // Handle new chat
+                        },
+                        onSettings: () {
+                          // Handle settings
+                            showDialog(
+                            context: context,
+                            builder: (context) => const SettingsDialog(),
+                          );
+                        },
+                      )
+                    : null,
               ),
-              SizedBox(width: 12),
+              if (_isLeftPanelVisible == true) const SizedBox(width: 12),
               Expanded(
                 flex: 4,
-                child: ChatPanel(),
+                child: ChatPanel(
+                  onTogglePanel: _toggleLeftPanel,
+                  isPanelVisible: _isLeftPanelVisible,
+                ),
               ),
             ],
           ),
