@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:highlight/languages/plaintext.dart';
 import 'package:pointycastle/export.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
