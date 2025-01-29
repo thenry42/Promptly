@@ -5,8 +5,6 @@ import 'package:promptly_app/srcs/backend/OpenAI.dart';
 import 'package:promptly_app/srcs/backend/Singleton.dart';
 import 'ChatMessage.dart';
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropicsdk;
-import 'package:ollama_dart/ollama_dart.dart' as ollama;
-import 'package:dart_openai/dart_openai.dart' as openai;
 
 class Chat
 {
