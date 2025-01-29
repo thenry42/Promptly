@@ -3,11 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:window_size/window_size.dart';
 import 'srcs/backend/Colors.dart';
 import 'srcs/widgets/MainWindow.dart';
-import 'srcs/backend/MetaData.dart' as metadata;
+import 'srcs/backend/Singleton.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await metadata.MetaData.getKeysFromStorage();
+  
+  debugPrint("Bonjour !");
+  var metadata = Singleton();
+  await metadata.getAPIKeys();
+  await metadata.getModels();
+  print(metadata.ollama_models);
+  print(metadata.anthropic_models);
+  print(metadata.openai_models);
 
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     setWindowTitle('Promptly');

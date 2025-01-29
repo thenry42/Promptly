@@ -1,10 +1,25 @@
 class ChatMessage
 {
-  late final String sender;
-  late final String message;
-  late final Object rawMessage;
-  late final DateTime timestamp;
+  // ATTRIBUTES -------------------------------------------
+
+  final String sender;
+  final String message;
+  final DateTime timestamp;
+  final Object rawMessage;
+  
   bool useMarkdown = true;
   bool useRaw = false;
   bool usePlainText = false;
+
+  // CONSTRUCTOR ------------------------------------------
+
+  ChatMessage({
+    required this.sender,
+    required this.message,
+    required this.timestamp,
+    required this.rawMessage
+  });
+
+  // METHODS ----------------------------------------------
+
 }

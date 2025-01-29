@@ -4,20 +4,16 @@ import 'package:promptly_app/srcs/backend/ChatMessage.dart';
 
 class Anthropic
 {
-  int? maxTokens;
-  final String apiKey;
-  bool supportToolCalling = false;
+  // ATTRIBUTES -------------------------------------------
 
-  // For the time being, the list of Anthropic model is hard-coded
-  List<anthropicsdk.Model> models = const [
-    anthropicsdk.Model.modelId('claude-3-5-sonnet-latest'),
-    anthropicsdk.Model.modelId('claude-3-5-haiku-latest'),
-    anthropicsdk.Model.modelId('claude-3-opus-latest'),
-  ];
+  final String apiKey;
+
+  // CONSTRUCTOR ------------------------------------------
 
   Anthropic({required this.apiKey});
 
-  // REMINDER: this function return an Message Object, NOT a String
+  // METHODS ----------------------------------------------
+
   Future<anthropicsdk.Message> generateMessageRequest({
     required Object model,
     required String prompt,
@@ -55,7 +51,5 @@ class Anthropic
   }
 
   // TO DO :
-  // getModelList()
   // generateStreamRequest()
-
 }

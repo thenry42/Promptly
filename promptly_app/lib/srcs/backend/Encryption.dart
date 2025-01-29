@@ -10,12 +10,9 @@ class Encryption {
   static const int _ivLength = 16;
   
   final String _masterKey;
-  late Uint8List _key;
 
   // Constructor to initialize with a master key
-  Encryption(this._masterKey, [Uint8List? key]) {
-    _key = key ?? Uint8List(_keyLength);
-  } 
+  Encryption(this._masterKey); 
 
   String generateSalt(int len) {
     final random = Random.secure();

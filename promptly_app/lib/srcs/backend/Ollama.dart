@@ -4,27 +4,10 @@ import 'ChatMessage.dart';
 
 class Ollama
 {
-  int? maxTokens;
-  List<ollama.Model> models = [];
-  bool supportToolCalling = false;
-
-  Future<List<ollama.Model>> getOllamaModels() async {
-    try {
-      final client = ollama.OllamaClient();
-      final response = await client.listModels();
-
-      // Convert to List of Maps with name and type
-      final List<ollama.Model> models = response.models!.toList();
-
-      return models;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching models: $e');
-      }
-      return models;
-    }
-  }
-
+  // CONSTRUCTOR ------------------------------------------
+  
+  // METHODS ----------------------------------------------
+  
   Future<ollama.Message> generateMessageRequest({
     required Object model,
     required String prompt,

@@ -1,8 +1,6 @@
-// MainWindow.dart
 import 'package:flutter/material.dart';
 import 'ChatPanel.dart';
 import 'LeftPanel.dart';
-import 'SettingsDialog.dart';
 
 class MainWindow extends StatefulWidget {
   const MainWindow({super.key});
@@ -42,10 +40,6 @@ class _MainWindowState extends State<MainWindow> {
                         },
                         onSettings: () {
                           // Handle settings
-                            showDialog(
-                            context: context,
-                            builder: (context) => const SettingsDialog(),
-                          );
                         },
                       )
                     : null,

@@ -4,26 +4,15 @@ import 'ChatMessage.dart';
 
 class OpenAI
 {
+  // ATTRIBUTES -------------------------------------------
+
   final String apiKey;
-  List<openai.OpenAIModelModel> models = [];
-  int? maxTokens;
-  bool supportToolCalling = false;
+
+  // CONSTRUCTOR ------------------------------------------
 
   OpenAI({required this.apiKey});
 
-  Future<List<openai.OpenAIModelModel>> getOpenAIModels() async {
-    try {
-      
-      openai.OpenAI.apiKey = apiKey;
-      models = await openai.OpenAI.instance.model.list();
-
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching openAI models: $e');
-      }
-    }
-    return models;
-  }
+  // METHODS ----------------------------------------------
 
   // Contrary to others LLM providers this function can return null
   Future<openai.OpenAIChatCompletionModel?> generateMessageRequest({
