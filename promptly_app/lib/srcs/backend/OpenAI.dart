@@ -7,17 +7,16 @@ class OpenAI
   // ATTRIBUTES -------------------------------------------
 
   final String apiKey;
+  String model;
 
   // CONSTRUCTOR ------------------------------------------
 
-  OpenAI({required this.apiKey});
+  OpenAI({required this.apiKey, required this.model});
 
   // METHODS ----------------------------------------------
 
   // Contrary to others LLM providers this function can return null
-  Future<openai.OpenAIChatCompletionModel?> generateMessageRequest({
-    required Object model,
-    required String prompt,
+  Future<ChatMessage> generateOpenAIMessageRequest({
     required List<ChatMessage> messageList,
     required int maxTokens
   }) async {
@@ -34,18 +33,28 @@ class OpenAI
       }).toList();
 
       openai.OpenAIChatCompletionModel res = await openai.OpenAI.instance.chat.create(
-        model: model.toString(),
+        model: model,
         messages: messages,
       ).timeout(const Duration(seconds: 500));
 
-      return res;
+      return ChatMessage(
+        sender: 'Assistant',
+        message: res.choices.first.message.content!.join(' '),
+        timestamp: DateTime.now(),
+        rawMessage: res,
+      );
 
     } catch (e) {
       if (kDebugMode) {
         print('Error generating completion: $e');
       }
     }
-    return null;
+    return ChatMessage(
+      sender: 'Assistant',
+      message: 'Error',
+      timestamp: DateTime.now(),
+      rawMessage: 'Error',
+    );
   }
 
   // TO DO :

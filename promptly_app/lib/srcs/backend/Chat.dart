@@ -13,9 +13,14 @@ class Chat
   // ATTRIBUTES -------------------------------------------
 
   int id;
-  String title;
   late Icon icon;
-  Object model;
+  String modelName;
+  
+  String type;
+  late Anthropic claude;
+  late Ollama vicugna;
+  late OpenAI gepeto;
+  
   bool isHovered = false;
   bool isSelected = false;
   bool isSendingRequest = false;
@@ -26,16 +31,17 @@ class Chat
 
   // CONSTRUCTOR ------------------------------------------
 
-  Chat({required this.id, required this.title, required this.model}) {
+  Chat({required this.id, required this.modelName, required this.type}) {
     var metadata = Singleton();
-    if (model == anthropicsdk.Model) {
-      model = Anthropic(apiKey: metadata.anthropicKey!);
-    } else if (model == ollama.Model) {
-      model = Ollama();
-    } else if (model == openai.OpenAIModelModel) {
-      model = OpenAI(apiKey: metadata.openAIKey!);
+    if (type == "Anthropic") {
+      anthropicsdk.Model model = anthropicsdk.Model.modelId(modelName);
+      claude = Anthropic(apiKey: metadata.anthropicKey!, model: model);
+    } else if (type == "Ollama") {
+      vicugna = Ollama(model: modelName);
+    } else if (type == "OpenAI") {
+      gepeto = OpenAI(apiKey: metadata.openAIKey!, model: modelName);
     } else {
-      debugPrint("Error: Unknown model");
+      debugPrint("Error: Unknown model [0]");
     }
   }
 
@@ -50,17 +56,20 @@ class Chat
   }
 
   Future<void> generateMessageRequest() async {
-    if (model == anthropicsdk.Model) {
-      ChatMessage response = model.generateAnthropicMessageRequest();
+    if (type == "Anthropic") {
+      max_output_tokens = 100;
+      ChatMessage response = await claude.generateAnthropicMessageRequest(messageList: messages, maxTokens: max_output_tokens!);
       addChatMessage(response);
-    } else if (model == ollama.Model) {
-      ChatMessage response = model.generateOllamaMessageRequest();
+    } else if (type == "Ollama") {
+      max_output_tokens = 100;
+      ChatMessage response = await vicugna.generateOllamaMessageRequest(messageList: messages, maxTokens: max_output_tokens!);
       addChatMessage(response);
-    } else if (model == openai.OpenAIModelModel) {
-      ChatMessage response = model.generateOpenAIMessageRequest();
+    } else if (type == "OpenAI") {
+      max_output_tokens = 100;
+      ChatMessage response = await gepeto.generateOpenAIMessageRequest(messageList: messages, maxTokens: max_output_tokens!);
       addChatMessage(response);
     } else {
-      debugPrint("Error: Unknown model");
+      debugPrint("Error: Unknown model [1]");
     }
   }
 

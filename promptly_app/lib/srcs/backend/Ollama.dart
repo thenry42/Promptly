@@ -4,13 +4,17 @@ import 'ChatMessage.dart';
 
 class Ollama
 {
+  // ATTRIBUTES -------------------------------------------
+
+  String model;
+
   // CONSTRUCTOR ------------------------------------------
   
+  Ollama({required this.model});
+
   // METHODS ----------------------------------------------
   
-  Future<ollama.Message> generateMessageRequest({
-    required Object model,
-    required String prompt,
+  Future<ChatMessage> generateOllamaMessageRequest({
     required List<ChatMessage> messageList,
     required int maxTokens
   }) async {
@@ -26,21 +30,28 @@ class Ollama
 
       final res = await client.generateChatCompletion(
         request: ollama.GenerateChatCompletionRequest(
-          model: model.toString(),
+          model: model,
           messages: messages,
         ),
       );
 
-      return res.message;
+      return ChatMessage(
+        sender: 'Assistant',
+        message: res.message.content,
+        timestamp: DateTime.now(),
+        rawMessage: res,
+      );
 
     } catch (e) {
       if (kDebugMode) {
         print('Error generating completion: $e');
       }
 
-      return const ollama.Message(
-        role: ollama.MessageRole.system,
-        content: 'Error'
+      return ChatMessage(
+        sender: 'Assistant',
+        message: 'Error',
+        timestamp: DateTime.now(),
+        rawMessage: 'Error',
       );
     }
   }

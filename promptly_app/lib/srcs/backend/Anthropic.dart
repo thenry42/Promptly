@@ -7,16 +7,15 @@ class Anthropic
   // ATTRIBUTES -------------------------------------------
 
   final String apiKey;
+  anthropicsdk.Model model;
 
   // CONSTRUCTOR ------------------------------------------
 
-  Anthropic({required this.apiKey});
+  Anthropic({required this.apiKey, required this.model});
 
   // METHODS ----------------------------------------------
 
-  Future<anthropicsdk.Message> generateMessageRequest({
-    required Object model,
-    required String prompt,
+  Future<ChatMessage> generateAnthropicMessageRequest({
     required List<ChatMessage> messageList,
     required int maxTokens
     }) async {
@@ -31,22 +30,23 @@ class Anthropic
         );
       }).toList();
 
-      final res = await client.createMessage(
+      final raw = await client.createMessage(
         request: anthropicsdk.CreateMessageRequest(
-          model: anthropicsdk.ModelId(model.toString()),
+          model: model,
           messages: messages,
           maxTokens: maxTokens));
 
-      return res;
+      const sender = "Assistant";
+      final message = raw.content.text;
+      final timestamp = DateTime.now();
+
+      return ChatMessage(sender: sender, message: message, timestamp: timestamp, rawMessage: raw);
 
     } catch (e) {
       if (kDebugMode) {
         print('Error generating completion: $e');
       }
-
-      return const anthropicsdk.Message(
-        content: anthropicsdk.MessageContent.text('Error'),
-        role: anthropicsdk.MessageRole.assistant);
+      return ChatMessage(sender: "Assistant", message: "Error", timestamp: DateTime.now(), rawMessage: "Error");
     }
   }
 
