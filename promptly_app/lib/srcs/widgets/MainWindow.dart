@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'ChatPanel.dart';
 import 'LeftPanel.dart';
-import 'NewChatDialog.dart';
 
 class MainWindow extends StatefulWidget {
   const MainWindow({super.key});

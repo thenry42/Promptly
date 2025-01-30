@@ -18,14 +18,6 @@ void main() async {
 
   print(metadata.modelsName);
 
-  // Create an Ollama chat
-  Chat chat = Chat(id: 0, modelName: metadata.ollama_models[0].model!, type: "Ollama");
-  metadata.chatList.add(chat);
-
-  // Create another Ollama chat
-  Chat chat1 = Chat(id: 1, modelName: metadata.ollama_models[1].model!, type: "Ollama");
-  metadata.chatList.add(chat1);
-
   /*
   // Create a chat message
   ChatMessage chat_message = ChatMessage(sender: "User", message: "why is the sky blue ?", timestamp: DateTime.now(), rawMessage: "Hello");

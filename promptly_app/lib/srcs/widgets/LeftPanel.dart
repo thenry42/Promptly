@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:promptly_app/srcs/backend/Singleton.dart';
 import 'package:promptly_app/srcs/backend/Chat.dart';
 import 'package:promptly_app/srcs/widgets/NewChatDialog.dart';
+import 'package:promptly_app/srcs/widgets/SettingsDialog.dart';
 
 class LeftPanel extends StatefulWidget {
 
@@ -30,6 +31,15 @@ class _LeftPanelState extends State<LeftPanel> {
       context: context,
       builder: (BuildContext context) => NewChatDialog(
         onChatCreated: () => setState(() {}),
+      ),
+    );
+  }
+
+  void _showSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => SettingsDialog(
+        onSettingsChanged: () => setState(() {}),
       ),
     );
   }
@@ -77,7 +87,7 @@ class _LeftPanelState extends State<LeftPanel> {
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: IconButton(
-                onPressed: () => debugPrint('Settings button pressed'),
+                onPressed: _showSettingsDialog,
                 icon: const Icon(Icons.settings),
                 tooltip: 'Settings',
                 constraints: const BoxConstraints(
