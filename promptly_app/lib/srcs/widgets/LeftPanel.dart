@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:promptly_app/srcs/backend/Singleton.dart';
 import 'package:promptly_app/srcs/backend/Chat.dart';
+import 'package:promptly_app/srcs/widgets/NewChatDialog.dart';
 
 class LeftPanel extends StatefulWidget {
-  final VoidCallback onNewChat;
-  final VoidCallback onSettings;
 
   const LeftPanel({
     super.key,
-    required this.onNewChat,
-    required this.onSettings,
   });
 
   @override
@@ -28,6 +25,15 @@ class _LeftPanelState extends State<LeftPanel> {
     debugPrint("Switched to chat: ${chat.modelName}");
   }
 
+  void _showNewChatDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => NewChatDialog(
+        onChatCreated: () => setState(() {}),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -43,7 +49,7 @@ class _LeftPanelState extends State<LeftPanel> {
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: IconButton(
-                onPressed: widget.onNewChat,
+                onPressed: _showNewChatDialog,
                 icon: const Icon(Icons.add),
                 tooltip: 'New Chat',
                 constraints: const BoxConstraints(
@@ -71,7 +77,7 @@ class _LeftPanelState extends State<LeftPanel> {
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: IconButton(
-                onPressed: widget.onSettings,
+                onPressed: () => debugPrint('Settings button pressed'),
                 icon: const Icon(Icons.settings),
                 tooltip: 'Settings',
                 constraints: const BoxConstraints(

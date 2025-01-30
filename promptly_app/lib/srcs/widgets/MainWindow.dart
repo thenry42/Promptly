@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'ChatPanel.dart';
 import 'LeftPanel.dart';
+import 'NewChatDialog.dart';
 
 class MainWindow extends StatefulWidget {
   const MainWindow({super.key});
@@ -33,16 +34,7 @@ class _MainWindowState extends State<MainWindow> {
               AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 width: _isLeftPanelVisible ? MediaQuery.of(context).size.width * 0.2 : 0,
-                child: _isLeftPanelVisible 
-                    ? LeftPanel(
-                        onNewChat: () {
-                          // Handle new chat
-                        },
-                        onSettings: () {
-                          // Handle settings
-                        },
-                      )
-                    : null,
+                child: _isLeftPanelVisible ? const LeftPanel() : null,
               ),
               if (_isLeftPanelVisible == true) const SizedBox(width: 12),
               Expanded(
