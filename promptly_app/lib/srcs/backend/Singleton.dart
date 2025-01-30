@@ -15,6 +15,7 @@ class Singleton {
   late List<anthropicsdk.Model> anthropic_models = [];
   late List<ollama.Model> ollama_models = [];
   late List<openai.OpenAIModelModel> openai_models = [];
+  late List<String> modelsName = [];
 
   // CONSTRUCTOR ------------------------------------------
 
@@ -68,6 +69,18 @@ class Singleton {
     await getAnthropicModels();
     await getOllamaModels();
     await getOpenAIModels();
+  }
+
+  Future<void> getModelsName() async {
+    for (int i = 0; i < anthropic_models.length; i++) {
+      modelsName.add(anthropic_models[i].value.toString());
+    }
+    for (int i = 0; i < ollama_models.length; i++) {
+      modelsName.add(ollama_models[i].model!);
+    }
+    for (int i = 0; i < openai_models.length; i++) {
+      modelsName.add(openai_models[i].id);
+    }
   }
 
   Future<void> getAPIKeys() async {

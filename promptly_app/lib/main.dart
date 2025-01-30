@@ -14,33 +14,28 @@ void main() async {
   var metadata = Singleton();
   await metadata.getAPIKeys();
   await metadata.getModels();
+  await metadata.getModelsName();
 
-  print(metadata.ollama_models[0].model);
-  //print(metadata.anthropic_models);
-  //print(metadata.openai_models);
-  //print(metadata.openai_models.length);
-  //print(metadata.openai_models[47].id);
-
-  // Create an Anthropic chat
-  //Chat chat = Chat(id: 0, modelName: metadata.anthropic_models[1].value.toString(), type: "Anthropic");
-  //metadata.chatList.add(chat);
+  print(metadata.modelsName);
 
   // Create an Ollama chat
-  Chat chat2 = Chat(id: 1, modelName: metadata.ollama_models[0].model!, type: "Ollama");
-  metadata.chatList.add(chat2);
+  Chat chat = Chat(id: 0, modelName: metadata.ollama_models[0].model!, type: "Ollama");
+  metadata.chatList.add(chat);
 
-  // Create an OpenAI chat
-  //Chat chat3 = Chat(id: 2, modelName: metadata.openai_models[47].id, type: "OpenAI");
-  //metadata.chatList.add(chat3);
+  // Create another Ollama chat
+  Chat chat1 = Chat(id: 1, modelName: metadata.ollama_models[1].model!, type: "Ollama");
+  metadata.chatList.add(chat1);
 
+  /*
   // Create a chat message
   ChatMessage chat_message = ChatMessage(sender: "User", message: "why is the sky blue ?", timestamp: DateTime.now(), rawMessage: "Hello");
-  chat2.addChatMessage(chat_message);
+  chat.addChatMessage(chat_message);
 
   // Generate a message request
-  await chat2.generateMessageRequest();
-  print(chat2.messages[0].message);
-  print(chat2.messages[1].message);
+  await chat.generateMessageRequest();
+  print(chat.messages[0].message);
+  print(chat.messages[1].message);
+  */
 
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     setWindowTitle('Promptly');
