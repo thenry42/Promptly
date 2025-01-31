@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:promptly_app/srcs/backend/Singleton.dart';
-import 'package:promptly_app/srcs/backend/Chat.dart';
 
 class SettingsDialog extends StatefulWidget {
   final VoidCallback onSettingsChanged;

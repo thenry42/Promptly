@@ -5,9 +5,11 @@ import 'package:promptly_app/srcs/widgets/NewChatDialog.dart';
 import 'package:promptly_app/srcs/widgets/SettingsDialog.dart';
 
 class LeftPanel extends StatefulWidget {
+  final Function(Chat) onChatSelected;
 
   const LeftPanel({
     super.key,
+    required this.onChatSelected,
   });
 
   @override
@@ -23,6 +25,7 @@ class _LeftPanelState extends State<LeftPanel> {
         existingChat.isSelected = existingChat.id == chat.id;
       }
     });
+    widget.onChatSelected(chat); // Notify parent about the selection
     debugPrint("Switched to chat: ${chat.modelName}");
   }
 
@@ -158,7 +161,7 @@ class _LeftPanelState extends State<LeftPanel> {
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: chat.isSelected || chat.isHovered
-                    ? Theme.of(context).colorScheme.primary
+                    ? Theme.of(context).colorScheme.onSurface
                     : Theme.of(context).colorScheme.onSurface,
               ),
             ),
@@ -167,9 +170,9 @@ class _LeftPanelState extends State<LeftPanel> {
               borderRadius: BorderRadius.circular(8),
             ),
             tileColor: chat.isSelected
-                ? Theme.of(context).colorScheme.primaryContainer
+                ? Theme.of(context).colorScheme.surfaceContainerHighest
                 : chat.isHovered
-                    ? Theme.of(context).colorScheme.surfaceContainerHighest
+                    ? Theme.of(context).colorScheme.surfaceContainerHigh
                     : Theme.of(context).colorScheme.surfaceContainer,
           ),
         ),
