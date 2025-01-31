@@ -29,7 +29,7 @@ class Chat
 
   // CONSTRUCTOR ------------------------------------------
 
-  Chat({required this.id, required this.modelName, required this.type}) {
+  Chat({required this.id, required this.modelName, required this.type, isSelected}) {
     var metadata = Singleton();
     if (type == "Anthropic") {
       anthropicsdk.Model model = anthropicsdk.Model.modelId(modelName);

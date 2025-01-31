@@ -72,11 +72,13 @@ class _NewChatDialogState extends State<NewChatDialog> {
               ? () {
                   final metadata = Singleton();
                   final newChatId = metadata.chatList.isEmpty ? 0 : metadata.chatList.last.id + 1;
+                  final isFirstChat = metadata.chatList.isEmpty ? true : false;
                   
                   final newChat = Chat(
                     id: newChatId,
                     modelName: selectedModel!,
                     type: selectedModelType!,
+                    isSelected: isFirstChat,
                   );
                   
                   metadata.chatList.add(newChat);
