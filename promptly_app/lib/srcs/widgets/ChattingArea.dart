@@ -129,6 +129,7 @@ class _ChattingAreaState extends State<ChattingArea> {
             onSubmitted: isInputEnabled ? (_) => _sendMessage() : null,
           ),
         ),
+        const SizedBox(width: 8),
         IconButton(
           icon: const Icon(Icons.send),
           onPressed: isInputEnabled ? _sendMessage : null,
