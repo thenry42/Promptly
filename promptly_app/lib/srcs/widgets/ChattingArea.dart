@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:promptly_app/srcs/backend/ChatMessage.dart';
+import 'package:promptly_app/srcs/backend/Singleton.dart';
+import 'package:promptly_app/srcs/backend/Chat.dart';
+import 'package:promptly_app/srcs/widgets/ChatMessageWidget.dart';
 
 class ChattingArea extends StatefulWidget {
   const ChattingArea({Key? key}) : super(key: key);
@@ -8,16 +12,129 @@ class ChattingArea extends StatefulWidget {
 }
 
 class _ChattingAreaState extends State<ChattingArea> {
-  final List<String> messages = [];
+  final metadata = Singleton();
+  late String message;
   final TextEditingController _textController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Listen for changes in selectedChatIndex
+    metadata.addChatSelectionListener(_onChatSelected);
+  }
+
+  @override
+  void dispose() {
+    // Remove listener when widget is disposed
+    metadata.removeChatSelectionListener(_onChatSelected);
+    _textController.dispose();
+    super.dispose();
+  }
+
+  // Callback for chat selection changes
+  void _onChatSelected() {
+    setState(() {
+      // Force widget rebuild when chat is selected
+    });
+  }
 
   void _sendMessage() {
     if (_textController.text.isNotEmpty) {
       setState(() {
-        messages.add(_textController.text);
+        ChatMessage message = ChatMessage(
+          sender: "user",
+          message: _textController.text,
+          timestamp: DateTime.now(),
+          rawMessage: _textController.text,
+        );
+        metadata.chatList[metadata.selectedChatIndex].addChatMessage(message);
         _textController.clear();
       });
     }
+  }
+
+  Widget _buildMessagesList() {
+    if (metadata.chatList.isEmpty) {
+      return const Center(
+        child: Text(
+          'No chats yet. Start a new conversation!',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 16,
+          ),
+        ),
+      );
+    }
+
+    if (metadata.selectedChatIndex < 0 || 
+        metadata.selectedChatIndex >= metadata.chatList.length) {
+      return const Center(
+        child: Text(
+          'Please select a chat to start messaging',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 16,
+          ),
+        ),
+      );
+    }
+
+    final messages = metadata.chatList[metadata.selectedChatIndex].messages;
+    if (messages.isEmpty) {
+      return const Center(
+        child: Text(
+          'No messages yet. Start the conversation!',
+          style: TextStyle(
+            color: Colors.grey,
+            fontSize: 16,
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: messages.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: ChatMessageWidget(message: messages[index]),
+        );
+      },
+    );
+  }
+
+  Widget _buildInputArea() {
+    bool isInputEnabled = metadata.chatList.isNotEmpty && 
+        metadata.selectedChatIndex >= 0 &&
+        metadata.selectedChatIndex < metadata.chatList.length;
+
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _textController,
+            enabled: isInputEnabled,
+            decoration: InputDecoration(
+              hintText: isInputEnabled 
+                ? 'Type a message...' 
+                : 'Select a chat to start messaging',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12, 
+                vertical: 8,
+              ),
+            ),
+            onSubmitted: isInputEnabled ? (_) => _sendMessage() : null,
+          ),
+        ),
+        IconButton(
+          icon: const Icon(Icons.send),
+          onPressed: isInputEnabled ? _sendMessage : null,
+        ),
+      ],
+    );
   }
 
   @override
@@ -25,51 +142,10 @@ class _ChattingAreaState extends State<ChattingArea> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Title
-        Text(
-          'Chat',
-          style: Theme.of(context).textTheme.titleMedium,
-          textAlign: TextAlign.left,
-        ),
-
-        // Messages List
         Expanded(
-          child: ListView.separated(
-            itemCount: messages.length,
-            separatorBuilder: (context, index) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Text(
-                  messages[index],
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              );
-            },
-          ),
+          child: _buildMessagesList(),
         ),
-
-        // Text Input Area
-        Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _textController,
-                decoration: InputDecoration(
-                  hintText: 'Type a message...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                ),
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.send),
-              onPressed: _sendMessage,
-            ),
-          ],
-        ),
+        _buildInputArea(),
       ],
     );
   }

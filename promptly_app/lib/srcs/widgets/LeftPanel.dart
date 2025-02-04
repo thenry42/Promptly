@@ -21,12 +21,22 @@ class _LeftPanelState extends State<LeftPanel> {
   void _switchChat(Chat chat) {
     final metadata = Singleton();
     setState(() {
+      // Find the index of the chat in the list
+      int chatIndex = metadata.chatList.indexWhere((c) => c.id == chat.id);
+      
+      // Update selection state for all chats
       for (var existingChat in metadata.chatList) {
         existingChat.isSelected = existingChat.id == chat.id;
       }
+      
+      // Use setSelectedChatIndex to trigger listeners
+      if (chatIndex != -1) {
+        metadata.setSelectedChatIndex(chatIndex);
+      }
     });
+    
     widget.onChatSelected(chat); // Notify parent about the selection
-    debugPrint("Switched to chat: ${chat.modelName}");
+    debugPrint("Switched to chat: ${chat.modelName} at index ${metadata.selectedChatIndex}");
   }
 
   void _showNewChatDialog() {

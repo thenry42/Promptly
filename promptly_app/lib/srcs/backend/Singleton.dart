@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'Chat.dart';
@@ -16,6 +18,9 @@ class Singleton {
   late List<ollama.Model> ollama_models = [];
   late List<openai.OpenAIModelModel> openai_models = [];
   late List<String> modelsName = [];
+  int selectedChatIndex = 0;
+
+  final List<VoidCallback> _chatSelectionListeners = [];
 
   // CONSTRUCTOR ------------------------------------------
 
@@ -99,4 +104,19 @@ class Singleton {
     chatList.remove(chat);
   }
 
+  void addChatSelectionListener(VoidCallback listener) {
+    _chatSelectionListeners.add(listener);
+  }
+
+  void removeChatSelectionListener(VoidCallback listener) {
+    _chatSelectionListeners.remove(listener);
+  }
+
+  void setSelectedChatIndex(int index) {
+    selectedChatIndex = index;
+    // Notify all listeners when chat selection changes
+    for (final listener in _chatSelectionListeners) {
+      listener();
+    }
+  }
 }

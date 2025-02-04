@@ -25,6 +25,29 @@ class _ChatPanelState extends State<ChatPanel> {
   void initState() {
     super.initState();
     metadata = Singleton();
+    // Listen for changes in the chat list or selection
+    metadata.addChatSelectionListener(_onChatChanged);
+  }
+
+  @override
+  void dispose() {
+    metadata.removeChatSelectionListener(_onChatChanged);
+    super.dispose();
+  }
+
+  void _onChatChanged() {
+    setState(() {
+      // Update the panel when chat changes
+    });
+  }
+
+  String get _currentChatName {
+    if (metadata.chatList.isEmpty || 
+        metadata.selectedChatIndex < 0 || 
+        metadata.selectedChatIndex >= metadata.chatList.length) {
+      return widget.chatName;
+    }
+    return metadata.chatList[metadata.selectedChatIndex].modelName;
   }
 
   @override
@@ -54,8 +77,9 @@ class _ChatPanelState extends State<ChatPanel> {
                   Expanded(
                     child: Center(
                       child: Text(
-                        widget.chatName,
+                        _currentChatName,
                         style: Theme.of(context).textTheme.titleMedium,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
