@@ -1,6 +1,7 @@
 import 'package:dart_openai/dart_openai.dart' as openai;
 import 'package:flutter/foundation.dart';
 import 'ChatMessage.dart';
+import 'Singleton.dart';
 
 class OpenAI
 {

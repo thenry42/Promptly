@@ -52,7 +52,7 @@ class PlainTextMessageWidget extends StatelessWidget {
   }
 
   Widget _buildMessageContainer(BuildContext context, Widget content) {
-    final isUser = message.sender == "user";
+    final isUser = message.sender == "User";
     
     return Container(
       padding: const EdgeInsets.all(16.0),

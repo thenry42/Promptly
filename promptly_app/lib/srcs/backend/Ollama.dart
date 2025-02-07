@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:ollama_dart/ollama_dart.dart' as ollama;
 import 'ChatMessage.dart';
+import 'Singleton.dart';
 
 class Ollama
 {
@@ -13,7 +14,7 @@ class Ollama
   Ollama({required this.model});
 
   // METHODS ----------------------------------------------
-  
+
   Future<ChatMessage> generateOllamaMessageRequest({
     required List<ChatMessage> messageList,
     required int maxTokens

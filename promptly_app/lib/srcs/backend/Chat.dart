@@ -24,7 +24,7 @@ class Chat
   bool isSendingRequest = false;
   List <ChatMessage> messages = [];
 
-  int? max_output_tokens;
+  int? max_output_tokens = 1024;
   bool? support_tool_calling;
 
   // CONSTRUCTOR ------------------------------------------
@@ -53,19 +53,21 @@ class Chat
     messages.remove(chat_message);
   }
 
-  Future<void> generateMessageRequest() async {
+  Future<void> generateMessageRequest({required Singleton metadata}) async {
+    
+    final index = metadata.selectedChatIndex;
+    final messageList = metadata.chatList[metadata.selectedChatIndex].messages;
+    final maxTokens = metadata.chatList[metadata.selectedChatIndex].max_output_tokens;
+
     if (type == "Anthropic") {
-      max_output_tokens = 100;
-      ChatMessage response = await claude.generateAnthropicMessageRequest(messageList: messages, maxTokens: max_output_tokens!);
-      addChatMessage(response);
+      ChatMessage response = await claude.generateAnthropicMessageRequest(messageList: messageList, maxTokens: maxTokens!);
+      metadata.chatList[index].addChatMessage(response);
     } else if (type == "Ollama") {
-      max_output_tokens = 100;
-      ChatMessage response = await vicugna.generateOllamaMessageRequest(messageList: messages, maxTokens: max_output_tokens!);
-      addChatMessage(response);
+      ChatMessage response = await vicugna.generateOllamaMessageRequest(messageList: messageList, maxTokens: maxTokens!);
+      metadata.chatList[index].addChatMessage(response);
     } else if (type == "OpenAI") {
-      max_output_tokens = 100;
-      ChatMessage response = await gepeto.generateOpenAIMessageRequest(messageList: messages, maxTokens: max_output_tokens!);
-      addChatMessage(response);
+      ChatMessage response = await gepeto.generateOpenAIMessageRequest(messageList: messageList, maxTokens: maxTokens!);
+      metadata.chatList[index].addChatMessage(response);
     } else {
       debugPrint("Error: Unknown model [1]");
     }
@@ -78,5 +80,4 @@ class Chat
   // generateStreamRequest()
   // fetchModelDetails()
   // getModelIcon()
-
 }

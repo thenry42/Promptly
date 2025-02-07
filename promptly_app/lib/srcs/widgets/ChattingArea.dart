@@ -15,6 +15,7 @@ class _ChattingAreaState extends State<ChattingArea> {
   final metadata = Singleton();
   late String message;
   final TextEditingController _textController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -38,18 +39,29 @@ class _ChattingAreaState extends State<ChattingArea> {
     });
   }
 
-  void _sendMessage() {
+  void _sendMessage() async {
     if (_textController.text.isNotEmpty) {
       setState(() {
         ChatMessage message = ChatMessage(
-          sender: "user",
+          sender: "User",
           message: _textController.text,
           timestamp: DateTime.now(),
           rawMessage: _textController.text,
         );
         metadata.chatList[metadata.selectedChatIndex].addChatMessage(message);
         _textController.clear();
+        _isLoading = true;  // Set loading state to true before generating response
       });
+
+      try {
+        await metadata.chatList[metadata.selectedChatIndex].generateMessageRequest(metadata: metadata);
+      } finally {
+        if (mounted) {  // Check if widget is still mounted
+          setState(() {
+            _isLoading = false;  // Set loading state to false after response
+          });
+        }
+      }
     }
   }
 
@@ -92,14 +104,30 @@ class _ChattingAreaState extends State<ChattingArea> {
       );
     }
 
-    return ListView.builder(
-      itemCount: messages.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: ChatMessageWidget(message: messages[index]),
-        );
-      },
+    return Stack(
+      children: [
+        ListView.builder(
+          itemCount: messages.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: ChatMessageWidget(message: messages[index]),
+            );
+          },
+        ),
+        if (_isLoading)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 50,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
