@@ -72,6 +72,7 @@ class _ChatPanelState extends State<ChatPanel> {
                           ? Icons.chevron_left
                           : Icons.chevron_right,
                     ),
+                    iconSize: 40,
                     tooltip: widget.isPanelVisible ? 'Hide Panel' : 'Show Panel',
                   ),
                   Expanded(
