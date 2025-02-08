@@ -67,12 +67,13 @@ class _ChattingAreaState extends State<ChattingArea> {
 
   Widget _buildMessagesList() {
     if (metadata.chatList.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No chats yet. Start a new conversation!',
           style: TextStyle(
             color: Colors.grey,
-            fontSize: 16,
+            fontSize: metadata.fontSize,
+            fontFamily: metadata.fontFamily,
           ),
         ),
       );
@@ -80,12 +81,13 @@ class _ChattingAreaState extends State<ChattingArea> {
 
     if (metadata.selectedChatIndex < 0 || 
         metadata.selectedChatIndex >= metadata.chatList.length) {
-      return const Center(
+      return Center(
         child: Text(
           'Please select a chat to start messaging',
           style: TextStyle(
             color: Colors.grey,
-            fontSize: 16,
+            fontSize: metadata.fontSize,
+            fontFamily: metadata.fontFamily,
           ),
         ),
       );
@@ -93,12 +95,13 @@ class _ChattingAreaState extends State<ChattingArea> {
 
     final messages = metadata.chatList[metadata.selectedChatIndex].messages;
     if (messages.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No messages yet. Start the conversation!',
           style: TextStyle(
             color: Colors.grey,
-            fontSize: 16,
+            fontSize: metadata.fontSize,
+            fontFamily: metadata.fontFamily,
           ),
         ),
       );
@@ -132,37 +135,62 @@ class _ChattingAreaState extends State<ChattingArea> {
   }
 
   Widget _buildInputArea() {
-    bool isInputEnabled = metadata.chatList.isNotEmpty && 
+    bool isInputEnabled = metadata.chatList.isNotEmpty &&
         metadata.selectedChatIndex >= 0 &&
         metadata.selectedChatIndex < metadata.chatList.length;
 
-    return Row(
-      children: [
-        Expanded(
-          child: TextField(
-            controller: _textController,
-            enabled: isInputEnabled,
-            decoration: InputDecoration(
-              hintText: isInputEnabled 
-                ? 'Type a message...' 
-                : 'Select a chat to start messaging',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Container(
+              constraints: const BoxConstraints(
+                maxHeight: 500, // TO DO: need to adjust that because there is an overflow
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12, 
-                vertical: 8,
+              child: SingleChildScrollView(
+                child: TextFormField(
+                  controller: _textController,
+                  enabled: isInputEnabled,
+                  maxLines: 30,
+                  minLines: 1,
+                  keyboardType: TextInputType.multiline,
+                  style: TextStyle(
+                    fontFamily: metadata.fontFamily,
+                    fontSize: metadata.fontSize,
+                  ),
+                  scrollPhysics: const BouncingScrollPhysics(), // Makes scrolling smoother
+                  decoration: InputDecoration(
+                    hintText: isInputEnabled
+                        ? 'Type a message...'
+                        : 'Select a chat to start messaging',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    isCollapsed: false,
+                  ),
+                  onFieldSubmitted: isInputEnabled ? (_) => _sendMessage() : null,
+                ),
               ),
             ),
-            onSubmitted: isInputEnabled ? (_) => _sendMessage() : null,
           ),
-        ),
-        const SizedBox(width: 8),
-        IconButton(
-          icon: const Icon(Icons.send),
-          onPressed: isInputEnabled ? _sendMessage : null,
-        ),
-      ],
+          const SizedBox(width: 8),
+          IconButton(
+            icon: const Icon(Icons.send),
+            onPressed: isInputEnabled ? _sendMessage : null,
+            constraints: const BoxConstraints(
+              minWidth: 60.0,
+              minHeight: 60.0,
+            ),
+            iconSize: 40,
+          ),
+        ],
+      ),
     );
   }
 

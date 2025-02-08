@@ -48,17 +48,19 @@ class PlainTextMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildMessageContainer(context, SelectableText(message.message));
+    final metadata = Singleton();
+    return _buildMessageContainer(context, SelectableText(message.message, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)));
   }
 
   Widget _buildMessageContainer(BuildContext context, Widget content) {
     final isUser = message.sender == "User";
+    final metadata = Singleton();
     
     return Container(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(18.0),
       margin: EdgeInsets.only(
-        left: isUser ? 150.0 : 16.0,
-        right: isUser ? 16.0 : 150.0,
+        left: isUser ? 150.0 : 18.0,
+        right: isUser ? 18.0 : 150.0,
       ),
       decoration: BoxDecoration(
         color: isUser 
@@ -79,15 +81,17 @@ class PlainTextMessageWidget extends StatelessWidget {
                 message.sender,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 12,
+                  fontSize: metadata.fontSize,
                   color: Theme.of(context).colorScheme.primary,
+                  fontFamily: metadata.fontFamily,
                 ),
               ),
               Text(
                 _formatTimestamp(message.timestamp),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontSize: 10,
+                  fontSize: metadata.fontSize,
+                  fontFamily: metadata.fontFamily,
                 ),
               ),
             ],
@@ -131,16 +135,19 @@ class MarkdownMessageWidget extends PlainTextMessageWidget {
 
   @override
   Widget build(BuildContext context) {
+    final metadata = Singleton();
+    
     return _buildMessageContainer(
       context,
       MarkdownBody(
         data: message.message,
         selectable: true,
         styleSheet: MarkdownStyleSheet(
-          p: const TextStyle(fontSize: 14),
+          p: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
           code: TextStyle(
             backgroundColor: Colors.grey[300],
-            fontFamily: 'Courier New',
+            fontFamily: metadata.fontFamily,
+            fontSize: metadata.fontSize,
           ),
         ),
       ),
@@ -157,11 +164,13 @@ class RawMessageWidget extends PlainTextMessageWidget {
 
   @override
   Widget build(BuildContext context) {
+    final metadata = Singleton();
+    
     return _buildMessageContainer(
       context,
       SelectableText(
         message.rawMessage.toString(),
-        style: const TextStyle(fontFamily: 'Courier New', fontSize: 14),
+        style: TextStyle(fontFamily: metadata.fontFamily, fontSize: metadata.fontSize),
       ),
     );
   }
@@ -180,6 +189,8 @@ class _FormatButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final metadata = Singleton();
+    
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
@@ -193,10 +204,11 @@ class _FormatButton extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 12,
+          fontSize: metadata.fontSize,
           color: isActive
             ? Theme.of(context).colorScheme.onPrimaryContainer
             : Theme.of(context).colorScheme.primary,
+          fontFamily: metadata.fontFamily,
         ),
       ),
     );

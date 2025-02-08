@@ -76,9 +76,10 @@ class _LeftPanelState extends State<LeftPanel> {
                 icon: const Icon(Icons.add),
                 tooltip: 'New Chat',
                 constraints: const BoxConstraints(
-                  minWidth: 48.0,
-                  minHeight: 48.0,
+                  minWidth: 60.0,
+                  minHeight: 60.0,
                 ),
+                iconSize: 40,
               ),
             ),
             // Main content area
@@ -104,9 +105,10 @@ class _LeftPanelState extends State<LeftPanel> {
                 icon: const Icon(Icons.settings),
                 tooltip: 'Settings',
                 constraints: const BoxConstraints(
-                  minWidth: 48.0,
-                  minHeight: 48.0,
+                  minWidth: 60.0,
+                  minHeight: 60.0,
                 ),
+                iconSize: 40,
               ),
             ),
           ],
@@ -120,12 +122,12 @@ class _LeftPanelState extends State<LeftPanel> {
     
     try {
       if (metadata.chatList.isEmpty) {
-        return const SizedBox(
+        return SizedBox(
           height: 100,
           child: Center(
             child: Text(
               'No chats available',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
             ),
           ),
         );
@@ -145,7 +147,7 @@ class _LeftPanelState extends State<LeftPanel> {
         child: Text(
           'Error loading chats: ${e.toString()}',
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 18,
             color: Theme.of(context).colorScheme.error,
           ),
         ),
@@ -154,6 +156,7 @@ class _LeftPanelState extends State<LeftPanel> {
   }
 
   Widget _buildChatListItem(BuildContext context, Chat chat) {
+    final metadata = Singleton();
     return StatefulBuilder(
       builder: (context, setState) => MouseRegion(
         onEnter: (_) => setState(() => chat.isHovered = true),
@@ -173,6 +176,8 @@ class _LeftPanelState extends State<LeftPanel> {
                 color: chat.isSelected || chat.isHovered
                     ? Theme.of(context).colorScheme.onSurface
                     : Theme.of(context).colorScheme.onSurface,
+                fontFamily: metadata.fontFamily,
+                fontSize: metadata.fontSize,
               ),
             ),
             onTap: () => _switchChat(chat),

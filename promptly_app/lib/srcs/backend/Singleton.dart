@@ -19,8 +19,10 @@ class Singleton {
   late List<openai.OpenAIModelModel> openai_models = [];
   late List<String> modelsName = [];
   int selectedChatIndex = 0;
-
   final List<VoidCallback> _chatSelectionListeners = [];
+
+  double fontSize = 20;
+  String fontFamily = 'roboto';
 
   // CONSTRUCTOR ------------------------------------------
 

@@ -10,24 +10,10 @@ import 'srcs/backend/ChatMessage.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  debugPrint("Bonjour !");
   var metadata = Singleton();
   await metadata.getAPIKeys();
   await metadata.getModels();
   await metadata.getModelsName();
-
-  print(metadata.modelsName);
-
-  /*
-  // Create a chat message
-  ChatMessage chat_message = ChatMessage(sender: "User", message: "why is the sky blue ?", timestamp: DateTime.now(), rawMessage: "Hello");
-  chat.addChatMessage(chat_message);
-
-  // Generate a message request
-  await chat.generateMessageRequest();
-  print(chat.messages[0].message);
-  print(chat.messages[1].message);
-  */
 
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     setWindowTitle('Promptly');

@@ -20,7 +20,7 @@ class _NewChatDialogState extends State<NewChatDialog> {
     final metadata = Singleton();
 
     return AlertDialog(
-      title: const Text('Create New Chat'),
+      title: Text('Create New Chat', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,10 +32,10 @@ class _NewChatDialogState extends State<NewChatDialog> {
               labelText: 'Model Type',
               border: OutlineInputBorder(),
             ),
-            items: const [
-              DropdownMenuItem(value: 'Anthropic', child: Text('Anthropic')),
-              DropdownMenuItem(value: 'Ollama', child: Text('Ollama')),
-              DropdownMenuItem(value: 'OpenAI', child: Text('OpenAI')),
+            items: [
+              DropdownMenuItem(value: 'Anthropic', child: Text('Anthropic', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily))),
+              DropdownMenuItem(value: 'Ollama', child: Text('Ollama', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily))),
+              DropdownMenuItem(value: 'OpenAI', child: Text('OpenAI', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily))),
             ],
             onChanged: (value) {
               setState(() {
@@ -65,7 +65,7 @@ class _NewChatDialogState extends State<NewChatDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text('Cancel', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
         ),
         FilledButton(
           onPressed: selectedModel != null
@@ -86,7 +86,7 @@ class _NewChatDialogState extends State<NewChatDialog> {
                   Navigator.of(context).pop();
                 }
               : null,
-          child: const Text('Create'),
+          child: Text('Create', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
         ),
       ],
     );
@@ -98,21 +98,21 @@ class _NewChatDialogState extends State<NewChatDialog> {
         return metadata.anthropic_models
             .map((model) => DropdownMenuItem(
                   value: model.value.toString(),
-                  child: Text(model.value.toString()),
+                  child: Text(model.value.toString(), style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
                 ))
             .toList();
       case 'Ollama':
         return metadata.ollama_models
             .map((model) => DropdownMenuItem(
                   value: model.model!,
-                  child: Text(model.model!),
+                  child: Text(model.model!, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
                 ))
             .toList();
       case 'OpenAI':
         return metadata.openai_models
             .map((model) => DropdownMenuItem(
                   value: model.id,
-                  child: Text(model.id),
+                  child: Text(model.id, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
                 ))
             .toList();
       default:

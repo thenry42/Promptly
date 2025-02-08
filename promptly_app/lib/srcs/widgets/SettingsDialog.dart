@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:promptly_app/srcs/backend/Singleton.dart';
 
 class SettingsDialog extends StatefulWidget {
   final VoidCallback onSettingsChanged;
@@ -23,11 +24,14 @@ class _SettingsDialogState extends State<SettingsDialog> {
 
   @override
   Widget build(BuildContext context) {
+
+    Singleton metadata = Singleton();
+
     return AlertDialog(
-      title: const Text("Settings"),
+      title: Text("Settings", style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
       content: TextButton(
           onPressed: _saveSettings,
-          child: const Text("Save"),
+          child: Text("Save", style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
         ),
     );
   }

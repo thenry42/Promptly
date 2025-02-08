@@ -78,7 +78,7 @@ class _ChatPanelState extends State<ChatPanel> {
                     child: Center(
                       child: Text(
                         _currentChatName,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: TextStyle(fontSize: metadata.fontSize, fontWeight: FontWeight.bold, fontFamily: metadata.fontFamily),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
