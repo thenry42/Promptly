@@ -40,10 +40,11 @@ class _LeftPanelState extends State<LeftPanel> {
   }
 
   void _showNewChatDialog() {
+    final metadata = Singleton();
     showDialog(
       context: context,
       builder: (BuildContext context) => NewChatDialog(
-        onChatCreated: () => setState(() {}),
+        onChatCreated: () => setState(() {_switchChat(metadata.chatList.last);}),
       ),
     );
   }
