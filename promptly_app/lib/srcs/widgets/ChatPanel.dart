@@ -88,9 +88,7 @@ class _ChatPanelState extends State<ChatPanel> {
                       ),
                     ),
                   ),
-                  const Flexible(
-                    child: SizedBox(width: 48)
-                  ),
+                  const SizedBox(width: 48),
                 ],
               ),
             ),
