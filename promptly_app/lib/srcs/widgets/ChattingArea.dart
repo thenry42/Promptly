@@ -78,7 +78,6 @@ class _ChattingAreaState extends State<ChattingArea> {
         ),
       );
     }
-
     if (metadata.selectedChatIndex < 0 || 
         metadata.selectedChatIndex >= metadata.chatList.length) {
       return Center(

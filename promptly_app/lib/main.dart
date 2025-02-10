@@ -16,6 +16,8 @@ void main() async {
   await metadata.getModels();
   await metadata.getModelsName();
 
+  print(metadata.openai_models);
+
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     setWindowTitle('Promptly');
     setWindowMinSize(const Size(720, 720)); // 720, 720 safe

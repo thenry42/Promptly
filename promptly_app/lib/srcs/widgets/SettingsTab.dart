@@ -17,9 +17,6 @@ class _SettingsTabState extends State<SettingsTab> {
 
   @override
   Widget build(BuildContext context) {
-
-    Singleton metadata = Singleton();
-
     return Container(
       margin: const EdgeInsets.all(12),
       decoration: BoxDecoration(
