@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:window_size/window_size.dart';
 import 'srcs/backend/Colors.dart';
-import 'srcs/widgets/MainWindow.dart';
+import 'srcs/widgets/TabView.dart'; // Updated import
 import 'srcs/backend/Singleton.dart';
 import 'srcs/backend/Chat.dart';
 import 'srcs/backend/ChatMessage.dart';
+import 'srcs/widgets/TabView.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: AppTheme.myColorScheme.surfaceContainer,
       ),
       home: const SafeArea(
-        child: MainWindow(),
+        child: TabView(), // Updated to use TabView
       ),
     );
   }

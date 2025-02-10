@@ -145,46 +145,54 @@ class _ChattingAreaState extends State<ChattingArea> {
         constraints: const BoxConstraints(
           maxHeight: 500,
         ),
-        child: SingleChildScrollView(
-          child: TextFormField(
-            controller: _textController,
-            enabled: isInputEnabled,
-            maxLines: 30,
-            minLines: 1,
-            keyboardType: TextInputType.multiline,
-            style: TextStyle(
-              fontFamily: metadata.fontFamily,
-              fontSize: metadata.fontSize,
-            ),
-            scrollPhysics: const BouncingScrollPhysics(),
-            decoration: InputDecoration(
-              hintText: isInputEnabled
-                  ? 'Type a message...'
-                  : 'Select a chat to start messaging',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
-              isCollapsed: false,
-              // Add the send button as a suffix icon
-              suffixIcon: Container(
-                margin: const EdgeInsets.only(right: 8),
-                child: IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: isInputEnabled ? _sendMessage : null,
-                  constraints: const BoxConstraints(
-                    minWidth: 60.0,
-                    minHeight: 60.0,
-                  ),
-                  iconSize: 40,
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24), // More rounded corners
+                border: Border.all(
+                  color: Colors.grey.withOpacity(0.3),
                 ),
               ),
+              child: TextFormField(
+                controller: _textController,
+                enabled: isInputEnabled,
+                maxLines: 30,
+                minLines: 1,
+                keyboardType: TextInputType.multiline,
+                style: TextStyle(
+                  fontFamily: metadata.fontFamily,
+                  fontSize: metadata.fontSize,
+                ),
+                scrollPhysics: const BouncingScrollPhysics(),
+                decoration: InputDecoration(
+                  hintText: isInputEnabled ? 'Type a message...' : 'Select a chat to start messaging',
+                  border: InputBorder.none, // Remove default border
+                  contentPadding: const EdgeInsets.only(
+                    left: 24,
+                    right: 64, // Make space for the send button
+                    top: 20,
+                    bottom: 20,
+                  ),
+                  isCollapsed: false,
+                ),
+                onFieldSubmitted: isInputEnabled ? (_) => _sendMessage : null,
+              ),
             ),
-            onFieldSubmitted: isInputEnabled ? (_) => _sendMessage : null,
-          ),
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: IconButton(
+                icon: const Icon(Icons.send),
+                onPressed: isInputEnabled ? _sendMessage : null,
+                constraints: const BoxConstraints(
+                  minWidth: 40.0,
+                  minHeight: 40.0,
+                ),
+                iconSize: 24,
+              ),
+            ),
+          ],
         ),
       ),
     );
