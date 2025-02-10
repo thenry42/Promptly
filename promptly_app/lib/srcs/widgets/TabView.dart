@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'MainWindow.dart';
 import '../backend/Singleton.dart';
+import 'package:promptly_app/srcs/widgets/SettingsTab.dart';
 
 class PaperTabIndicator extends Decoration {
   final Color color;
@@ -111,25 +112,18 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin {
         children: [
           Container(
             color: colorScheme.surfaceContainerHigh,
-            padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
             child: Stack(
               children: [
                 TabBar(
                   controller: _tabController,
                   tabs: _tabTitles.map((title) => Tab(
                     height: 80,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      child: Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: metadata.fontSize,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: metadata.fontFamily,
-                        ),
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: metadata.fontSize,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: metadata.fontFamily,
                       ),
                     ),
                   )).toList(),
@@ -140,7 +134,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin {
                     color: colorScheme.surfaceContainer,
                     borderRadius: 8,
                   ),
-                  dividerColor: Colors.transparent,
+                  dividerColor: colorScheme.surfaceContainer.withOpacity(0),
                   labelPadding: EdgeInsets.zero,
                   indicatorSize: TabBarIndicatorSize.tab,
                 ),
@@ -149,7 +143,7 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin {
           ),
           Expanded(
             child: Container(
-              color: colorScheme.surface,
+              color: colorScheme.surfaceContainer,
               child: TabBarView(
                 controller: _tabController,
                 children: List.generate(
@@ -160,25 +154,6 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// Tab content widgets remain the same
-class SettingsTab extends StatelessWidget {
-  const SettingsTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Theme.of(context).colorScheme.surfaceContainer,
-      ),
-      child: const Center(
-        child: Text('Settings Content'),
       ),
     );
   }

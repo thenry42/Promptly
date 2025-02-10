@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:promptly_app/srcs/backend/Singleton.dart';
 import 'package:promptly_app/srcs/backend/Chat.dart';
 import 'package:promptly_app/srcs/widgets/NewChatDialog.dart';
-import 'package:promptly_app/srcs/widgets/SettingsDialog.dart';
 
 class LeftPanel extends StatefulWidget {
   final Function(Chat) onChatSelected;
@@ -49,15 +48,6 @@ class _LeftPanelState extends State<LeftPanel> {
     );
   }
 
-  void _showSettingsDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => SettingsDialog(
-        onSettingsChanged: () => setState(() {}),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -96,20 +86,6 @@ class _LeftPanelState extends State<LeftPanel> {
                     ],
                   ),
                 ),
-              ),
-            ),
-            // Settings button at bottom center
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: IconButton(
-                onPressed: _showSettingsDialog,
-                icon: const Icon(Icons.settings),
-                tooltip: 'Settings',
-                constraints: const BoxConstraints(
-                  minWidth: 60.0,
-                  minHeight: 60.0,
-                ),
-                iconSize: 40,
               ),
             ),
           ],

@@ -50,13 +50,6 @@ class SelectableMarkdown extends StatelessWidget {
       data: message,
       selectable: true,
       styleSheet: MarkdownStyleSheet(
-        a: TextStyle(
-          color: Theme.of(context).colorScheme.primary,
-          fontSize: metadata.fontSize,
-          fontFamily: metadata.fontFamily,
-          height: 1.5,
-          fontWeight: FontWeight.normal,
-        ),
         code: TextStyle(
           color: Theme.of(context).colorScheme.onSurface,
           fontSize: metadata.fontSize,
