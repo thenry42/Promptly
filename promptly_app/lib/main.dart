@@ -18,7 +18,7 @@ void main() async {
 
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     setWindowTitle('Promptly');
-    setWindowMinSize(const Size(680, 370));
+    setWindowMinSize(const Size(720, 720)); // 720, 720 safe
     setWindowMaxSize(const Size(2560, 1440));
   }
 

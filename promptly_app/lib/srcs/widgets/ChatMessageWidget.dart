@@ -73,6 +73,7 @@ class PlainTextMessageWidget extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -85,6 +86,7 @@ class PlainTextMessageWidget extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                   fontFamily: metadata.fontFamily,
                 ),
+                overflow: TextOverflow.ellipsis,
               ),
               Text(
                 _formatTimestamp(message.timestamp),

@@ -79,19 +79,25 @@ class _ChatPanelState extends State<ChatPanel> {
                     child: Center(
                       child: Text(
                         _currentChatName,
-                        style: TextStyle(fontSize: metadata.fontSize, fontWeight: FontWeight.bold, fontFamily: metadata.fontFamily),
+                        style: TextStyle(
+                          fontSize: metadata.fontSize,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: metadata.fontFamily,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 48),
+                  const Flexible(
+                    child: SizedBox(width: 48)
+                  ),
                 ],
               ),
             ),
-            const Expanded(
-              child: Padding(
-                padding: EdgeInsets.all(12),
-                child: ChattingArea(),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                child: const ChattingArea(),
               ),
             ),
           ],
