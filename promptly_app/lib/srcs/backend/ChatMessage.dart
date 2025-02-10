@@ -7,9 +7,9 @@ class ChatMessage
   final DateTime timestamp;
   final Object rawMessage;
   
-  bool useMarkdown = false;
+  bool useMarkdown = true;
   bool useRaw = false;
-  bool usePlainText = true;
+  bool usePlainText = false;
 
   // CONSTRUCTOR ------------------------------------------
 

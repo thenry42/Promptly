@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:promptly_app/srcs/backend/ChatMessage.dart';
 import 'package:promptly_app/srcs/backend/Singleton.dart';
+import 'package:promptly_app/srcs/widgets/Markdown.dart';
 
 class ChatMessageWidget extends StatefulWidget {
   final ChatMessage message;
@@ -130,28 +131,17 @@ class PlainTextMessageWidget extends StatelessWidget {
 
 class MarkdownMessageWidget extends PlainTextMessageWidget {
   const MarkdownMessageWidget({
-    Key? key,
-    required ChatMessage message,
-    required Function(String) onFormatChange,
-  }) : super(key: key, message: message, onFormatChange: onFormatChange);
+    super.key,
+    required super.message,
+    required super.onFormatChange,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final metadata = Singleton();
-    
     return _buildMessageContainer(
       context,
-      MarkdownBody(
-        data: message.message,
-        selectable: true,
-        styleSheet: MarkdownStyleSheet(
-          p: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
-          code: TextStyle(
-            backgroundColor: Colors.grey[300],
-            fontFamily: metadata.fontFamily,
-            fontSize: metadata.fontSize,
-          ),
-        ),
+      MarkdownMessage(
+        message: message.message,
       ),
     );
   }
