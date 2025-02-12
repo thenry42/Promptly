@@ -116,7 +116,10 @@ class _LeftPanelState extends State<LeftPanel> {
         itemCount: metadata.chatList.length,
         itemBuilder: (context, index) {
           final chat = metadata.chatList[index];
-          return _buildChatListItem(context, chat);
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: _buildChatListItem(context, chat),
+          );
         },
       );
     } catch (e) {
@@ -142,8 +145,12 @@ class _LeftPanelState extends State<LeftPanel> {
           color: Colors.transparent,
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(
-              horizontal: 8.0,
-              vertical: 4.0,
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
+            leading: Image(
+              image: chat.icon,
+              fit: BoxFit.contain,
             ),
             title: Text(
               chat.modelName,
@@ -157,6 +164,45 @@ class _LeftPanelState extends State<LeftPanel> {
                 fontSize: metadata.fontSize,
               ),
             ),
+            trailing: PopupMenuButton<String>(
+              icon: Icon(
+                Icons.more_vert,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              onSelected: (value) {
+                switch (value) {
+                  case 'details':
+                    _showChatDetails(context, chat);
+                    break;
+                  case 'delete':
+                    _showDeleteConfirmation(context, chat);
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: 'details',
+                  child: Text(
+                    'Details',
+                    style: TextStyle(
+                      fontSize: metadata.fontSize,
+                      fontFamily: metadata.fontFamily,
+                    ),
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(
+                      fontSize: metadata.fontSize,
+                      fontFamily: metadata.fontFamily,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             onTap: () => _switchChat(chat),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -168,6 +214,120 @@ class _LeftPanelState extends State<LeftPanel> {
                     : Theme.of(context).colorScheme.surfaceContainer,
           ),
         ),
+      ),
+    );
+  }
+
+  void _showChatDetails(BuildContext context, Chat chat) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final metadata = Singleton();
+        return AlertDialog(
+          title: Text(
+            'Chat Details',
+            style: TextStyle(
+              fontSize: metadata.fontSize,
+              fontFamily: metadata.fontFamily,
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Model Name: ${chat.modelName}',
+                style: TextStyle(
+                  fontSize: metadata.fontSize,
+                  fontFamily: metadata.fontFamily,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Model Type: ${chat.type}',
+                style: TextStyle(
+                  fontSize: metadata.fontSize,
+                  fontFamily: metadata.fontFamily,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Messages: ${chat.messages.length}',
+                style: TextStyle(
+                  fontSize: metadata.fontSize,
+                  fontFamily: metadata.fontFamily,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Close',
+                style: TextStyle(
+                  fontSize: metadata.fontSize,
+                  fontFamily: metadata.fontFamily,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, Chat chat) {
+    final metadata = Singleton();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(
+          'Delete Chat',
+          style: TextStyle(
+            fontSize: metadata.fontSize,
+            fontFamily: metadata.fontFamily,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to delete this chat?',
+          style: TextStyle(
+            fontSize: metadata.fontSize,
+            fontFamily: metadata.fontFamily,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                fontSize: metadata.fontSize,
+                fontFamily: metadata.fontFamily,
+              ),
+            ),
+          ),
+          FilledButton(
+            onPressed: () {
+              setState(() {
+                metadata.chatList.removeWhere((c) => c.id == chat.id);
+                if (metadata.chatList.isNotEmpty) {
+                  _switchChat(metadata.chatList.first);
+                } else {
+                  metadata.setSelectedChatIndex(-1);
+                }
+              });
+              Navigator.of(context).pop();
+            },
+            child: Text(
+              'Delete',
+              style: TextStyle(
+                fontSize: metadata.fontSize,
+                fontFamily: metadata.fontFamily,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

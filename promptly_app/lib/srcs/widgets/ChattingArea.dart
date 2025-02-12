@@ -160,69 +160,81 @@ class _ChattingAreaState extends State<ChattingArea> {
         metadata.selectedChatIndex < metadata.chatList.length;
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24), // More rounded corners
-              border: Border.all(
-                color: Colors.grey.withOpacity(0.3),
-              ),
-            ),
-            child: TextFormField(
-              controller: _textController,
-              enabled: isInputEnabled,
-              maxLines: 30,
-              minLines: 1,
-              keyboardType: TextInputType.multiline,
-              style: TextStyle(
-                fontFamily: metadata.fontFamily,
-                fontSize: metadata.fontSize,
-              ),
-              scrollPhysics: const BouncingScrollPhysics(),
-              decoration: InputDecoration(
-                hintText: isInputEnabled ? 'Type a message...' : 'Select a chat to start messaging',
-                border: InputBorder.none, // Remove default border
-                contentPadding: const EdgeInsets.only(
-                  left: 24,
-                  right: 64, // Make space for the send button
-                  top: 20,
-                  bottom: 20,
+      padding: const EdgeInsets.all(8.0), // Reduced padding
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            children: [
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: constraints.maxWidth, // Ensure container respects parent width
                 ),
-                isCollapsed: false,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: Colors.grey.withOpacity(0.3),
+                  ),
+                ),
+                child: TextFormField(
+                  controller: _textController,
+                  enabled: isInputEnabled,
+                  maxLines: 30,
+                  minLines: 1,
+                  keyboardType: TextInputType.multiline,
+                  style: TextStyle(
+                    fontFamily: metadata.fontFamily,
+                    fontSize: metadata.fontSize,
+                  ),
+                  scrollPhysics: const BouncingScrollPhysics(),
+                  decoration: InputDecoration(
+                    hintText: isInputEnabled ? 'Type a message...' : 'Select a chat to start messaging',
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.only(
+                      left: 16, // Reduced padding
+                      right: 48, // Reduced padding, but keep space for send button
+                      top: 12, // Reduced padding
+                      bottom: 12, // Reduced padding
+                    ),
+                    isCollapsed: false,
+                  ),
+                  onFieldSubmitted: isInputEnabled ? (_) => _sendMessage : null,
+                ),
               ),
-              onFieldSubmitted: isInputEnabled ? (_) => _sendMessage : null,
-            ),
-          ),
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: IconButton(
-              icon: const Icon(Icons.send),
-              onPressed: isInputEnabled ? _sendMessage : null,
-              constraints: const BoxConstraints(
-                minWidth: 40.0,
-                minHeight: 40.0,
+              Positioned(
+                bottom: 8, // Reduced positioning
+                right: 8, // Reduced positioning
+                child: IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: isInputEnabled ? _sendMessage : null,
+                  constraints: const BoxConstraints(
+                    minWidth: 32.0, // Slightly smaller button
+                    minHeight: 32.0, // Slightly smaller button
+                  ),
+                  iconSize: 20, // Slightly smaller icon
+                ),
               ),
-              iconSize: 24,
-            ),
-          ),
-        ],
+            ],
+          );
+        }
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: _buildMessagesList(),
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: _buildMessagesList(),
           ),
-        _buildInputArea(),
-      ],
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: _buildInputArea(),
+          ),
+        ],
+      ),
     );
   }
 }

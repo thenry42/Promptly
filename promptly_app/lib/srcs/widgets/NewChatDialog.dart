@@ -27,6 +27,7 @@ class _NewChatDialogState extends State<NewChatDialog> {
         children: [
           // Model Type Selection
           DropdownButtonFormField<String>(
+            isExpanded: true,
             style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
             value: selectedModelType,
             decoration: const InputDecoration(
@@ -49,6 +50,7 @@ class _NewChatDialogState extends State<NewChatDialog> {
           // Model Selection
           if (selectedModelType != null)
             DropdownButtonFormField<String>(
+              isExpanded: true,
               style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
               value: selectedModel,
               decoration: const InputDecoration(
