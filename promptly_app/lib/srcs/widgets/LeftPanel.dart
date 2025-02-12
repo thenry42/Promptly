@@ -148,10 +148,12 @@ class _LeftPanelState extends State<LeftPanel> {
               horizontal: 16.0,
               vertical: 8.0,
             ),
+            /*
             leading: Image(
               image: chat.icon,
               fit: BoxFit.contain,
             ),
+            */
             title: Text(
               chat.modelName,
               maxLines: 1,
@@ -164,6 +166,7 @@ class _LeftPanelState extends State<LeftPanel> {
                 fontSize: metadata.fontSize,
               ),
             ),
+            /*
             trailing: PopupMenuButton<String>(
               icon: Icon(
                 Icons.more_vert,
@@ -203,6 +206,7 @@ class _LeftPanelState extends State<LeftPanel> {
                 ),
               ],
             ),
+            */
             onTap: () => _switchChat(chat),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
