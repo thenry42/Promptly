@@ -18,7 +18,16 @@ class ChatMessage
     required this.message,
     required this.timestamp,
     required this.rawMessage
-  });
+  }) {
+    // Set default formatting based on sender
+    if (sender.toLowerCase() == 'user') {
+      useMarkdown = false;
+      usePlainText = true;
+    } else if (sender.toLowerCase() == 'assistant') {
+      useMarkdown = true;
+      usePlainText = false;
+    }
+  }
 
   // METHODS ----------------------------------------------
 

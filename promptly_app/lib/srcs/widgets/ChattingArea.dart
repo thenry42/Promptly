@@ -15,6 +15,7 @@ class _ChattingAreaState extends State<ChattingArea> {
   final metadata = Singleton();
   late String message;
   final TextEditingController _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController(); // Add this line
   bool _isLoading = false;
 
   @override
@@ -29,6 +30,7 @@ class _ChattingAreaState extends State<ChattingArea> {
     // Remove listener when widget is disposed
     metadata.removeChatSelectionListener(_onChatSelected);
     _textController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -37,6 +39,24 @@ class _ChattingAreaState extends State<ChattingArea> {
     setState(() {
       // Force widget rebuild when chat is selected
     });
+    // Add this line to scroll to bottom after chat selection
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottomInstant());
+  }
+
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void _scrollToBottomInstant() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    }
   }
 
   void _sendMessage() async {
@@ -52,6 +72,8 @@ class _ChattingAreaState extends State<ChattingArea> {
         _textController.clear();
         _isLoading = true;  // Set loading state to true before generating response
       });
+    
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
 
       try {
         await metadata.chatList[metadata.selectedChatIndex].generateMessageRequest(metadata: metadata);
@@ -60,6 +82,7 @@ class _ChattingAreaState extends State<ChattingArea> {
           setState(() {
             _isLoading = false;  // Set loading state to false after response
           });
+          WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
         }
       }
     }
@@ -109,26 +132,24 @@ class _ChattingAreaState extends State<ChattingArea> {
     return Stack(
       children: [
         ListView.builder(
-          itemCount: messages.length,
+          controller: _scrollController,
+          itemCount: messages.length + (_isLoading ? 1 : 0), // Add 1 to itemCount if loading
           itemBuilder: (context, index) {
+            if (index == messages.length && _isLoading) {
+              // Return loading indicator as the last item
+              return const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: ChatMessageWidget(message: messages[index]),
             );
           },
         ),
-        if (_isLoading)
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 50,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          ),
       ],
     );
   }
