@@ -190,44 +190,46 @@ class _LeftPanelState extends State<LeftPanel> {
                   // Menu
                   Flexible(
                     flex: 1,
-                    child: PopupMenuButton<String>(
-                      icon: Icon(
-                        Icons.more_vert,
-                        color: Theme.of(context).colorScheme.onSurface,
+                    child: Center(
+                      child: PopupMenuButton<String>(
+                        icon: Icon(
+                          Icons.more_vert,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        onSelected: (value) {
+                          switch (value) {
+                            case 'details':
+                              _showChatDetails(context, chat);
+                              break;
+                            case 'delete':
+                              _showDeleteConfirmation(context, chat);
+                              break;
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                          PopupMenuItem<String>(
+                            value: 'details',
+                            child: Text(
+                              'Details',
+                              style: TextStyle(
+                                fontSize: metadata.fontSize,
+                                fontFamily: metadata.fontFamily,
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'delete',
+                            child: Text(
+                              'Delete',
+                              style: TextStyle(
+                                fontSize: metadata.fontSize,
+                                fontFamily: metadata.fontFamily,
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      onSelected: (value) {
-                        switch (value) {
-                          case 'details':
-                            _showChatDetails(context, chat);
-                            break;
-                          case 'delete':
-                            _showDeleteConfirmation(context, chat);
-                            break;
-                        }
-                      },
-                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                        PopupMenuItem<String>(
-                          value: 'details',
-                          child: Text(
-                            'Details',
-                            style: TextStyle(
-                              fontSize: metadata.fontSize,
-                              fontFamily: metadata.fontFamily,
-                            ),
-                          ),
-                        ),
-                        PopupMenuItem<String>(
-                          value: 'delete',
-                          child: Text(
-                            'Delete',
-                            style: TextStyle(
-                              fontSize: metadata.fontSize,
-                              fontFamily: metadata.fontFamily,
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ],
