@@ -143,79 +143,96 @@ class _LeftPanelState extends State<LeftPanel> {
         onExit: (_) => setState(() => chat.isHovered = false),
         child: Material(
           color: Colors.transparent,
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
-            /*
-            leading: Image(
-              image: chat.icon,
-              fit: BoxFit.contain,
-            ),
-            */
-            title: Text(
-              chat.modelName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: chat.isSelected || chat.isHovered
-                    ? Theme.of(context).colorScheme.onSurface
-                    : Theme.of(context).colorScheme.onSurface,
-                fontFamily: metadata.fontFamily,
-                fontSize: metadata.fontSize,
-              ),
-            ),
-            /*
-            trailing: PopupMenuButton<String>(
-              icon: Icon(
-                Icons.more_vert,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-              onSelected: (value) {
-                switch (value) {
-                  case 'details':
-                    _showChatDetails(context, chat);
-                    break;
-                  case 'delete':
-                    _showDeleteConfirmation(context, chat);
-                    break;
-                }
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                PopupMenuItem<String>(
-                  value: 'details',
-                  child: Text(
-                    'Details',
-                    style: TextStyle(
-                      fontSize: metadata.fontSize,
-                      fontFamily: metadata.fontFamily,
-                    ),
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'delete',
-                  child: Text(
-                    'Delete',
-                    style: TextStyle(
-                      fontSize: metadata.fontSize,
-                      fontFamily: metadata.fontFamily,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            */
+          child: InkWell(
             onTap: () => _switchChat(chat),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 16.0,
+              ),
+              decoration: BoxDecoration(
+                color: chat.isSelected
+                    ? Theme.of(context).colorScheme.surfaceContainerHighest
+                    : chat.isHovered
+                        ? Theme.of(context).colorScheme.surfaceContainerHigh
+                        : Theme.of(context).colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Icon
+                  Flexible(
+                    flex: 1,
+                    child: SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: Image(
+                        image: chat.icon,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                  // Title
+                  Expanded(
+                    flex: 4,
+                    child: Text(
+                      chat.modelName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontFamily: metadata.fontFamily,
+                        fontSize: metadata.fontSize,
+                      ),
+                    ),
+                  ),
+                  // Menu
+                  Flexible(
+                    flex: 1,
+                    child: PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_vert,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'details':
+                            _showChatDetails(context, chat);
+                            break;
+                          case 'delete':
+                            _showDeleteConfirmation(context, chat);
+                            break;
+                        }
+                      },
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                        PopupMenuItem<String>(
+                          value: 'details',
+                          child: Text(
+                            'Details',
+                            style: TextStyle(
+                              fontSize: metadata.fontSize,
+                              fontFamily: metadata.fontFamily,
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Text(
+                            'Delete',
+                            style: TextStyle(
+                              fontSize: metadata.fontSize,
+                              fontFamily: metadata.fontFamily,
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-            tileColor: chat.isSelected
-                ? Theme.of(context).colorScheme.surfaceContainerHighest
-                : chat.isHovered
-                    ? Theme.of(context).colorScheme.surfaceContainerHigh
-                    : Theme.of(context).colorScheme.surfaceContainer,
           ),
         ),
       ),
