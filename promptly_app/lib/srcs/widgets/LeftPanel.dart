@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:promptly_app/srcs/backend/Singleton.dart';
 import 'package:promptly_app/srcs/backend/Chat.dart';
 import 'package:promptly_app/srcs/widgets/NewChatDialog.dart';
+import 'package:flutter/services.dart';
+import 'dart:convert';
 
 class LeftPanel extends StatefulWidget {
   final Function(Chat) onChatSelected;
@@ -35,7 +37,6 @@ class _LeftPanelState extends State<LeftPanel> {
     });
     
     widget.onChatSelected(chat); // Notify parent about the selection
-    debugPrint("Switched to chat: ${chat.modelName} at index ${metadata.selectedChatIndex}");
   }
 
   void _showNewChatDialog() {
@@ -143,7 +144,9 @@ class _LeftPanelState extends State<LeftPanel> {
         onExit: (_) => setState(() => chat.isHovered = false),
         child: Material(
           color: Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
           child: InkWell(
+            borderRadius: BorderRadius.circular(8),
             onTap: () => _switchChat(chat),
             child: Container(
               padding: const EdgeInsets.symmetric(
@@ -154,7 +157,7 @@ class _LeftPanelState extends State<LeftPanel> {
                 color: chat.isSelected
                     ? Theme.of(context).colorScheme.surfaceContainerHighest
                     : chat.isHovered
-                        ? Theme.of(context).colorScheme.surfaceContainerHigh
+                        ? Theme.of(context).colorScheme.surfaceContainerHigh.withOpacity(0.8)
                         : Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -172,6 +175,11 @@ class _LeftPanelState extends State<LeftPanel> {
                         fit: BoxFit.contain,
                       ),
                     ),
+                  ),
+                  // Spacing
+                  const Flexible(
+                    flex: 1,
+                    child: SizedBox(width: 16),
                   ),
                   // Title
                   Expanded(
@@ -241,11 +249,25 @@ class _LeftPanelState extends State<LeftPanel> {
     );
   }
 
-  void _showChatDetails(BuildContext context, Chat chat) {
+  void _showChatDetails(BuildContext context, Chat chat) async {
+    // Load and decode the JSON file
+    final String jsonString = await rootBundle.loadString('assets/json/models.json');
+    final Map<String, dynamic> jsonData = json.decode(jsonString);
+    
+    // Find the model details from JSON
+    Map<String, dynamic>? modelDetails;
+    if (chat.type == 'anthropic') {
+      modelDetails = (jsonData['anthropic_models'] as List)
+          .firstWhere((model) => model['id'] == chat.modelName, orElse: () => null);
+    } else if (chat.type == 'openai') {
+      modelDetails = (jsonData['openai_models'] as List)
+          .firstWhere((model) => model['id'] == chat.modelName, orElse: () => null);
+    }
+
+    final metadata = Singleton();
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        final metadata = Singleton();
         return AlertDialog(
           title: Text(
             'Chat Details',
@@ -254,34 +276,92 @@ class _LeftPanelState extends State<LeftPanel> {
               fontFamily: metadata.fontFamily,
             ),
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Model Name: ${chat.modelName}',
-                style: TextStyle(
-                  fontSize: metadata.fontSize,
-                  fontFamily: metadata.fontFamily,
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Model Name: ${modelDetails?['name'] ?? chat.modelName}',
+                  style: TextStyle(
+                    fontSize: metadata.fontSize,
+                    fontFamily: metadata.fontFamily,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Model Type: ${chat.type}',
-                style: TextStyle(
-                  fontSize: metadata.fontSize,
-                  fontFamily: metadata.fontFamily,
+                const SizedBox(height: 8),
+                Text(
+                  'Description: ${modelDetails?['description'] ?? 'No description available'}',
+                  style: TextStyle(
+                    fontSize: metadata.fontSize,
+                    fontFamily: metadata.fontFamily,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Messages: ${chat.messages.length}',
-                style: TextStyle(
-                  fontSize: metadata.fontSize,
-                  fontFamily: metadata.fontFamily,
+                const SizedBox(height: 8),
+                Text(
+                  'Model Type: ${chat.type}',
+                  style: TextStyle(
+                    fontSize: metadata.fontSize,
+                    fontFamily: metadata.fontFamily,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text(
+                  'Vision Capable: ${modelDetails?['vision'] ?? 'Unknown'}',
+                  style: TextStyle(
+                    fontSize: metadata.fontSize,
+                    fontFamily: metadata.fontFamily,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Audio Input: ${modelDetails?['audio_input'] ?? 'Unknown'}',
+                  style: TextStyle(
+                    fontSize: metadata.fontSize,
+                    fontFamily: metadata.fontFamily,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Input Price: ${modelDetails?['price_per_million_tokens']['input']} ${modelDetails?['price_per_million_tokens']['currency']}/M tokens',
+                  style: TextStyle(
+                    fontSize: metadata.fontSize,
+                    fontFamily: metadata.fontFamily,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Output Price: ${modelDetails?['price_per_million_tokens']['output']} ${modelDetails?['price_per_million_tokens']['currency']}/M tokens',
+                  style: TextStyle(
+                    fontSize: metadata.fontSize,
+                    fontFamily: metadata.fontFamily,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Max Output Tokens: ${modelDetails?['max_output_tokens'] ?? 'Unknown'}',
+                  style: TextStyle(
+                    fontSize: metadata.fontSize,
+                    fontFamily: metadata.fontFamily,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Context Window: ${modelDetails?['context_window'] ?? 'Unknown'}',
+                  style: TextStyle(
+                    fontSize: metadata.fontSize,
+                    fontFamily: metadata.fontFamily,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Messages: ${chat.messages.length}',
+                  style: TextStyle(
+                    fontSize: metadata.fontSize,
+                    fontFamily: metadata.fontFamily,
+                  ),
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(

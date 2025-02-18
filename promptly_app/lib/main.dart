@@ -12,11 +12,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   var metadata = Singleton();
-  await metadata.getAPIKeys();
-  await metadata.getModels();
-  await metadata.getModelsName();
-
-  print(metadata.openai_models);
 
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     setWindowTitle('Promptly');

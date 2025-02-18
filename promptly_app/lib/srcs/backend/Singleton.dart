@@ -1,18 +1,19 @@
-import 'dart:ffi';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'Chat.dart';
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropicsdk;
 import 'package:ollama_dart/ollama_dart.dart' as ollama;
 import 'package:dart_openai/dart_openai.dart' as openai;
+import 'package:flutter/services.dart';
+import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Singleton {
 
   // ATTRIBUTES -------------------------------------------
 
-  String? anthropicKey;
-  String? openAIKey;
+  late String? anthropicKey = null;
+  late String? openAIKey = null;
   List<Chat> chatList = [];
   late List<anthropicsdk.Model> anthropic_models = [];
   late List<ollama.Model> ollama_models = [];
@@ -24,24 +25,28 @@ class Singleton {
   double fontSize = 20;
   String fontFamily = 'roboto';
 
+  bool isInitialized = false;
+
+  final _storage = const FlutterSecureStorage();
+
   // CONSTRUCTOR ------------------------------------------
 
   static final Singleton _instance = Singleton._internal();
-  factory Singleton() {
-    return _instance;
-  } 
+  factory Singleton() => _instance;
   Singleton._internal();
 
   // METHODS ----------------------------------------------
 
   Future<void> getAnthropicModels() async {
-    // For the time being, the list of Anthropic model is hard-coded
-    // TO DO: Fetch the list of models from the json file
-    List<anthropicsdk.Model> models = const [
-      anthropicsdk.Model.modelId('claude-3-5-sonnet-latest'),
-      anthropicsdk.Model.modelId('claude-3-5-haiku-latest'),
-      anthropicsdk.Model.modelId('claude-3-opus-latest'),
-    ];
+    // Read and decode the JSON file
+    final String jsonString = await rootBundle.loadString('assets/json/models.json');
+    final Map<String, dynamic> jsonData = json.decode(jsonString);
+    
+    // Extract Anthropic models from the JSON and convert to List<anthropicsdk.Model>
+    List<anthropicsdk.Model> models = (jsonData['anthropic_models'] as List)
+        .map((model) => anthropicsdk.Model.modelId(model['id'] as String))
+        .toList();
+    
     anthropic_models = models;
   }
 
@@ -61,9 +66,22 @@ class Singleton {
 
   Future<void> getOpenAIModels() async {
     try {
+      // Read and decode the JSON file
+      final String jsonString = await rootBundle.loadString('assets/json/models.json');
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
       
+      // Get the list of model IDs from the JSON file
+      final List<String> allowedModelIds = (jsonData['openai_models'] as List)
+          .map((model) => model['id'] as String)
+          .toList();
+
       openai.OpenAI.apiKey = openAIKey!;
-      openai_models = await openai.OpenAI.instance.model.list();
+      final allModels = await openai.OpenAI.instance.model.list();
+      
+      // Filter models to only include those in our JSON file
+      openai_models = allModels
+          .where((model) => allowedModelIds.contains(model.id))
+          .toList();
 
     } catch (e) {
       if (kDebugMode) {
@@ -90,14 +108,6 @@ class Singleton {
     }
   }
 
-  Future<void> getAPIKeys() async {
-    if (openAIKey == null || anthropicKey == null) {
-      await dotenv.load();
-      openAIKey = dotenv.env['OPEN_AI_API_KEY'];
-      anthropicKey = dotenv.env['ANTHROPIC_API_KEY'];
-    }
-  }
-
   void addChat(Chat chat) {
     chatList.add(chat);
   }
@@ -119,6 +129,22 @@ class Singleton {
     // Notify all listeners when chat selection changes
     for (final listener in _chatSelectionListeners) {
       listener();
+    }
+  }
+
+  Future<void> saveAPIKeys() async {
+    if (anthropicKey == null || openAIKey == null) return;
+    
+    await _storage.write(key: 'anthropic_key', value: anthropicKey!);
+    await _storage.write(key: 'openai_key', value: openAIKey!);
+  }
+
+  Future<void> loadAPIKeys() async {
+    anthropicKey = await _storage.read(key: 'anthropic_key');
+    openAIKey = await _storage.read(key: 'openai_key');
+    
+    if (anthropicKey == null || openAIKey == null) {
+      throw Exception('No API keys found');
     }
   }
 }
