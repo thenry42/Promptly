@@ -165,8 +165,8 @@ class _SettingsTabState extends State<SettingsTab> {
           _isUnlocked = false;
           _openAIController.clear();
           _claudeController.clear();
-          metadata.openAIKey = null;
-          metadata.anthropicKey = null;
+          metadata.openAIKey = '';
+          metadata.anthropicKey = '';
           metadata.isInitialized = false;
         });
 

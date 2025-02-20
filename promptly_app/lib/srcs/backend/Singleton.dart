@@ -12,8 +12,8 @@ class Singleton {
 
   // ATTRIBUTES -------------------------------------------
 
-  late String? anthropicKey = null;
-  late String? openAIKey = null;
+  String anthropicKey = '';
+  String openAIKey = '';
   List<Chat> chatList = [];
   late List<anthropicsdk.Model> anthropic_models = [];
   late List<ollama.Model> ollama_models = [];
@@ -93,7 +93,7 @@ class Singleton {
           .map((model) => model['id'] as String)
           .toList();
 
-      openai.OpenAI.apiKey = openAIKey!;
+      openai.OpenAI.apiKey = openAIKey;
       final allModels = await openai.OpenAI.instance.model.list();
       
       // Filter models to only include those in our JSON file
@@ -195,12 +195,8 @@ class Singleton {
   }
 
   Future<void> loadAPIKeys() async {
-    anthropicKey = await _storage.read(key: 'anthropic_key');
-    openAIKey = await _storage.read(key: 'openai_key');
-    
-    if (anthropicKey == null || openAIKey == null) {
-      throw Exception('No API keys found');
-    }
+    anthropicKey = (await _storage.read(key: 'anthropic_key'))!;
+    openAIKey = (await _storage.read(key: 'openai_key'))!;
   }
 
   Future<void> saveChats() async {
