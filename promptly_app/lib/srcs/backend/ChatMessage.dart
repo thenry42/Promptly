@@ -31,4 +31,27 @@ class ChatMessage
 
   // METHODS ----------------------------------------------
 
+  Map<String, dynamic> toJson() {
+    return {
+      'sender': sender,
+      'message': message,
+      'timestamp': timestamp.toIso8601String(),
+      'rawMessage': rawMessage.toString(),
+      'useMarkdown': useMarkdown,
+      'useRaw': useRaw,
+      'usePlainText': usePlainText,
+    };
+  }
+
+  factory ChatMessage.fromJson(Map<String, dynamic> json) {
+    return ChatMessage(
+      sender: json['sender'],
+      message: json['message'],
+      timestamp: DateTime.parse(json['timestamp']),
+      rawMessage: json['rawMessage'],
+    )
+    ..useMarkdown = json['useMarkdown'] ?? true
+    ..useRaw = json['useRaw'] ?? false
+    ..usePlainText = json['usePlainText'] ?? false;
+  }
 }

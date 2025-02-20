@@ -51,6 +51,8 @@ class Chat
 
   void addChatMessage(ChatMessage chat_message) {
     messages.add(chat_message);
+    // Save after each new message
+    Singleton().saveChats();
   }
 
   void removeChatMessage(ChatMessage chat_message) {
@@ -58,30 +60,65 @@ class Chat
   }
 
   Future<void> generateMessageRequest({required Singleton metadata}) async {
-    
     final index = metadata.selectedChatIndex;
     final messageList = metadata.chatList[metadata.selectedChatIndex].messages;
     final maxTokens = metadata.chatList[metadata.selectedChatIndex].max_output_tokens;
 
-    if (type == "Anthropic") {
-      ChatMessage response = await claude.generateAnthropicMessageRequest(messageList: messageList, maxTokens: maxTokens!);
-      metadata.chatList[index].addChatMessage(response);
-    } else if (type == "Ollama") {
-      ChatMessage response = await vicugna.generateOllamaMessageRequest(messageList: messageList, maxTokens: maxTokens!);
-      metadata.chatList[index].addChatMessage(response);
-    } else if (type == "OpenAI") {
-      ChatMessage response = await gepeto.generateOpenAIMessageRequest(messageList: messageList, maxTokens: maxTokens!);
-      metadata.chatList[index].addChatMessage(response);
-    } else {
-      debugPrint("Error: Unknown model [1]");
+    ChatMessage? response;
+    try {
+      if (type == "Anthropic") {
+        response = await claude.generateAnthropicMessageRequest(messageList: messageList, maxTokens: maxTokens!);
+      } else if (type == "Ollama") {
+        response = await vicugna.generateOllamaMessageRequest(messageList: messageList, maxTokens: maxTokens!);
+      } else if (type == "OpenAI") {
+        response = await gepeto.generateOpenAIMessageRequest(messageList: messageList, maxTokens: maxTokens!);
+      } else {
+        debugPrint("Error: Unknown model [1]");
+        return;
+      }
+
+      if (response != null) {
+        metadata.chatList[index].addChatMessage(response);
+        // Save after AI response
+        metadata.saveChats();
+      }
+    } catch (e) {
+      debugPrint("Error generating message: $e");
     }
   }
 
-  // TO DO:
-  // SendMessage()
-  // AutoScrollToBottom()
-  // generateMessageRequest()
-  // generateStreamRequest()
-  // fetchModelDetails()
-  // getModelIcon()
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'modelName': modelName,
+      'type': type,
+      'isSelected': isSelected,
+      'isSendingRequest': isSendingRequest,
+      'messages': messages.map((msg) => msg.toJson()).toList(),
+      'max_output_tokens': max_output_tokens,
+      'support_tool_calling': support_tool_calling,
+    };
+  }
+
+  factory Chat.fromJson(Map<String, dynamic> json) {
+    Chat chat = Chat(
+      id: json['id'],
+      modelName: json['modelName'],
+      type: json['type'],
+      isSelected: json['isSelected'],
+    );
+    
+    chat.isSendingRequest = json['isSendingRequest'] ?? false;
+    chat.max_output_tokens = json['max_output_tokens'];
+    chat.support_tool_calling = json['support_tool_calling'];
+    
+    // Load messages
+    if (json['messages'] != null) {
+      chat.messages = (json['messages'] as List)
+          .map((msgJson) => ChatMessage.fromJson(msgJson))
+          .toList();
+    }
+    
+    return chat;
+  }
 }

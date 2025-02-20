@@ -4,6 +4,7 @@ import 'package:promptly_app/srcs/backend/Chat.dart';
 import 'package:promptly_app/srcs/widgets/NewChatDialog.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 class LeftPanel extends StatefulWidget {
   final Function(Chat) onChatSelected;
@@ -411,16 +412,26 @@ class _LeftPanelState extends State<LeftPanel> {
             ),
           ),
           FilledButton(
-            onPressed: () {
-              setState(() {
-                metadata.chatList.removeWhere((c) => c.id == chat.id);
-                if (metadata.chatList.isNotEmpty) {
-                  _switchChat(metadata.chatList.first);
-                } else {
-                  metadata.setSelectedChatIndex(-1);
+            onPressed: () async {
+              try {
+                // Find the index of the chat to remove
+                final chatIndex = metadata.chatList.indexWhere((c) => c.id == chat.id);
+                if (chatIndex != -1) {
+                  await metadata.removeChat(chatIndex);
+                  setState(() {}); // Refresh the UI
                 }
-              });
-              Navigator.of(context).pop();
+                if (!context.mounted) return;
+                Navigator.of(context).pop();
+              } catch (e) {
+                if (kDebugMode) {
+                  print('Error deleting chat: $e');
+                }
+                // Show error to user if deletion fails
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to delete chat: $e')),
+                );
+              }
             },
             child: Text(
               'Delete',

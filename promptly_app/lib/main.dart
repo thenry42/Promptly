@@ -12,6 +12,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   var metadata = Singleton();
+  
+  await metadata.getModels();
 
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     setWindowTitle('Promptly');

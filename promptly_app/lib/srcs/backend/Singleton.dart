@@ -33,7 +33,25 @@ class Singleton {
 
   static final Singleton _instance = Singleton._internal();
   factory Singleton() => _instance;
-  Singleton._internal();
+  Singleton._internal() {
+    // Initialize API keys and chats asynchronously
+    Future.wait([
+      loadAPIKeys(),
+      loadChats(),
+    ]).then((_) {
+      isInitialized = true;
+      if (kDebugMode) {
+        print('Singleton initialized successfully');
+        print('Loaded ${chatList.length} chats');
+      }
+    }).catchError((error) {
+      if (kDebugMode) {
+        print('Error during initialization: $error');
+      }
+      isInitialized = false;
+      chatList = []; // Ensure we have an empty list on error
+    });
+  }
 
   // METHODS ----------------------------------------------
 
@@ -112,8 +130,45 @@ class Singleton {
     chatList.add(chat);
   }
 
-  void removeChat(Chat chat) {
-    chatList.remove(chat);
+  Future<void> removeChat(int index) async {
+    if (index >= 0 && index < chatList.length) {
+      try {
+        // Remove from memory
+        chatList.removeAt(index);
+        
+        // Update selected index
+        if (index <= selectedChatIndex) {
+          if (selectedChatIndex >= chatList.length) {
+            selectedChatIndex = chatList.isEmpty ? 0 : chatList.length - 1;
+          } else {
+            selectedChatIndex = selectedChatIndex > 0 ? selectedChatIndex - 1 : 0;
+          }
+          // Notify listeners of the selection change
+          for (final listener in _chatSelectionListeners) {
+            listener();
+          }
+        }
+        
+        // Save updated list to storage
+        await saveChats();
+        
+        if (kDebugMode) {
+          print('Successfully removed chat at index $index and updated storage');
+          print('New chat count: ${chatList.length}');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error removing chat: $e');
+        }
+        // Attempt to restore consistency between memory and storage
+        await loadChats();
+        throw Exception('Failed to remove chat: $e');
+      }
+    }
+  }
+
+  Future<void> removeSelectedChat() async {
+    await removeChat(selectedChatIndex);
   }
 
   void addChatSelectionListener(VoidCallback listener) {
@@ -145,6 +200,52 @@ class Singleton {
     
     if (anthropicKey == null || openAIKey == null) {
       throw Exception('No API keys found');
+    }
+  }
+
+  Future<void> saveChats() async {
+    try {
+      // Convert each chat to a JSON string
+      final chatJsonList = chatList.map((chat) => chat.toJson()).toList();
+      // Convert the list to a single JSON string
+      final String encodedChats = json.encode(chatJsonList);
+      // Save to secure storage
+      await _storage.write(key: 'saved_chats', value: encodedChats);
+      
+      if (kDebugMode) {
+        print('Saved ${chatList.length} chats');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error saving chats: $e');
+      }
+    }
+  }
+
+  Future<void> loadChats() async {
+    try {
+      // Read the JSON string from storage
+      final String? encodedChats = await _storage.read(key: 'saved_chats');
+      if (encodedChats != null) {
+        // Decode the JSON string to a List
+        final List<dynamic> chatJsonList = json.decode(encodedChats);
+        // Convert each JSON object back to a Chat
+        chatList = chatJsonList.map((jsonChat) => Chat.fromJson(jsonChat)).toList();
+        
+        if (kDebugMode) {
+          print('Loaded ${chatList.length} chats');
+        }
+      } else {
+        if (kDebugMode) {
+          print('No saved chats found');
+        }
+        chatList = [];
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error loading chats: $e');
+      }
+      chatList = []; // Initialize empty list if loading fails
     }
   }
 }
