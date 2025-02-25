@@ -1,9 +1,26 @@
 {
     "anthropic_models": [
         {
-            "id": "claude-3-5-sonnet-latest",
-            "name": "Sonnet",
+            "id": "claude-3-7-sonnet-latest",
+            "name": "Sonnet 3.7",
             "description": "Highest level of intelligence and capability",
+            "vision": true,
+            "audio_input": false,
+            "price_per_million_tokens": {
+                "input": 3.00,
+                "output": 15.00,
+                "currency": "USD"
+            },
+            "max_output_tokens": 8192,
+            "context_window": 200000,
+            "output_format": {
+                "text": true
+            }
+        },
+        {
+            "id": "claude-3-5-sonnet-latest",
+            "name": "Sonnet 3.5",
+            "description": "Previous highest level of intelligence and capability",
             "vision": true,
             "audio_input": false,
             "price_per_million_tokens": {

@@ -12,7 +12,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   var metadata = Singleton();
-  
+ 
+  await metadata.loadAPIKeys();
+  await metadata.loadChats();
   await metadata.getModels();
 
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {

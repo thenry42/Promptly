@@ -38,9 +38,14 @@ class OpenAI
         messages: messages,
       ).timeout(const Duration(seconds: 500));
 
+      String generatedMessage = '';
+      if (res.choices.isNotEmpty && res.choices.first.message.content != null) {
+        generatedMessage = res.choices.first.message.content!.first.text ?? '';
+      }
+
       return ChatMessage(
         sender: 'Assistant',
-        message: res.choices.first.message.content!.join(' '),
+        message: generatedMessage,
         timestamp: DateTime.now(),
         rawMessage: res,
       );

@@ -18,8 +18,8 @@ class _SettingsTabState extends State<SettingsTab> {
   void initState() {
     super.initState();
     final metadata = Singleton();
-    _openAIController.text = metadata.openAIKey ?? '';
-    _claudeController.text = metadata.anthropicKey ?? '';
+    _openAIController.text = metadata.openAIKey;
+    _claudeController.text = metadata.anthropicKey;
     
     // Try to load API keys without password
     _initializeModels(skipPasswordCheck: true);
@@ -40,8 +40,8 @@ class _SettingsTabState extends State<SettingsTab> {
       await metadata.loadAPIKeys();
       
       setState(() {
-        _openAIController.text = metadata.openAIKey ?? '';
-        _claudeController.text = metadata.anthropicKey ?? '';
+        _openAIController.text = metadata.openAIKey;
+        _claudeController.text = metadata.anthropicKey;
         metadata.isInitialized = true;
       });
 

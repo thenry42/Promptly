@@ -5,6 +5,7 @@ import 'package:promptly_app/srcs/backend/OpenAI.dart';
 import 'package:promptly_app/srcs/backend/Singleton.dart';
 import 'ChatMessage.dart';
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropicsdk;
+import 'package:dart_openai/dart_openai.dart' as openai;
 
 class Chat
 {
@@ -34,13 +35,13 @@ class Chat
     var metadata = Singleton();
     if (type == "Anthropic") {
       anthropicsdk.Model model = anthropicsdk.Model.modelId(modelName);
-      claude = Anthropic(apiKey: metadata.anthropicKey!, model: model);
+      claude = Anthropic(apiKey: metadata.anthropicKey, model: model);
       icon = const AssetImage('assets/images/anthropic.png');
     } else if (type == "Ollama") {
       vicugna = Ollama(model: modelName);
       icon = const AssetImage('assets/images/ollama.png');
     } else if (type == "OpenAI") {
-      gepeto = OpenAI(apiKey: metadata.openAIKey!, model: modelName);
+      gepeto = OpenAI(apiKey: metadata.openAIKey, model: modelName);
       icon = const AssetImage('assets/images/openai.png');
     } else {
       debugPrint("Error: Unknown model [0]");
@@ -58,7 +59,6 @@ class Chat
   }
 
   Future<void> generateMessageRequest({required Singleton metadata}) async {
-    
     final index = metadata.selectedChatIndex;
     final messageList = metadata.chatList[metadata.selectedChatIndex].messages;
     final maxTokens = metadata.chatList[metadata.selectedChatIndex].max_output_tokens;
@@ -75,6 +75,9 @@ class Chat
     } else {
       debugPrint("Error: Unknown model [1]");
     }
+
+    // Save chats after generating a message
+    await metadata.saveChats();
   }
 
   Map<String, dynamic> toJson() {
@@ -98,6 +101,8 @@ class Chat
       modelName: json['modelName'],
       type: json['type'],
       isSelected: json['isSelected'],
-    );
+    )..messages = (json['messages'] as List<dynamic>)
+        .map((msgJson) => ChatMessage.fromJson(msgJson as Map<String, dynamic>))
+        .toList();
   }
 }

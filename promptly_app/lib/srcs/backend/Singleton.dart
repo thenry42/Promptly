@@ -12,8 +12,8 @@ class Singleton {
 
   // ATTRIBUTES -------------------------------------------
 
-  String anthropicKey = '';
-  String openAIKey = '';
+  late String anthropicKey;
+  late String openAIKey;
   List<Chat> chatList = [];
   late List<anthropicsdk.Model> anthropic_models = [];
   late List<ollama.Model> ollama_models = [];
@@ -35,10 +35,10 @@ class Singleton {
   factory Singleton() => _instance;
   Singleton._internal() {
     // Initialize API keys and chats asynchronously
-    Future.wait([
-      loadAPIKeys(),
-      loadChats(),
-    ]).then((_) {
+    loadAPIKeys().then((_) {
+      // Only load chats after API keys are initialized
+      return loadChats();
+    }).then((_) {
       isInitialized = true;
       if (kDebugMode) {
         print('Singleton initialized successfully');
@@ -188,15 +188,15 @@ class Singleton {
   }
 
   Future<void> saveAPIKeys() async {
-    if (anthropicKey == null || openAIKey == null) return;
+    if (anthropicKey == null && openAIKey == null) return;
     
     await _storage.write(key: 'anthropic_key', value: anthropicKey!);
     await _storage.write(key: 'openai_key', value: openAIKey!);
   }
 
   Future<void> loadAPIKeys() async {
-    anthropicKey = (await _storage.read(key: 'anthropic_key'))!;
-    openAIKey = (await _storage.read(key: 'openai_key'))!;
+    anthropicKey = (await _storage.read(key: 'anthropic_key')) ?? '';
+    openAIKey = (await _storage.read(key: 'openai_key')) ?? '';
   }
 
   Future<void> saveChats() async {
