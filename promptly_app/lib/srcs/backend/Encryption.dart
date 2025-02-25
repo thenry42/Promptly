@@ -1,3 +1,7 @@
+// As of right now this file is not used.
+// Encryption is handled by the flutter secure storage package.
+// This file is kept here for potential future use.
+
 import 'dart:math';
 import 'dart:convert';
 import 'dart:typed_data';
