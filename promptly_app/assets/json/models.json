@@ -1,0 +1,176 @@
+{
+    "anthropic_models": [
+        {
+            "id": "claude-3-7-sonnet-latest",
+            "name": "Sonnet 3.7",
+            "description": "Highest level of intelligence and capability",
+            "vision": true,
+            "audio_input": false,
+            "price_per_million_tokens": {
+                "input": 3.00,
+                "output": 15.00,
+                "currency": "USD"
+            },
+            "max_output_tokens": 8192,
+            "context_window": 200000,
+            "output_format": {
+                "text": true
+            }
+        },
+        {
+            "id": "claude-3-5-sonnet-latest",
+            "name": "Sonnet 3.5",
+            "description": "Previous highest level of intelligence and capability",
+            "vision": true,
+            "audio_input": false,
+            "price_per_million_tokens": {
+                "input": 3.00,
+                "output": 15.00,
+                "currency": "USD"
+            },
+            "max_output_tokens": 8192,
+            "context_window": 200000,
+            "output_format": {
+                "text": true
+            }
+        },
+        {
+            "id": "claude-3-5-haiku-latest",
+            "name": "Haiku",
+            "description": "Fastest model",
+            "vision": false,
+            "audio_input": false,
+            "price_per_million_tokens": {
+                "input": 0.80,
+                "output": 4.00,
+                "currency": "USD"
+            },
+            "max_output_tokens": 8192,
+            "context_window": 200000,
+            "output_format": {
+                "text": true
+            }
+        },
+        {
+            "id": "claude-3-opus-latest",
+            "name": "Opus",
+            "description": "Powerful model for complex tasks",
+            "vision": true,
+            "audio_input": false,
+            "price_per_million_tokens": {
+                "input": 15.00,
+                "output": 75.00,
+                "currency": "USD"
+            },
+            "max_output_tokens": 4096,
+            "context_window": 200000,
+            "output_format": {
+                "text": true
+            }
+        }
+    ],
+    "openai_models": [
+        {
+            "id": "gpt-4o",
+            "name": "gpt-4o",
+            "description": "The most powerful model, capable of understanding and generating human-like text",
+            "vision": true,
+            "audio_input": false,
+            "price_per_million_tokens": {
+                "input": 2.50,
+                "output": 10.00,
+                "currency": "USD"
+            },
+            "max_output_tokens": 16384,
+            "context_window": 128000,
+            "output_format": {
+                "text": true
+            }
+        },
+        {
+            "id": "chatgpt-4o-latest",
+            "name": "chatgpt-4o-latest",
+            "description": "A conversational model that can chat with users in a human-like way",
+            "vision": true,
+            "audio_input": false,
+            "price_per_million_tokens": {
+                "input": 5.00,
+                "output": 15.00,
+                "currency": "USD"
+            },
+            "max_output_tokens": 16384,
+            "context_window": 128000,
+            "output_format": {
+                "text": true
+            }
+        },
+        { 
+            "id": "gpt-4o-mini",
+            "name": "gpt-4o-mini",
+            "description": "A smaller version of the gpt-4o model",
+            "vision": true,
+            "audio_input": false,
+            "price_per_million_tokens": {
+                "input": 0.15,
+                "output": 0.60,
+                "currency": "USD"
+            },
+            "max_output_tokens": 16384,
+            "context_window": 128000,
+            "output_format": {
+                "text": true
+            }
+        },
+        {
+            "id": "o1-mini",
+            "name": "o1-mini",
+            "description": "A smaller version of the o1 model that is designed to solve hard problems across domains.",
+            "vision": true,
+            "audio_input": false,
+            "price_per_million_tokens": {
+                "input": 1.10,
+                "output": 4.40,
+                "currency": "USD"
+            },
+            "max_output_tokens": 65536,
+            "context_window": 128000,
+            "output_format": {
+                "text": true
+            }
+        },
+        {
+            "id": "gpt-4o-realtime-preview",
+            "name": "gpt-4o-realtime-preview",
+            "description": "A smaller version of the gpt-4o model that is designed for real-time applications.",
+            "vision": false,
+            "audio_input": true,
+            "price_per_million_tokens": {
+                "input": 5.00,
+                "output": 20.00,
+                "currency": "USD"
+            },
+            "max_output_tokens": 4096,
+            "context_window": 128000,
+            "output_format": {
+                "text": true
+            }
+        },
+        {
+            "id": "gpt-4o-mini-realtime-preview",
+            "name": "gpt-4o-mini-realtime-preview",
+            "description": "A smaller version of the gpt-4o-mini model that is designed for real-time applications.",
+            "vision": false,
+            "audio_input": true,
+            "price_per_million_tokens": {
+                "input": 0.60,
+                "output": 2.40,
+                "currency": "USD"
+            },
+            "max_output_tokens": 4096,
+            "context_window": 128000,
+            "output_format": {
+                "text": true
+            }
+        }
+    ]
+}

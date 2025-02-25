@@ -11,5 +11,9 @@ class AppTheme {
     onSurface: Color(0xFFE6E0E9),
     tertiary: Color(0xFFEFB8C8),
     onTertiary: Color(0xFF492532),
+
+    // TO DO
+    // Add all colors of the theme
+
   );
 }
