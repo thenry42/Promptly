@@ -29,8 +29,9 @@ This simple project provides a convenient way to communicate with various AI lan
 > Note: This app is currently in development on Linux (Nobara 40). I'm working on adding support for other platforms, but it's not ready yet. I have not tested the app on any other platforms.
 
 1. Clone the repository
-2. Run `flutter pub get`
-3. Run `flutter run`
+2. Run `cd promptly_app`
+3. Run `flutter pub get`
+4. Run `flutter run`
 
 ## Configuration
 
