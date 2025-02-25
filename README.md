@@ -18,7 +18,6 @@ This simple project provides a convenient way to communicate with various AI lan
 - [x] Add support for Anthropic (claude-3-5-sonnet-latest, claude-3-7-sonnet-latest, claude-3-5-haiku-latest, claude-3-opus-latest)
 - [x] Add support for Ollama (most models work out of the box)
 - [ ] Add support for DeepSeek
-- [ ] Add support for Gemini
 - [ ] Ship the app on Mac, Linux, and Windows
 - [ ] Add support for tool calling
 - [ ] Add support for image input
@@ -26,6 +25,8 @@ This simple project provides a convenient way to communicate with various AI lan
 - [ ] Add support for image generation
 
 ## Getting Started (Development Installation)
+
+> Note: This app is currently in development on Linux (Nobara 40). I'm working on adding support for other platforms, but it's not ready yet. I have not tested the app on any other platforms.
 
 1. Clone the repository
 2. Run `flutter pub get`
