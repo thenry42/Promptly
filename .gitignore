@@ -1,2 +1,4 @@
 .env
 /promptly_app/.env
+build/
+.vscode
