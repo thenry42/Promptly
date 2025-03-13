@@ -26,7 +26,14 @@ This simple project provides a convenient way to communicate with various AI lan
 
 ## Getting Started (Development Installation)
 
-> Note: This app is currently in development on Linux (Nobara 40). I'm working on adding support for other platforms, but it's not ready yet. I have not tested the app on any other platforms.
+> This app is currently in development on Linux (Nobara 40). I'm working on adding support for other platforms, but it's not ready yet. I have not tested the app on any other platforms.
+
+### Install Flutter
+
+1. Install [Flutter/Dart](https://docs.flutter.dev/get-started/install)
+2. Run `flutter doctor` and install the missing dependencies for your device if any.
+
+### Install Promptly
 
 1. Clone the repository
 2. Run `cd promptly_app`
