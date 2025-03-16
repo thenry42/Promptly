@@ -35,13 +35,13 @@ class Chat
     var metadata = Singleton();
     if (type == "Anthropic") {
       anthropicsdk.Model model = anthropicsdk.Model.modelId(modelName);
-      claude = Anthropic(apiKey: metadata.anthropicKey, model: model);
+      claude = Anthropic(model: model);
       icon = const AssetImage('assets/images/anthropic.png');
     } else if (type == "Ollama") {
       vicugna = Ollama(model: modelName);
       icon = const AssetImage('assets/images/ollama.png');
     } else if (type == "OpenAI") {
-      gepeto = OpenAI(apiKey: metadata.openAIKey, model: modelName);
+      gepeto = OpenAI(model: modelName);
       icon = const AssetImage('assets/images/openai.png');
     } else {
       debugPrint("Error: Unknown model [0]");

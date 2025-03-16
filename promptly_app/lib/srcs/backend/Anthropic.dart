@@ -7,12 +7,11 @@ class Anthropic
 {
   // ATTRIBUTES -------------------------------------------
 
-  final String apiKey;
   anthropicsdk.Model model;
 
   // CONSTRUCTOR ------------------------------------------
 
-  Anthropic({required this.apiKey, required this.model});
+  Anthropic({required this.model});
 
   // METHODS ----------------------------------------------
 
@@ -21,7 +20,7 @@ class Anthropic
     required int maxTokens
     }) async {
 
-    final client = anthropicsdk.AnthropicClient(apiKey: apiKey);
+    final client = anthropicsdk.AnthropicClient(apiKey: Singleton().anthropicKey);  // Get current API key
 
     try {
       final List<anthropicsdk.Message> messages = messageList.map((msg) {

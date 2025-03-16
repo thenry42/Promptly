@@ -68,8 +68,6 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin {
   final List<String> _tabTitles = const [
     'Chats',
     'Settings',
-    'Tools',
-    'Agents',
   ];
 
   @override
@@ -93,10 +91,6 @@ class _TabViewState extends State<TabView> with TickerProviderStateMixin {
         return const MainWindow();
       case 1:
         return const SettingsTab();
-      case 2:
-        return const ToolsTab();
-      case 3:
-        return const AgentsTab();
       default:
         return const Center(child: Text('Tab content not found'));
     }

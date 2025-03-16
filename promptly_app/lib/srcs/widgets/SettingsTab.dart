@@ -128,6 +128,8 @@ class _SettingsTabState extends State<SettingsTab> {
 
     Future<void> handleSaveKeys() async {
       await metadata.saveAPIKeys();
+      await metadata.getModels();
+      await metadata.getModelsName();
       
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

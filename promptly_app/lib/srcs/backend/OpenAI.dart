@@ -3,16 +3,18 @@ import 'package:flutter/foundation.dart';
 import 'ChatMessage.dart';
 import 'Singleton.dart';
 
+// NEED TO GO FROM dart_openai TO openai_dart that is developped by LANGCHAIN
+// BETTER FOR API KEY MANAGEMENT
+
 class OpenAI
 {
   // ATTRIBUTES -------------------------------------------
 
-  final String apiKey;
   String model;
 
   // CONSTRUCTOR ------------------------------------------
 
-  OpenAI({required this.apiKey, required this.model});
+  OpenAI({required this.model});
 
   // METHODS ----------------------------------------------
 
