@@ -213,6 +213,9 @@ class _LeftPanelState extends State<LeftPanel> {
                             case 'delete':
                               _showDeleteConfirmation(context, chat);
                               break;
+                            case 'deleteAll':
+                              _showDeleteAllConfirmation(context);
+                              break;
                           }
                         },
                         itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -230,6 +233,17 @@ class _LeftPanelState extends State<LeftPanel> {
                             value: 'delete',
                             child: Text(
                               'Delete',
+                              style: TextStyle(
+                                fontSize: metadata.fontSize,
+                                fontFamily: metadata.fontFamily,
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                            ),
+                          ),
+                          PopupMenuItem<String>(
+                            value: 'deleteAll',
+                            child: Text(
+                              'Delete All Chats',
                               style: TextStyle(
                                 fontSize: metadata.fontSize,
                                 fontFamily: metadata.fontFamily,
@@ -435,6 +449,70 @@ class _LeftPanelState extends State<LeftPanel> {
             },
             child: Text(
               'Delete',
+              style: TextStyle(
+                fontSize: metadata.fontSize,
+                fontFamily: metadata.fontFamily,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAllConfirmation(BuildContext context) {
+    final metadata = Singleton();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text(
+          'Delete All Chats',
+          style: TextStyle(
+            fontSize: metadata.fontSize,
+            fontFamily: metadata.fontFamily,
+          ),
+        ),
+        content: Text(
+          'Are you sure you want to delete all chats? This action cannot be undone.',
+          style: TextStyle(
+            fontSize: metadata.fontSize,
+            fontFamily: metadata.fontFamily,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                fontSize: metadata.fontSize,
+                fontFamily: metadata.fontFamily,
+              ),
+            ),
+          ),
+          FilledButton(
+            onPressed: () async {
+              try {
+                // Delete all chats one by one
+                while (metadata.chatList.isNotEmpty) {
+                  await metadata.removeChat(0);
+                }
+                setState(() {}); // Refresh the UI
+                if (!context.mounted) return;
+                Navigator.of(context).pop();
+              } catch (e) {
+                if (kDebugMode) {
+                  print('Error deleting all chats: $e');
+                }
+                // Show error to user if deletion fails
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to delete all chats: $e')),
+                );
+              }
+            },
+            child: Text(
+              'Delete All',
               style: TextStyle(
                 fontSize: metadata.fontSize,
                 fontFamily: metadata.fontFamily,

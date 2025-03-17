@@ -33,7 +33,6 @@ class Chat
 
   Chat({required this.id, required this.modelName, required this.type, isSelected}) : 
     icon = const AssetImage('assets/images/anthropic.png') {
-    var metadata = Singleton();
     if (type == "Anthropic") {
       anthropicsdk.Model model = anthropicsdk.Model.modelId(modelName);
       claude = Anthropic(model: model);
