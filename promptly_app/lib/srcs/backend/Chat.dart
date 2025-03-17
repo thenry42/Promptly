@@ -5,7 +5,8 @@ import 'package:promptly_app/srcs/backend/OpenAI.dart';
 import 'package:promptly_app/srcs/backend/Singleton.dart';
 import 'ChatMessage.dart';
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropicsdk;
-import 'package:dart_openai/dart_openai.dart' as openai;
+//import 'package:dart_openai/dart_openai.dart' as openai;
+import 'package:openai_dart/openai_dart.dart' as openai;
 
 class Chat
 {
@@ -41,7 +42,7 @@ class Chat
       vicugna = Ollama(model: modelName);
       icon = const AssetImage('assets/images/ollama.png');
     } else if (type == "OpenAI") {
-      gepeto = OpenAI(model: modelName);
+      gepeto = OpenAI(model: openai.ChatCompletionModel.modelId(modelName));
       icon = const AssetImage('assets/images/openai.png');
     } else {
       debugPrint("Error: Unknown model [0]");

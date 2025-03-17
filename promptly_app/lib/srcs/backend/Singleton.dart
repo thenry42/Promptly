@@ -3,7 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'Chat.dart';
 import 'package:anthropic_sdk_dart/anthropic_sdk_dart.dart' as anthropicsdk;
 import 'package:ollama_dart/ollama_dart.dart' as ollama;
-import 'package:dart_openai/dart_openai.dart' as openai;
+//import 'package:dart_openai/dart_openai.dart' as openai;
+import 'package:openai_dart/openai_dart.dart' as openai;
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -15,9 +16,11 @@ class Singleton {
   late String anthropicKey;
   late String openAIKey;
   List<Chat> chatList = [];
+  
   late List<anthropicsdk.Model> anthropic_models = [];
   late List<ollama.Model> ollama_models = [];
-  late List<openai.OpenAIModelModel> openai_models = [];
+  late List<openai.ChatCompletionModel> openai_models = [];
+
   late List<String> modelsName = [];
   int selectedChatIndex = 0;
   final List<VoidCallback> _chatSelectionListeners = [];
@@ -55,20 +58,27 @@ class Singleton {
 
   // METHODS ----------------------------------------------
 
-  Future<void> getAnthropicModels() async {
-    // Read and decode the JSON file
-    final String jsonString = await rootBundle.loadString('assets/json/models.json');
-    final Map<String, dynamic> jsonData = json.decode(jsonString);
+  Future<void> getAnthropicModels() async
+  {
+    try
+    {
+      final String jsonString = await rootBundle.loadString('assets/json/models.json');
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
+      // Extract Anthropic models from the JSON and convert to List<anthropicsdk.Model>
+      List<anthropicsdk.Model> models = (jsonData['anthropic_models'] as List)
+      .map((model) => anthropicsdk.Model.modelId(model['id'] as String))
+      .toList();
+      anthropic_models = models;
     
-    // Extract Anthropic models from the JSON and convert to List<anthropicsdk.Model>
-    List<anthropicsdk.Model> models = (jsonData['anthropic_models'] as List)
-        .map((model) => anthropicsdk.Model.modelId(model['id'] as String))
-        .toList();
-    
-    anthropic_models = models;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching anthropic models: $e');
+      }
+    }
   }
 
-  Future<void> getOllamaModels() async {
+  Future<void> getOllamaModels() async
+  {
     try {
 
       final client = ollama.OllamaClient();
@@ -82,25 +92,22 @@ class Singleton {
     }
   }
 
-  Future<void> getOpenAIModels() async {
+  Future<void> getOpenAIModels() async
+  {
     try {
-      // Read and decode the JSON file
-      final String jsonString = await rootBundle.loadString('assets/json/models.json');
-      final Map<String, dynamic> jsonData = json.decode(jsonString);
-      
-      // Get the list of model IDs from the JSON file
-      final List<String> allowedModelIds = (jsonData['openai_models'] as List)
-          .map((model) => model['id'] as String)
-          .toList();
 
-      openai.OpenAI.apiKey = openAIKey;
-      final allModels = await openai.OpenAI.instance.model.list();
+      final client = openai.OpenAIClient(apiKey: Singleton().openAIKey);
       
-      // Filter models to only include those in our JSON file
-      openai_models = allModels
-          .where((model) => allowedModelIds.contains(model.id))
-          .toList();
+      final allModels = await client.listModels();
+      if (kDebugMode) {
+        print('OpenAI models:');
+        for (var model in allModels.data) {
+          print('- ${model.id}');
+        }
+      }
 
+      openai_models = allModels.data.map((m) => openai.ChatCompletionModel.modelId(m.id)).toList();
+    
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching openAI models: $e');
@@ -108,7 +115,8 @@ class Singleton {
     }
   }
 
-  Future<void> getModels() async {
+  Future<void> getModels() async
+  {
     await getAnthropicModels();
     await getOllamaModels();
     await getOpenAIModels();
@@ -122,7 +130,7 @@ class Singleton {
       modelsName.add(ollama_models[i].model!);
     }
     for (int i = 0; i < openai_models.length; i++) {
-      modelsName.add(openai_models[i].id);
+      modelsName.add(openai_models[i].value.toString());
     }
   }
 

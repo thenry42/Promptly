@@ -115,8 +115,8 @@ class _NewChatDialogState extends State<NewChatDialog> {
       case 'OpenAI':
         return metadata.openai_models
             .map((model) => DropdownMenuItem(
-                  value: model.id,
-                  child: Text(model.id, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
+                  value: model.value.toString(),
+                  child: Text(model.value.toString(), style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
                 ))
             .toList();
       default:
