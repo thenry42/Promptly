@@ -13,6 +13,8 @@ class _SettingsTabState extends State<SettingsTab> {
   final TextEditingController _openAIController = TextEditingController();
   final TextEditingController _claudeController = TextEditingController();
   bool _isUnlocked = false;
+  bool _showOpenAIKey = false;
+  bool _showClaudeKey = false;
 
   @override
   void initState() {
@@ -229,11 +231,15 @@ class _SettingsTabState extends State<SettingsTab> {
             TextField(
               controller: _openAIController,
               enabled: _isUnlocked,
-              obscureText: !_isUnlocked,
+              obscureText: !_showOpenAIKey,
               decoration: InputDecoration(
                 labelText: 'OpenAI API Key',
                 border: const OutlineInputBorder(),
                 labelStyle: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
+                suffixIcon: _isUnlocked ? IconButton(
+                  icon: Icon(_showOpenAIKey ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () => setState(() => _showOpenAIKey = !_showOpenAIKey),
+                ) : null,
               ),
               style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
               onChanged: (value) {
@@ -244,11 +250,15 @@ class _SettingsTabState extends State<SettingsTab> {
             TextField(
               controller: _claudeController,
               enabled: _isUnlocked,
-              obscureText: !_isUnlocked,
+              obscureText: !_showClaudeKey,
               decoration: InputDecoration(
                 labelText: 'Claude API Key',
                 border: const OutlineInputBorder(),
                 labelStyle: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
+                suffixIcon: _isUnlocked ? IconButton(
+                  icon: Icon(_showClaudeKey ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () => setState(() => _showClaudeKey = !_showClaudeKey),
+                ) : null,
               ),
               style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
               onChanged: (value) {
