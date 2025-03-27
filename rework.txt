@@ -1,0 +1,17 @@
+# HUGE REWORK INCOMING
+
+https://chatgpt.com/share/67e54936-afc8-8005-8983-9553b1dbce45
+
+Changes:
+- Use of python to interact with AI providers
+- Use FastAPI (python) and dio (flutter) to exchange data
+- Save keys and chat history in flutter using flutter storage
+- Use of Riverpod to manage states in flutter
+- add new providers:
+    - Ollama
+    - Open AI
+    - Anthropic
+    - Google AI
+    - Mistral
+    - Deepseek
+
