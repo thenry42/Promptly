@@ -1,8 +1,16 @@
 services:
-  python_app:
+  backend:
     build:
       context: .
-      dockerfile: python_app/Dockerfile
+      dockerfile: backend/Dockerfile
     environment:
       - OLLAMA_HOST=http://localhost:11434
+    network_mode: "host"
+  
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    depends_on:
+      - backend
     network_mode: "host"

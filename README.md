@@ -1,3 +1,12 @@
+# REWORK ONGOING
+
+- Use of python to interact with AI providers
+- Use FastAPI (python) and dio (flutter) to exchange data
+- Save keys and chat history in flutter using flutter storage
+- Use of Riverpod to manage states in flutter
+- Manage all of that in 2 dinstinct Docker Container
+- New AI provider (Anthropic, OpenAI, Ollama, Deepseek, Mistral, Gemini)
+
 # What is Promptly ?
 
 Promptly is a flutter app that allows you to chat with LLMs from multiple providers in a single place.

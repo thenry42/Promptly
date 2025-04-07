@@ -2,3 +2,4 @@
 /promptly_app/.env
 build/
 .vscode
+frontend/promptly_app/.env

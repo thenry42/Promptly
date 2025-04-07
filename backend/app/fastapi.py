@@ -21,3 +21,17 @@ def list_models():
         return models
     except Exception as e:
         return {"error": str(e)}
+
+@app.post("/completion")
+def completion(request: CompletionRequest):
+    try:
+        client = ollama_client()
+        response = client.chat(
+            model = request.model,
+            messages = [
+                {"role": "user", "content": request.prompt}
+            ]
+        )
+        return {"completion": response}
+    except Exception as e:
+        return {"error": str(e)}
