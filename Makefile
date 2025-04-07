@@ -22,6 +22,9 @@ frontend:
 up:
 	$(COMPOSE) up -d
 
+ps:
+	$(COMPOSE) ps
+
 # Start only the backend in detached mode
 up-backend:
 	$(COMPOSE) up -d backend
