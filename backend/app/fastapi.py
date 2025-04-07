@@ -1,6 +1,6 @@
 # Handle the FastAPI app
 from fastapi import FastAPI
-from services.ollama_ import ollama_client
+from ollama_ import ollama_client
 from pydantic import BaseModel
 
 app = FastAPI()

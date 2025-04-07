@@ -1,5 +1,5 @@
 .env
-/promptly_app/.env
 build/
 .vscode
-frontend/promptly_app/.env
+frontend/.env
+frontend/build/

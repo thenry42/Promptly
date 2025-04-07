@@ -4,7 +4,7 @@
 - Use FastAPI (python) and dio (flutter) to exchange data
 - Save keys and chat history in flutter using flutter storage
 - Use of Riverpod to manage states in flutter
-- Manage all of that in 2 dinstinct Docker Container
+- Added Docker for my backend
 - New AI provider (Anthropic, OpenAI, Ollama, Deepseek, Mistral, Gemini)
 
 # What is Promptly ?
