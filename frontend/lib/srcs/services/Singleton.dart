@@ -12,11 +12,18 @@ class Singleton {
 
   late String anthropicKey;
   late String openAIKey;
+  late String mistralKey;
+  late String geminiKey;
+  late String deepseekKey;
+
   List<Chat> chatList = [];
   
   late List<dynamic> anthropic_models = [];
   late List<dynamic> ollama_models = [];
   late List<dynamic> openai_models = [];
+  late List<dynamic> mistral_models = [];
+  late List<dynamic> gemini_models = [];
+  late List<dynamic> deepseek_models = [];
 
   late List<String> modelsName = [];
   int selectedChatIndex = 0;
@@ -71,6 +78,21 @@ class Singleton {
   }
 
   Future<void> getOpenAIModels() async
+  {
+    // TODO: Implement using http request
+  }
+
+  Future<void> getMistralModels() async
+  {
+    // TODO: Implement using http request
+  }
+
+  Future<void> getGeminiModels() async
+  {
+    // TODO: Implement using http request
+  }
+
+  Future<void> getDeepSeekModels() async
   {
     // TODO: Implement using http request
   }
