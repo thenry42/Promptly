@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'ChatPanel.dart';
 import 'LeftPanel.dart';
-import 'package:promptly_app/srcs/backend/Chat.dart';
+import 'package:promptly_app/srcs/services/Chat.dart';
 
 class MainWindow extends StatefulWidget {
   const MainWindow({super.key});

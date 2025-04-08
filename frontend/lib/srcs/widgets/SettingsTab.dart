@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:promptly_app/srcs/backend/Singleton.dart';
+import 'package:promptly_app/srcs/services/Singleton.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SettingsTab extends StatefulWidget {
@@ -49,7 +49,6 @@ class _SettingsTabState extends State<SettingsTab> {
 
       if (!skipPasswordCheck) {
         await metadata.getModels();
-        await metadata.getModelsName();
         
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -131,7 +130,6 @@ class _SettingsTabState extends State<SettingsTab> {
     Future<void> handleSaveKeys() async {
       await metadata.saveAPIKeys();
       await metadata.getModels();
-      await metadata.getModelsName();
       
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:promptly_app/srcs/backend/Singleton.dart';
+import 'package:promptly_app/srcs/services/Singleton.dart';
 import 'package:promptly_app/srcs/widgets/ChattingArea.dart';
 
 class ChatPanel extends StatefulWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:promptly_app/srcs/backend/ChatMessage.dart';
-import 'package:promptly_app/srcs/backend/Singleton.dart';
-import 'package:promptly_app/srcs/backend/Chat.dart';
+import 'package:promptly_app/srcs/services/ChatMessage.dart';
+import 'package:promptly_app/srcs/services/Singleton.dart';
+import 'package:promptly_app/srcs/services/Chat.dart';
 import 'package:promptly_app/srcs/widgets/ChatMessageWidget.dart';
 
 class ChattingArea extends StatefulWidget {

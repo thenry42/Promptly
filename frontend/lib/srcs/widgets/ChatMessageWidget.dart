@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:promptly_app/srcs/backend/ChatMessage.dart';
-import 'package:promptly_app/srcs/backend/Singleton.dart';
+import 'package:promptly_app/srcs/services/ChatMessage.dart';
+import 'package:promptly_app/srcs/services/Singleton.dart';
 import 'package:promptly_app/srcs/widgets/Markdown.dart';
 
 class ChatMessageWidget extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:promptly_app/srcs/backend/Singleton.dart';
-import 'package:promptly_app/srcs/backend/Chat.dart';
+import 'package:promptly_app/srcs/services/Singleton.dart';
+import 'package:promptly_app/srcs/services/Chat.dart';
 import 'package:promptly_app/srcs/widgets/NewChatDialog.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
@@ -172,7 +172,7 @@ class _LeftPanelState extends State<LeftPanel> {
                       width: 40,
                       height: 40,
                       child: Image(
-                        image: chat.icon,
+                        image: chat.icon ?? const AssetImage('assets/images/ollama.png'),
                         fit: BoxFit.contain,
                       ),
                     ),

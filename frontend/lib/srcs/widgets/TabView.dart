@@ -1,7 +1,7 @@
 // TabView.dart
 import 'package:flutter/material.dart';
 import 'MainWindow.dart';
-import '../backend/Singleton.dart';
+import '../services/Singleton.dart';
 import 'package:promptly_app/srcs/widgets/SettingsTab.dart';
 
 class PaperTabIndicator extends Decoration {

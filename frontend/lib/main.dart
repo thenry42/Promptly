@@ -1,18 +1,19 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:window_size/window_size.dart';
-import 'srcs/backend/Colors.dart';
+import 'srcs/services/Colors.dart';
 import 'srcs/widgets/TabView.dart'; // Updated import
-import 'srcs/backend/Singleton.dart';
-import 'srcs/backend/Chat.dart';
-import 'srcs/backend/ChatMessage.dart';
+import 'srcs/services/Singleton.dart';
+import 'srcs/services/Chat.dart';
+import 'srcs/services/ChatMessage.dart';
 import 'srcs/widgets/TabView.dart';
+import 'srcs/services/httpRequest.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   var metadata = Singleton();
- 
+
   await metadata.loadAPIKeys();
   await metadata.loadChats();
   await metadata.getModels();

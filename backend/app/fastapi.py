@@ -13,7 +13,7 @@ class CompletionRequest(BaseModel):
 def read_root():
     return {"message": "Hello, World!"}
 
-@app.get("/models")
+@app.get("/ollama/models/list")
 def list_models():
     try:
         client = ollama_client()
@@ -22,6 +22,7 @@ def list_models():
     except Exception as e:
         return {"error": str(e)}
 
+"""
 @app.post("/completion")
 def completion(request: CompletionRequest):
     try:
@@ -35,3 +36,4 @@ def completion(request: CompletionRequest):
         return {"completion": response}
     except Exception as e:
         return {"error": str(e)}
+"""

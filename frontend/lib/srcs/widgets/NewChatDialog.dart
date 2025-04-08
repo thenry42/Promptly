@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:promptly_app/srcs/backend/Singleton.dart';
-import 'package:promptly_app/srcs/backend/Chat.dart';
+import 'package:promptly_app/srcs/services/Singleton.dart';
+import 'package:promptly_app/srcs/services/Chat.dart';
 
 class NewChatDialog extends StatefulWidget {
   final VoidCallback onChatCreated;
@@ -100,23 +100,23 @@ class _NewChatDialogState extends State<NewChatDialog> {
     switch (type) {
       case 'Anthropic':
         return metadata.anthropic_models
-            .map((model) => DropdownMenuItem(
-                  value: model.value.toString(),
-                  child: Text(model.value.toString(), style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
+            .map((model) => DropdownMenuItem<String>(
+                  value: model['id'],
+                  child: Text(model['id'], style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
                 ))
             .toList();
       case 'Ollama':
         return metadata.ollama_models
-            .map((model) => DropdownMenuItem(
-                  value: model.model!,
-                  child: Text(model.model!, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
+            .map((model) => DropdownMenuItem<String>(
+                  value: model['name'],
+                  child: Text(model['name'], style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
                 ))
             .toList();
       case 'OpenAI':
         return metadata.openai_models
-            .map((model) => DropdownMenuItem(
-                  value: model.value.toString(),
-                  child: Text(model.value.toString(), style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
+            .map((model) => DropdownMenuItem<String>(
+                  value: model['id'],
+                  child: Text(model['id'], style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
                 ))
             .toList();
       default:
