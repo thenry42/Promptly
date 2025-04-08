@@ -10,11 +10,19 @@ class SettingsTab extends StatefulWidget {
 }
 
 class _SettingsTabState extends State<SettingsTab> {
+  
   final TextEditingController _openAIController = TextEditingController();
   final TextEditingController _claudeController = TextEditingController();
+  final TextEditingController _mistralController = TextEditingController();
+  final TextEditingController _geminiController = TextEditingController();
+  final TextEditingController _deepSeekController = TextEditingController();
+  
   bool _isUnlocked = false;
   bool _showOpenAIKey = false;
   bool _showClaudeKey = false;
+  bool _showMistralKey = false;
+  bool _showGeminiKey = false;
+  bool _showDeepSeekKey = false;
 
   @override
   void initState() {
@@ -22,7 +30,10 @@ class _SettingsTabState extends State<SettingsTab> {
     final metadata = Singleton();
     _openAIController.text = metadata.openAIKey;
     _claudeController.text = metadata.anthropicKey;
-    
+    _mistralController.text = metadata.mistralKey;
+    _geminiController.text = metadata.geminiKey;
+    _deepSeekController.text = metadata.deepseekKey;
+
     // Try to load API keys without password
     _initializeModels(skipPasswordCheck: true);
   }
@@ -31,6 +42,9 @@ class _SettingsTabState extends State<SettingsTab> {
   void dispose() {
     _openAIController.dispose();
     _claudeController.dispose();
+    _mistralController.dispose();
+    _geminiController.dispose();
+    _deepSeekController.dispose();
     super.dispose();
   }
 
@@ -44,6 +58,9 @@ class _SettingsTabState extends State<SettingsTab> {
       setState(() {
         _openAIController.text = metadata.openAIKey;
         _claudeController.text = metadata.anthropicKey;
+        _mistralController.text = metadata.mistralKey;
+        _geminiController.text = metadata.geminiKey;
+        _deepSeekController.text = metadata.deepseekKey;
         metadata.isInitialized = true;
       });
 
@@ -167,8 +184,14 @@ class _SettingsTabState extends State<SettingsTab> {
           _isUnlocked = false;
           _openAIController.clear();
           _claudeController.clear();
+          _mistralController.clear();
+          _geminiController.clear();
+          _deepSeekController.clear();
           metadata.openAIKey = '';
           metadata.anthropicKey = '';
+          metadata.mistralKey = '';
+          metadata.geminiKey = '';
+          metadata.deepseekKey = '';
           metadata.isInitialized = false;
         });
 
@@ -264,11 +287,63 @@ class _SettingsTabState extends State<SettingsTab> {
               },
             ),
             const SizedBox(height: 16),
-            
-            // Add this after the API Keys section
-            const SizedBox(height: 32),
-            const Divider(),
+            TextField(
+              controller: _mistralController,
+              enabled: _isUnlocked,
+              obscureText: !_showMistralKey,
+              decoration: InputDecoration(
+                labelText: 'Mistral API Key',
+                border: const OutlineInputBorder(),
+                labelStyle: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
+                suffixIcon: _isUnlocked ? IconButton(
+                  icon: Icon(_showMistralKey ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () => setState(() => _showMistralKey = !_showMistralKey),
+                ) : null,
+              ),
+              style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
+              onChanged: (value) {
+                metadata.mistralKey = value;
+              },
+            ),
             const SizedBox(height: 16),
+            TextField(
+              controller: _geminiController,
+              enabled: _isUnlocked,
+              obscureText: !_showGeminiKey,
+              decoration: InputDecoration(
+                labelText: 'Gemini API Key',
+                border: const OutlineInputBorder(),
+                labelStyle: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
+                suffixIcon: _isUnlocked ? IconButton(
+                  icon: Icon(_showGeminiKey ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () => setState(() => _showGeminiKey = !_showGeminiKey),
+                ) : null,
+              ),
+              style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
+              onChanged: (value) {
+                metadata.geminiKey = value;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _deepSeekController,
+              enabled: _isUnlocked,
+              obscureText: !_showDeepSeekKey,
+              decoration: InputDecoration(
+                labelText: 'DeepSeek API Key',
+                border: const OutlineInputBorder(),
+                labelStyle: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
+                suffixIcon: _isUnlocked ? IconButton(
+                  icon: Icon(_showDeepSeekKey ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () => setState(() => _showDeepSeekKey = !_showDeepSeekKey),
+                ) : null,
+              ),
+              style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
+              onChanged: (value) {
+                metadata.deepseekKey = value;
+              },
+            ),
+            const SizedBox(height: 32),
             
             // Reset Settings Button
             Row(

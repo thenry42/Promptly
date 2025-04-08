@@ -2,6 +2,10 @@
 from fastapi import FastAPI
 from app.ollama_ import ollama_client
 from app.anthropic_ import anthropic_list_models
+from app.openai_ import openai_list_models
+from app.mistral_ import mistral_list_models
+from app.gemini_ import gemini_list_models
+from app.deepseek_ import deepseek_list_models
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -57,20 +61,32 @@ def list_anthropic_models(api_key: str):
         return {"error": str(e)}
 
 @app.get("/openai/models/list")
-def list_openai_models():
-    return {"message": "OpenAI models list"}
+def list_openai_models(api_key: str):
+    try:
+        return openai_list_models(api_key)
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.get("/deepseek/models/list")
-def list_deepseek_models():
-    return {"message": "DeepSeek models list"}
+def list_deepseek_models(api_key: str):
+    try:
+        return deepseek_list_models(api_key)
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.get("/mistral/models/list")
-def list_mistral_models():
-    return {"message": "Mistral models list"}
+def list_mistral_models(api_key: str):
+    try:
+        return mistral_list_models(api_key)
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.get("/gemini/models/list")
-def list_gemini_models():
-    return {"message": "Gemini models list"}
+def list_gemini_models(api_key: str):
+    try:
+        return gemini_list_models(api_key)
+    except Exception as e:
+        return {"error": str(e)}
 
 """
 @app.post("/completion")

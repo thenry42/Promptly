@@ -4,7 +4,7 @@ import 'Chat.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'httpRequest.dart';
+import 'HttpRequest.dart';
 
 class Singleton {
 
@@ -67,44 +67,42 @@ class Singleton {
   Future<void> getAnthropicModels() async
   {
     anthropic_models = await backendService.getAnthropicModels(anthropicKey);
-    if (kDebugMode) {
-      print('Anthropic models: $anthropic_models');
-    }
   }
 
   Future<void> getOllamaModels() async
   {
     ollama_models = await backendService.getOllamaModels();
-    if (kDebugMode) {
-      print('Ollama models: $ollama_models');
-    }
   }
 
   Future<void> getOpenAIModels() async
   {
-    // TODO: Implement using http request
+    openai_models = await backendService.getOpenAIModels(openAIKey);
   }
+
 
   Future<void> getMistralModels() async
   {
-    // TODO: Implement using http request
+    mistral_models = await backendService.getMistralModels(mistralKey);
   }
 
   Future<void> getGeminiModels() async
   {
-    // TODO: Implement using http request
+    gemini_models = await backendService.getGeminiModels(geminiKey);
   }
 
   Future<void> getDeepSeekModels() async
   {
-    // TODO: Implement using http request
+    deepseek_models = await backendService.getDeepSeekModels(deepseekKey);
   }
 
   Future<void> getModels() async
   {
-    await getAnthropicModels();
-    await getOllamaModels();
-    await getOpenAIModels();
+    await getAnthropicModels(); // WORKS
+    await getOllamaModels(); // WORKS
+    await getOpenAIModels(); // WORKS
+    await getMistralModels(); // WORKS
+    await getGeminiModels(); // WORKS
+    await getDeepSeekModels(); // WORKS
   }
 
   void addChat(Chat chat) {
@@ -173,11 +171,17 @@ class Singleton {
     
     await _storage.write(key: 'anthropic_key', value: anthropicKey!);
     await _storage.write(key: 'openai_key', value: openAIKey!);
+    await _storage.write(key: 'mistral_key', value: mistralKey!);
+    await _storage.write(key: 'gemini_key', value: geminiKey!);
+    await _storage.write(key: 'deepseek_key', value: deepseekKey!);
   }
 
   Future<void> loadAPIKeys() async {
     anthropicKey = (await _storage.read(key: 'anthropic_key')) ?? '';
     openAIKey = (await _storage.read(key: 'openai_key')) ?? '';
+    mistralKey = (await _storage.read(key: 'mistral_key')) ?? '';
+    geminiKey = (await _storage.read(key: 'gemini_key')) ?? '';
+    deepseekKey = (await _storage.read(key: 'deepseek_key')) ?? '';
   }
 
   Future<void> saveChats() async {

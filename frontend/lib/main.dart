@@ -7,7 +7,7 @@ import 'srcs/services/Singleton.dart';
 import 'srcs/services/Chat.dart';
 import 'srcs/services/ChatMessage.dart';
 import 'srcs/widgets/TabView.dart';
-import 'srcs/services/httpRequest.dart';
+import 'srcs/services/HttpRequest.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

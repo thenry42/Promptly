@@ -40,27 +40,20 @@ class BackendService {
     }
   }
 
-  /// Get a completion from the backend using the specified model and prompt
-  Future<String> getCompletion(String model, String prompt) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/completion'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'model': model,
-          'prompt': prompt,
-        }),
-      );
-      
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return data['completion']['message']['content'];
-      } else {
-        throw Exception('Failed to get completion: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('Error getting completion: $e');
-      throw Exception('Network error: $e');
-    }
+  Future<List<dynamic>> getOpenAIModels(String apiKey) async {
+    return [];
   }
+
+  Future<List<dynamic>> getMistralModels(String apiKey) async {
+    return [];
+  }
+
+  Future<List<dynamic>> getGeminiModels(String apiKey) async {
+    return [];
+  }
+
+  Future<List<dynamic>> getDeepSeekModels(String apiKey) async {
+    return [];
+  }
+
 }
