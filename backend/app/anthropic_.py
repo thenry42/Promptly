@@ -16,8 +16,6 @@ def anthropic_list_models(api_key):
             {
                 "id": model.id,
                 "name": model.id,
-                "max_tokens": model.max_tokens,
-                "context_window": model.context_window
             }
             for model in models.data
         ]

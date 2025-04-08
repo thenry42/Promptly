@@ -21,6 +21,25 @@ class BackendService {
     }
   }
 
+  Future<List<dynamic>> getAnthropicModels(String apiKey) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/anthropic/models/list?api_key=$apiKey'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['models'] ?? [];
+      } else {
+        throw Exception('Failed to load Anthropic models: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error getting Anthropic models: $e');
+      throw Exception('Network error: $e');
+    }
+  }
+
   /// Get a completion from the backend using the specified model and prompt
   Future<String> getCompletion(String model, String prompt) async {
     try {

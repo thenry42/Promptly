@@ -16,6 +16,8 @@ class Singleton {
   late String geminiKey;
   late String deepseekKey;
 
+  var backendService = BackendService();
+
   List<Chat> chatList = [];
   
   late List<dynamic> anthropic_models = [];
@@ -64,13 +66,14 @@ class Singleton {
 
   Future<void> getAnthropicModels() async
   {
-    // TODO: Implement using http request
+    anthropic_models = await backendService.getAnthropicModels(anthropicKey);
+    if (kDebugMode) {
+      print('Anthropic models: $anthropic_models');
+    }
   }
 
   Future<void> getOllamaModels() async
   {
-    // TODO: Implement using http request
-    var backendService = BackendService();
     ollama_models = await backendService.getOllamaModels();
     if (kDebugMode) {
       print('Ollama models: $ollama_models');
