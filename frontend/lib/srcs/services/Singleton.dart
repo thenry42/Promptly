@@ -97,6 +97,8 @@ class Singleton {
 
   Future<void> getModels() async
   {
+    // These work to retrieve the models from providers
+    // but models and their features need to be parsed
     await getAnthropicModels(); // WORKS
     await getOllamaModels(); // WORKS
     await getOpenAIModels(); // WORKS

@@ -18,6 +18,13 @@ void main() async {
   await metadata.loadChats();
   await metadata.getModels();
 
+  print(metadata.ollama_models);
+  print(metadata.anthropic_models);
+  print(metadata.openai_models);
+  print(metadata.mistral_models);
+  print(metadata.gemini_models);
+  print(metadata.deepseek_models);
+
   if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
     setWindowTitle('Promptly');
     setWindowMinSize(const Size(720, 720)); // 720, 720 safe

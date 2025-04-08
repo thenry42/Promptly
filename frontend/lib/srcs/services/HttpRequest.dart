@@ -11,7 +11,7 @@ class BackendService {
       
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['models'];
+        return data['models'] ?? [];
       } else {
         throw Exception('Failed to load models: ${response.statusCode}');
       }
@@ -41,19 +41,79 @@ class BackendService {
   }
 
   Future<List<dynamic>> getOpenAIModels(String apiKey) async {
-    return [];
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/openai/models/list?api_key=$apiKey'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['models'] ?? [];
+      } else {
+        throw Exception('Failed to load OpenAI models: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error getting OpenAI models: $e');
+      throw Exception('Network error: $e');
+    }
   }
 
   Future<List<dynamic>> getMistralModels(String apiKey) async {
-    return [];
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/mistral/models/list?api_key=$apiKey'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['models'] ?? [];
+      } else {
+        throw Exception('Failed to load Mistral models: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error getting Mistral models: $e');
+      throw Exception('Network error: $e');
+    }
   }
 
   Future<List<dynamic>> getGeminiModels(String apiKey) async {
-    return [];
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/gemini/models/list?api_key=$apiKey'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['models'] ?? [];
+      } else {
+        throw Exception('Failed to load Gemini models: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error getting Gemini models: $e');
+      throw Exception('Network error: $e');
+    }
   }
 
   Future<List<dynamic>> getDeepSeekModels(String apiKey) async {
-    return [];
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/deepseek/models/list?api_key=$apiKey'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['models'] ?? [];
+      } else {
+        throw Exception('Failed to load DeepSeek models: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error getting DeepSeek models: $e');
+      throw Exception('Network error: $e');
+    }
   }
 
 }

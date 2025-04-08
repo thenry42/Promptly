@@ -9,14 +9,4 @@ def anthropic_list_models(api_key):
     """List available Anthropic models."""
     client = anthropic_client(api_key)
     models = client.models.list()
-    
-    # Format response for easier consumption
-    return {
-        "models": [
-            {
-                "id": model.id,
-                "name": model.id,
-            }
-            for model in models.data
-        ]
-    }
+    return models
