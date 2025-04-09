@@ -7,7 +7,7 @@ class Chat
   // ATTRIBUTES -------------------------------------------
 
   int id;
-  AssetImage? icon;
+  late AssetImage icon;
   String modelName; 
   String type;
   
@@ -21,7 +21,37 @@ class Chat
 
   // CONSTRUCTOR ------------------------------------------
 
-  Chat({required this.id, required this.modelName, required this.type, isSelected}); 
+  Chat({required this.id, required this.modelName, required this.type, isSelected})
+  {
+    // Set the icon based on the provider type instead of model name
+    switch (type) {
+      case 'Gemini':
+        icon = const AssetImage('assets/images/gemini.png');
+        break;
+      case 'Mistral':
+        icon = const AssetImage('assets/images/mistral.png');
+        break;
+      case 'DeepSeek':
+        icon = const AssetImage('assets/images/deepseek.png');
+        break;
+      case 'Ollama':
+        icon = const AssetImage('assets/images/ollama.png');
+        break;
+      case 'OpenAI':
+        icon = const AssetImage('assets/images/openai.png');
+        break;
+      case 'Anthropic':
+        icon = const AssetImage('assets/images/anthropic.png');
+        break;
+      default:
+        icon = const AssetImage('assets/images/error.png');
+    }
+    
+    // Set isSelected if provided
+    if (isSelected != null) {
+      this.isSelected = isSelected;
+    }
+  }
 
   // METHODS ----------------------------------------------
 

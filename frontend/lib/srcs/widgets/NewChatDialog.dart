@@ -38,6 +38,9 @@ class _NewChatDialogState extends State<NewChatDialog> {
               DropdownMenuItem(value: 'Anthropic', child: Text('Anthropic', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily))),
               DropdownMenuItem(value: 'Ollama', child: Text('Ollama', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily))),
               DropdownMenuItem(value: 'OpenAI', child: Text('OpenAI', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily))),
+              DropdownMenuItem(value: 'Mistral', child: Text('Mistral', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily))),
+              DropdownMenuItem(value: 'Gemini', child: Text('Gemini', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily))),
+              DropdownMenuItem(value: 'DeepSeek', child: Text('DeepSeek', style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily))),
             ],
             onChanged: (value) {
               setState(() {
@@ -47,23 +50,37 @@ class _NewChatDialogState extends State<NewChatDialog> {
             },
           ),
           const SizedBox(height: 16),
-          // Model Selection
-          if (selectedModelType != null)
-            DropdownButtonFormField<String>(
-              isExpanded: true,
-              style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
-              value: selectedModel,
-              decoration: const InputDecoration(
-                labelText: 'Model',
-                border: OutlineInputBorder(),
-              ),
-              items: _getModelItems(selectedModelType!, metadata),
-              onChanged: (value) {
-                setState(() {
-                  selectedModel = value;
-                });
-              },
+          
+          // Model Selection - Always displayed, disabled if no model type selected
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily),
+            value: selectedModel,
+            decoration: const InputDecoration(
+              labelText: 'Model',
+              border: OutlineInputBorder(),
             ),
+            items: selectedModelType != null 
+                ? _getModelItems(selectedModelType!, metadata)
+                : [], // Empty list if no model type selected
+            onChanged: selectedModelType != null 
+                ? (value) {
+                    setState(() {
+                      selectedModel = value;
+                    });
+                  }
+                : null, // Disabled if no model type selected
+            hint: Text(
+              selectedModelType == null 
+                ? 'Select a model type first' 
+                : 'Select a model',
+              style: TextStyle(
+                fontSize: metadata.fontSize, 
+                fontFamily: metadata.fontFamily,
+                color: Colors.grey,
+              ),
+            ),
+          ),
         ],
       ),
       actions: [
@@ -96,27 +113,77 @@ class _NewChatDialogState extends State<NewChatDialog> {
     );
   }
 
+  Widget _buildProviderDropdownItem(String providerType, double fontSize, String fontFamily) {
+    return Row(
+      children: [
+        Image(image: _getProviderIcon(providerType), width: 20, height: 20),
+        const SizedBox(width: 8),
+        Text(providerType, style: TextStyle(fontSize: fontSize, fontFamily: fontFamily))
+      ],
+    );
+  }
+  
+  AssetImage _getProviderIcon(String type) {
+    switch (type) {
+      case 'Gemini':
+        return const AssetImage('assets/images/gemini.png');
+      case 'Mistral':
+        return const AssetImage('assets/images/mistral.png');
+      case 'DeepSeek':
+        return const AssetImage('assets/images/deepseek.png');
+      case 'Ollama':
+        return const AssetImage('assets/images/ollama.png');
+      case 'OpenAI':
+        return const AssetImage('assets/images/openai.png');
+      case 'Anthropic':
+        return const AssetImage('assets/images/anthropic.png');
+      default:
+        return const AssetImage('assets/images/error.png');
+    }
+  }
+
   List<DropdownMenuItem<String>> _getModelItems(String type, Singleton metadata) {
     switch (type) {
       case 'Anthropic':
         return metadata.anthropic_models
-            .map((model) => DropdownMenuItem<String>(
-                  value: model['id'],
-                  child: Text(model['id'], style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
+            .map((modelId) => DropdownMenuItem<String>(
+                  value: modelId,
+                  child: Text(modelId, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
                 ))
             .toList();
       case 'Ollama':
         return metadata.ollama_models
-            .map((model) => DropdownMenuItem<String>(
-                  value: model['name'],
-                  child: Text(model['name'], style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
+            .map((modelName) => DropdownMenuItem<String>(
+                  value: modelName,
+                  child: Text(modelName, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
                 ))
             .toList();
       case 'OpenAI':
         return metadata.openai_models
-            .map((model) => DropdownMenuItem<String>(
-                  value: model['id'],
-                  child: Text(model['id'], style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
+            .map((modelId) => DropdownMenuItem<String>(
+                  value: modelId,
+                  child: Text(modelId, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
+                ))
+            .toList();
+      case 'Mistral':
+        return metadata.mistral_models
+            .map((modelId) => DropdownMenuItem<String>(
+                  value: modelId,
+                  child: Text(modelId, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
+                ))
+            .toList();
+      case 'Gemini':
+        return metadata.gemini_models
+            .map((modelId) => DropdownMenuItem<String>(
+                  value: modelId,
+                  child: Text(modelId, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
+                ))
+            .toList();
+      case 'DeepSeek':
+        return metadata.deepseek_models
+            .map((modelId) => DropdownMenuItem<String>(
+                  value: modelId,
+                  child: Text(modelId, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)),
                 ))
             .toList();
       default:

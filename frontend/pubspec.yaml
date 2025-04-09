@@ -83,8 +83,10 @@ flutter:
     - assets/images/ollama.png
     - assets/images/openai.png
     - assets/images/anthropic.png
+    - assets/images/gemini.png
+    - assets/images/mistral.png
+    - assets/images/deepseek.png
     - assets/json/models.json
-  #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
