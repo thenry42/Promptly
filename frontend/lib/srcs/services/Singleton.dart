@@ -67,49 +67,58 @@ class Singleton {
   Future<void> getAnthropicModels() async
   {
     // Get the models from the backend API
-    anthropic_models = await backendService.getAnthropicModelsRequest(anthropicKey);
+    var tmp = await backendService.getAnthropicModelsRequest(anthropicKey);
   
     // Only retrieve the models name
+    anthropic_models = tmp.map<String>((model) => model['id'] as String).toList();
   }
 
   Future<void> getOllamaModels() async
   {
     // Get the models from the backend API
-    ollama_models = await backendService.getOllamaModelsRequest();
+    var tmp = await backendService.getOllamaModelsRequest();
 
-    // Retrieve the models from the backend API w/ their features
+    // Only retrieve the models name
+    ollama_models = tmp.map<String>((model) => model['model'] as String).toList();
   }
 
   Future<void> getOpenAIModels() async
   {
     // Get the models from the backend API
-    openai_models = await backendService.getOpenAIModelsRequest(openAIKey);
+    var tmp = await backendService.getOpenAIModelsRequest(openAIKey);
 
-    // Retrieve the models from the backend API w/ their features
+    // Only retrieve the models name
+    openai_models = tmp.map<String>((model) => model['id'] as String).toList();
   }
 
   Future<void> getMistralModels() async
   {
     // Get the models from the backend API
-    mistral_models = await backendService.getMistralModelsRequest(mistralKey);
+    var tmp = await backendService.getMistralModelsRequest(mistralKey);
 
-    // Retrieve the models from the backend API w/ their features
+    // Only retrieve the models name
+    mistral_models = tmp.map<String>((model) => model['id'] as String).toList();
   }
 
   Future<void> getGeminiModels() async
   {
     // Get the models from the backend API
-    gemini_models = await backendService.getGeminiModelsRequest(geminiKey);
+    var tmp = await backendService.getGeminiModelsRequest(geminiKey);
 
-    // Retrieve the models from the backend API w/ their features
+    // Only retrieve the models name - use 'name' field instead of 'id'
+    gemini_models = tmp.map<String>((model) => model['name'] as String).toList();
+
+    // Remove "models/" prefix if it exists
+    gemini_models = gemini_models.map<String>((model) => model.startsWith('models/') ? model.substring(7) : model).toList();
   }
 
   Future<void> getDeepSeekModels() async
   {
     // Get the models from the backend API
-    deepseek_models = await backendService.getDeepSeekModelsRequest(deepseekKey);
+    var tmp = await backendService.getDeepSeekModelsRequest(deepseekKey);
 
-    // Retrieve the models from the backend API w/ their features
+    // Only retrieve the models name
+    deepseek_models = tmp.map<String>((model) => model['id'] as String).toList();
   }
 
   Future<void> getModels() async
