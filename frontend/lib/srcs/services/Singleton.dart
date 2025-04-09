@@ -66,33 +66,50 @@ class Singleton {
 
   Future<void> getAnthropicModels() async
   {
-    anthropic_models = await backendService.getAnthropicModels(anthropicKey);
+    // Get the models from the backend API
+    anthropic_models = await backendService.getAnthropicModelsRequest(anthropicKey);
+  
+    // Only retrieve the models name
   }
 
   Future<void> getOllamaModels() async
   {
-    ollama_models = await backendService.getOllamaModels();
+    // Get the models from the backend API
+    ollama_models = await backendService.getOllamaModelsRequest();
+
+    // Retrieve the models from the backend API w/ their features
   }
 
   Future<void> getOpenAIModels() async
   {
-    openai_models = await backendService.getOpenAIModels(openAIKey);
-  }
+    // Get the models from the backend API
+    openai_models = await backendService.getOpenAIModelsRequest(openAIKey);
 
+    // Retrieve the models from the backend API w/ their features
+  }
 
   Future<void> getMistralModels() async
   {
-    mistral_models = await backendService.getMistralModels(mistralKey);
+    // Get the models from the backend API
+    mistral_models = await backendService.getMistralModelsRequest(mistralKey);
+
+    // Retrieve the models from the backend API w/ their features
   }
 
   Future<void> getGeminiModels() async
   {
-    gemini_models = await backendService.getGeminiModels(geminiKey);
+    // Get the models from the backend API
+    gemini_models = await backendService.getGeminiModelsRequest(geminiKey);
+
+    // Retrieve the models from the backend API w/ their features
   }
 
   Future<void> getDeepSeekModels() async
   {
-    deepseek_models = await backendService.getDeepSeekModels(deepseekKey);
+    // Get the models from the backend API
+    deepseek_models = await backendService.getDeepSeekModelsRequest(deepseekKey);
+
+    // Retrieve the models from the backend API w/ their features
   }
 
   Future<void> getModels() async

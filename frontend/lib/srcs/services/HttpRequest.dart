@@ -5,7 +5,7 @@ class BackendService {
   final String baseUrl = 'http://localhost:8000';
 
   /// Get the list of available models from the backend
-  Future<List<dynamic>> getOllamaModels() async {
+  Future<List<dynamic>> getOllamaModelsRequest() async {
     try {
       final response = await http.get(Uri.parse('$baseUrl/ollama/models/list'));
       
@@ -21,7 +21,7 @@ class BackendService {
     }
   }
 
-  Future<List<dynamic>> getAnthropicModels(String apiKey) async {
+  Future<List<dynamic>> getAnthropicModelsRequest(String apiKey) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/anthropic/models/list?api_key=$apiKey'),
@@ -30,7 +30,7 @@ class BackendService {
       
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['models'] ?? [];
+        return data['data'] ?? [];
       } else {
         throw Exception('Failed to load Anthropic models: ${response.statusCode}');
       }
@@ -40,7 +40,7 @@ class BackendService {
     }
   }
 
-  Future<List<dynamic>> getOpenAIModels(String apiKey) async {
+  Future<List<dynamic>> getOpenAIModelsRequest(String apiKey) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/openai/models/list?api_key=$apiKey'),
@@ -49,7 +49,7 @@ class BackendService {
       
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['models'] ?? [];
+        return data['data'] ?? [];
       } else {
         throw Exception('Failed to load OpenAI models: ${response.statusCode}');
       }
@@ -59,7 +59,7 @@ class BackendService {
     }
   }
 
-  Future<List<dynamic>> getMistralModels(String apiKey) async {
+  Future<List<dynamic>> getMistralModelsRequest(String apiKey) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/mistral/models/list?api_key=$apiKey'),
@@ -68,7 +68,7 @@ class BackendService {
       
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['models'] ?? [];
+        return data['data'] ?? [];
       } else {
         throw Exception('Failed to load Mistral models: ${response.statusCode}');
       }
@@ -78,7 +78,7 @@ class BackendService {
     }
   }
 
-  Future<List<dynamic>> getGeminiModels(String apiKey) async {
+  Future<List<dynamic>> getGeminiModelsRequest(String apiKey) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/gemini/models/list?api_key=$apiKey'),
@@ -87,7 +87,7 @@ class BackendService {
       
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['models'] ?? [];
+        return data['_page'] ?? [];
       } else {
         throw Exception('Failed to load Gemini models: ${response.statusCode}');
       }
@@ -97,7 +97,7 @@ class BackendService {
     }
   }
 
-  Future<List<dynamic>> getDeepSeekModels(String apiKey) async {
+  Future<List<dynamic>> getDeepSeekModelsRequest(String apiKey) async {
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/deepseek/models/list?api_key=$apiKey'),
@@ -106,7 +106,7 @@ class BackendService {
       
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['models'] ?? [];
+        return data['data'] ?? [];
       } else {
         throw Exception('Failed to load DeepSeek models: ${response.statusCode}');
       }
@@ -115,5 +115,4 @@ class BackendService {
       throw Exception('Network error: $e');
     }
   }
-
 }
