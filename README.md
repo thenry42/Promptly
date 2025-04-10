@@ -82,7 +82,7 @@ To use this application, you'll need to provide API keys for the LLM services yo
 
 ## Licence
 
-This project is licensed under the Unlicense. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the Unlicense. See the [LICENSE](LICENSE) file for details. Obviously, the licence only applies to the code I wrote, not the logos or materials that belong to their respective owners.
 
 ## Acknowledgements
 
