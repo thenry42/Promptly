@@ -1,0 +1,11 @@
+python-dotenv
+fastapi
+uvicorn
+ollama
+requests
+pydantic
+mistralai
+openai
+google-genai
+anthropic
+ftfy
