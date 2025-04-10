@@ -13,4 +13,7 @@ echo "Docker containers are now running!"
 echo "Starting Flutter frontend..."
 cd frontend && flutter run
 
+echo "Shutting down Docker containers..."
+cd .. && make down && make clean
+
 echo "Application startup complete!"
