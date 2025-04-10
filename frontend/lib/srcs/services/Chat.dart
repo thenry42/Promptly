@@ -109,7 +109,34 @@ class Chat
         }
       }
       // Add other model providers here (OpenAI, Anthropic, etc.)
-      
+      else if (type == "OpenAI") {
+        final response = await metadata.backendService.openaiCompletionRequest(
+          modelName: modelName,
+          messages: formattedMessages,
+          apiKey: metadata.openAIKey,
+        );
+
+        // Process OpenAI response
+        if (response.containsKey('choices') && 
+            response['choices'] is List && 
+            response['choices'].isNotEmpty) {
+          final assistantMessage = response['choices'][0]['message'];
+          final content = assistantMessage['content'];
+        
+          // Add the assistant's response to the chat
+          addChatMessage(ChatMessage(
+            sender: 'assistant',
+            message: content,
+            timestamp: DateTime.now(),
+            rawMessage: response,
+          ));
+        } else {
+          throw Exception('Invalid response format: missing choices array');
+        } 
+      }
+      // Add other model providers here (Anthropic, etc.)
+      else if (type == "Anthropic") {
+      }
     } catch (e) {
       print('Error generating message request: $e');
       addChatMessage(ChatMessage(

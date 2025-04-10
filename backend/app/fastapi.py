@@ -13,8 +13,6 @@ app = FastAPI()
 class OllamaChatCompletionRequest(BaseModel):
     model: str
     messages: list
-    max_tokens: int | None = None
-    temperature: float = 0.7
     stream: bool = False
 
 class OllamaRequest(BaseModel):
@@ -26,10 +24,11 @@ class AnthropicRequest(BaseModel):
     model: str
     prompt: str
 
-class OpenAIRequest(BaseModel):
-    api_key: str
+class OpenAIChatCompletionRequest(BaseModel):
     model: str
-    prompt: str
+    messages: list
+    api_key: str
+    stream: bool = False
 
 class MistralRequest(BaseModel):
     api_key: str
@@ -132,18 +131,34 @@ def ollama_chat_completion(request: OllamaChatCompletionRequest):
     except Exception as e:
         return {"error": str(e)}
 
-"""
-@app.post("/completion")
-def completion(request: OllamaRequest):
+@app.post("/openai/chat/completions")
+def openai_chat_completion(request: OpenAIChatCompletionRequest):
     try:
-        client = ollama_client()
-        response = client.chat(
-            model = request.model,
-            messages = [
-                {"role": "user", "content": request.prompt}
-            ]
-        )
-        return {"completion": response}
+        from openai import OpenAI
+        
+        # Initialize OpenAI client with the API key
+        client = OpenAI(api_key=request.api_key)
+        
+        # Prepare the request parameters
+        params = {
+            "model": request.model,
+            "messages": request.messages,
+        }
+        
+        # Call OpenAI API
+        response = client.chat.completions.create(**params)
+        
+        # Convert the response to a dict
+        # For the newer OpenAI client library, we need to convert the response object to a dict
+        if hasattr(response, 'model_dump'):
+            response_dict = response.model_dump()
+        else:
+            # For backwards compatibility with older versions
+            import json
+            response_dict = json.loads(json.dumps(response, default=lambda o: o.__dict__))
+        
+        return response_dict
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return {"error": str(e)}
-"""

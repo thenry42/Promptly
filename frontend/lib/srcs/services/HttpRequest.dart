@@ -145,4 +145,45 @@ class BackendService {
       throw Exception('Network error: $e');
     }
   }
+
+  Future<Map<String, dynamic>> openaiCompletionRequest({
+    required String modelName,
+    required List<Map<String, String>> messages,
+    required String apiKey,
+    bool stream = false,
+  }) async {
+    try {
+
+      if (apiKey.isEmpty) {
+        throw Exception('API key is empty');
+      }
+      
+      final Map<String, dynamic> requestBody = {
+        'model': modelName,
+        'messages': messages,
+        'stream': stream,
+        'api_key': apiKey,
+      };
+      
+      final body = jsonEncode(requestBody);
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/openai/chat/completions'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to get OpenAI completion: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      print('Error getting OpenAI completion: $e');
+      throw Exception('Network error: $e');
+    }
+  }
 }
