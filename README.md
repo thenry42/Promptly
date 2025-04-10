@@ -1,11 +1,21 @@
-# REWORK ONGOING
+<div align="center">
+  <img src="promptly-logo.png" alt="Promptly Logo" width="200"/>
+</div>
 
-- Use of python to interact with AI providers
-- Use FastAPI (python) and dio (flutter) to exchange data
-- Save keys and chat history in flutter using flutter storage
-- Use of Riverpod to manage states in flutter
-- Added Docker for my backend
-- New AI provider (Anthropic, OpenAI, Ollama, Deepseek, Mistral, Gemini)
+<div align="center">
+  <p>
+    <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker"/>
+    <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter"/>
+    <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
+    <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI"/>
+    <img src="https://img.shields.io/badge/Ollama-412991?style=for-the-badge&logo=llama&logoColor=white" alt="Ollama"/>
+    <img src="https://img.shields.io/badge/Anthropic-412991?style=for-the-badge&logo=anthropic&logoColor=white" alt="Anthropic"/>
+    <img src="https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart"/>
+    <img src="https://img.shields.io/badge/DeepSeek-412991?style=for-the-badge&logo=deepseek&logoColor=white" alt="DeepSeek"/>
+    <img src="https://img.shields.io/badge/Mistral-412991?style=for-the-badge&logo=mistral&logoColor=white" alt="Mistral"/>
+    <img src="https://img.shields.io/badge/Gemini-412991?style=for-the-badge&logo=gemini&logoColor=white" alt="Gemini"/>
+  </p>
+</div>
 
 # What is Promptly ?
 
@@ -13,20 +23,22 @@ Promptly is a flutter app that allows you to chat with LLMs from multiple provid
 
 ## Overview
 
-This simple project provides a convenient way to communicate with various AI language models from OpenAI, Anthropic, and Ollama - all from one application. Simply configure your API keys and start chatting with your preferred AI assistants.
+This simple project provides a convenient way to communicate with various AI language models from OpenAI, Anthropic, and Ollama, etc - all from one application. Simply configure your API keys and start chatting with your preferred AI assistants.
 
 ## Features
 
-- Multiple provider support (OpenAI, Anthropic, Ollama)
+- Multiple AI provider support for chat & text generation
 - Easy API key configuration (keys are encrypted and stored locally using the flutter SecureStorage package)
 - Chat history is automatically saved between app launches
 
 ## Roadmap
 
-- [x] Add support for OpenAI (gpt-4o, chatgpt-4o-latest, gpt-4o-mini, o1-mini, gpt-4o-realtime-preview, gpt-4o-mini-realtime-preview)
-- [x] Add support for Anthropic (claude-3-5-sonnet-latest, claude-3-7-sonnet-latest, claude-3-5-haiku-latest, claude-3-opus-latest)
+- [x] Add support for OpenAI models
+- [x] Add support for Anthropic models
 - [x] Add support for Ollama (most models work out of the box)
-- [ ] Add support for DeepSeek
+- [x] Add support for DeepSeek models
+- [x] Add support for Mistral models
+- [x] Add support for Gemini models
 - [ ] Ship the app on Mac, Linux, and Windows
 - [ ] Add support for tool calling
 - [ ] Add support for image input
@@ -41,13 +53,17 @@ This simple project provides a convenient way to communicate with various AI lan
 
 1. Install [Flutter/Dart](https://docs.flutter.dev/get-started/install)
 2. Run `flutter doctor` and install the missing dependencies for your device if any.
+3. Install [Docker](https://docs.docker.com/get-docker/)
+4. Run `make build` to build the Docker containers
 
 ### Install Promptly
 
 1. Clone the repository
 2. Run `cd promptly_app`
-3. Run `flutter pub get`
-4. Run `flutter run`
+3. Run `./run.sh` to start the application
+4. Alternatively, you can run Makefile commands to start/stop/clean the application (Optimal for development)
+
+> **Note:** You can add the desktop file to your applications menu to start the application faster. You need to adjust the Exec path to match your local path.
 
 ## Configuration
 
@@ -62,6 +78,7 @@ To use this application, you'll need to provide API keys for the LLM services yo
 - All API keys are encrypted at rest using the flutter FlutterSecureStorage package
 - All data is stored locally on the device
 - Conversations may be processed by the respective LLM providers according to their privacy policies
+- I cannot guarantee any misuses of API usage by the application. I personally use it at my own risk and so should you. I haven't add any issue so far but I would recommend to add API credits by small amounts to avoid any issues (recharge credits 5$ by 5$). Google does not provide that safety net, that's why I'm not using it.
 
 ## Licence
 
@@ -72,7 +89,10 @@ This project is licensed under the Unlicense. See the [LICENSE](LICENSE) file fo
 - [OpenAI](https://openai.com)
 - [Anthropic](https://anthropic.com)
 - [Ollama](https://ollama.com)
+- [DeepSeek](https://deepseek.com)
+- [Mistral](https://mistral.ai)
+- [Gemini](https://gemini.google.com)
 
 ## Disclaimer
 
-This project is not affiliated with OpenAI, Anthropic, or Ollama. It is a single person project that also happens to be my first Flutter project. I do not claim to own any of the logos (or anything else for that matter) used in this project. All logos are property of their respective owners. Don't come after me with legal threats, nobody ain't got time for that. If you have any suggestions or feedback, please feel free to open an issue ! :smile:
+This project is not affiliated with OpenAI, Anthropic, Ollama, DeepSeek, Mistral, Gemini. It is a single person project that also happens to be my first Flutter project. I personally use it as a tool to help me with my work and it's a good project for my portfolio. I do not claim to own any of the logos (or anything else for that matter) used in this project. All logos are property of their respective owners. Don't come after me with legal threats, nobody ain't got time for that. If you have any suggestions or feedback, please feel free to open an issue ! :smile:
