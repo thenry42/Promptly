@@ -10,6 +10,13 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+class OllamaChatCompletionRequest(BaseModel):
+    model: str
+    messages: list
+    max_tokens: int | None = None
+    temperature: float = 0.7
+    stream: bool = False
+
 class OllamaRequest(BaseModel):
     model: str
     prompt: str
@@ -85,6 +92,43 @@ def list_mistral_models(api_key: str):
 def list_gemini_models(api_key: str):
     try:
         return gemini_list_models(api_key)
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.post("/ollama/chat/completions")
+def ollama_chat_completion(request: OllamaChatCompletionRequest):
+    try:
+        client = ollama_client()
+        
+        # Prepare the request for Ollama
+        request_params = {
+            "model": request.model,
+            "messages": request.messages,
+        }
+        
+        # Stream is not implemented here, but could be added later
+        
+        # Call Ollama API
+        response = client.chat(**request_params)
+        
+        # Format response similar to OpenAI's format
+        return {
+            "id": response.get("id", ""),
+            "object": "chat.completion",
+            "created": response.get("created", 0),
+            "model": request.model,
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {
+                        "role": "assistant",
+                        "content": response.get("message", {}).get("content", "")
+                    },
+                    "finish_reason": "stop"
+                }
+            ],
+            "usage": response.get("usage", {})
+        }
     except Exception as e:
         return {"error": str(e)}
 

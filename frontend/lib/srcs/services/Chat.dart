@@ -68,8 +68,61 @@ class Chat
     final messageList = metadata.chatList[metadata.selectedChatIndex].messages;
     final maxTokens = metadata.chatList[metadata.selectedChatIndex].max_output_tokens;
 
-    // Save chats after generating a message
-    await metadata.saveChats();
+    isSendingRequest = true;
+
+    try {
+      List<Map<String, String>> formattedMessages = [];
+      for (var msg in messageList) {
+        formattedMessages.add({
+          'role': msg.sender.toLowerCase(),
+          'content': msg.message,
+        });
+      }
+
+      if (type == "Ollama") {
+        final response = await metadata.backendService.ollamaCompletionRequest(
+          modelName: modelName,
+          messages: formattedMessages,
+        );
+        
+        // Process Ollama response
+        if (response.containsKey('choices') && 
+            response['choices'] is List && 
+            response['choices'].isNotEmpty) {
+          
+          final assistantMessage = response['choices'][0]['message'];
+          if (assistantMessage != null && assistantMessage.containsKey('content')) {
+            final content = assistantMessage['content'];
+            
+            // Add the assistant's response to the chat
+            addChatMessage(ChatMessage(
+              sender: 'assistant',
+              message: content,
+              timestamp: DateTime.now(),
+              rawMessage: response,
+            ));
+          } else {
+            throw Exception('Invalid response format: missing message content');
+          }
+        } else {
+          throw Exception('Invalid response format: missing choices array');
+        }
+      }
+      // Add other model providers here (OpenAI, Anthropic, etc.)
+      
+    } catch (e) {
+      print('Error generating message request: $e');
+      addChatMessage(ChatMessage(
+        sender: 'system',
+        message: 'Error: Could not generate a response. $e',
+        timestamp: DateTime.now(),
+        rawMessage: {'error': e.toString()},
+      ));
+    } finally {
+      isSendingRequest = false;
+      // Save chats after generating a message
+      await metadata.saveChats(); 
+    }
   }
 
   Map<String, dynamic> toJson() {

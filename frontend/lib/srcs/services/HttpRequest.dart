@@ -115,4 +115,34 @@ class BackendService {
       throw Exception('Network error: $e');
     }
   }
+
+  Future<Map<String, dynamic>> ollamaCompletionRequest({
+    required String modelName,
+    required List<Map<String, String>> messages,
+    bool stream = false,
+  }) async {
+    try {
+      final body = jsonEncode({
+        'model': modelName,
+        'messages': messages,
+        'stream': stream,
+      });
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/ollama/chat/completions'),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to get completion: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error getting Ollama completion: $e');
+      throw Exception('Network error: $e');
+    }
+  }
 }
