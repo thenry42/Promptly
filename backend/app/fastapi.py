@@ -7,6 +7,7 @@ from app.mistral_ import mistral_list_models
 from app.gemini_ import gemini_list_models
 from app.deepseek_ import deepseek_list_models
 from pydantic import BaseModel
+import time
 
 app = FastAPI()
 
@@ -44,6 +45,12 @@ class DeepSeekRequest(BaseModel):
     api_key: str
     model: str
     prompt: str
+
+class MistralChatCompletionRequest(BaseModel):
+    model: str
+    messages: list
+    api_key: str
+    stream: bool = False
 
 @app.get("/")
 def read_root():
@@ -199,6 +206,74 @@ def deepseek_chat_completion(request: DeepSeekChatCompletionRequest):
             response_dict = json.loads(json.dumps(response, default=lambda o: o.__dict__))
         
         return response_dict
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
+
+@app.post("/mistral/chat/completions")
+def mistral_chat_completion(request: MistralChatCompletionRequest):
+    try:
+        from mistralai import Mistral
+        
+        # Initialize Mistral client with API key
+        client = Mistral(api_key=request.api_key)
+        
+        # Prepare the request parameters
+        params = {
+            "model": request.model,
+            "messages": request.messages,
+        }
+        
+        # Call Mistral API
+        response = client.chat.complete(**params)
+        
+        # Print the response for debugging
+        print("Raw Mistral response:", response)
+        
+        # Safely handle the usage info
+        usage_info = {}
+        if hasattr(response, 'usage'):
+            try:
+                # Try to access as a dictionary
+                if isinstance(response.usage, dict):
+                    usage_info = response.usage
+                # Try to access as an object with attributes
+                elif hasattr(response.usage, 'prompt_tokens'):
+                    usage_info = {
+                        'prompt_tokens': response.usage.prompt_tokens,
+                        'completion_tokens': response.usage.completion_tokens,
+                        'total_tokens': response.usage.total_tokens
+                    }
+            except Exception as usage_error:
+                print(f"Error processing usage info: {usage_error}")
+                # Provide default values if there's an error
+                usage_info = {
+                    'prompt_tokens': 0,
+                    'completion_tokens': 0,
+                    'total_tokens': 0
+                }
+        
+        # Convert the response to a format similar to OpenAI's
+        formatted_response = {
+            "id": getattr(response, "id", f"mistral-{int(time.time())}"),
+            "object": "chat.completion",
+            "created": int(time.time()),
+            "model": request.model,
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {
+                        "role": "assistant",
+                        "content": response.choices[0].message.content
+                    },
+                    "finish_reason": "stop"
+                }
+            ],
+            "usage": usage_info
+        }
+        
+        return formatted_response
     except Exception as e:
         import traceback
         traceback.print_exc()

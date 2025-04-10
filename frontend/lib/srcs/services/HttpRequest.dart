@@ -226,4 +226,44 @@ class BackendService {
       throw Exception('Network error: $e');
     }
   }
+
+  Future<Map<String, dynamic>> mistralCompletionRequest({
+    required String modelName,
+    required List<Map<String, String>> messages,
+    required String apiKey,
+    bool stream = false,
+  }) async {
+    try {
+      if (apiKey.isEmpty) {
+        throw Exception('Mistral API key is empty');
+      }
+      
+      final Map<String, dynamic> requestBody = {
+        'model': modelName,
+        'messages': messages,
+        'api_key': apiKey,
+        'stream': stream,
+      };
+      
+      final body = jsonEncode(requestBody);
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/mistral/chat/completions'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to get Mistral completion: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      print('Error getting Mistral completion: $e');
+      throw Exception('Network error: $e');
+    }
+  }
 }

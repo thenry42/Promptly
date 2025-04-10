@@ -79,6 +79,7 @@ class Chat
       }
 
       Map<String, dynamic> response;
+      String content = "";
 
       if (type == "Ollama") {
         response = await metadata.backendService.ollamaCompletionRequest(
@@ -114,31 +115,56 @@ class Chat
 
         print(response);
       }
+      else if (type == "Mistral") {
+        final apiKey = metadata.mistralKey;
+        
+        if (apiKey.isEmpty) {
+          throw Exception('Mistral API key is not set');
+        }
+        
+        response = await metadata.backendService.mistralCompletionRequest(
+          modelName: modelName,
+          messages: formattedMessages,
+          apiKey: apiKey,
+        );
+        
+        // Print the full response for debugging
+        print("Full Mistral response: $response");
+        
+        // Check for error in response
+        if (response.containsKey('error')) {
+          throw Exception('Mistral API error: ${response['error']}');
+        }
+        
+        // Extract content from Mistral response
+        if (response.containsKey('choices') && 
+            response['choices'] is List && 
+            response['choices'].isNotEmpty) {
+          
+          final assistantMessage = response['choices'][0]['message'];
+          if (assistantMessage != null && assistantMessage.containsKey('content')) {
+            content = assistantMessage['content'];
+          } else {
+            throw Exception('Invalid Mistral response format: missing message content');
+          }
+        } else {
+          throw Exception('Invalid Mistral response format: missing choices array');
+        }
+      }
       else {
         throw Exception('Unsupported model provider: $type');
       }
       
-      // Process response
-      if (response.containsKey('choices') && 
-          response['choices'] is List && 
-          response['choices'].isNotEmpty) {
-        
-        final assistantMessage = response['choices'][0]['message'];
-        if (assistantMessage != null && assistantMessage.containsKey('content')) {
-          final content = assistantMessage['content'];
-          
-          // Add the assistant's response to the chat
-          addChatMessage(ChatMessage(
-            sender: 'assistant',
-            message: content,
-            timestamp: DateTime.now(),
-            rawMessage: response,
-          ));
-        } else {
-          throw Exception('Invalid response format: missing message content');
-        }
+      // We've extracted the content, now add it to the chat
+      if (content.isNotEmpty) {
+        addChatMessage(ChatMessage(
+          sender: 'assistant',
+          message: content,
+          timestamp: DateTime.now(),
+          rawMessage: response,
+        ));
       } else {
-        throw Exception('Invalid response format: missing choices array');
+        throw Exception('Failed to extract content from response');
       }
       
     } catch (e) {
