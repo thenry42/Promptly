@@ -308,4 +308,33 @@ class BackendService {
       throw Exception('Network error: $e');
     }
   }
+
+  Future<Map<String, dynamic>> geminiCompletionRequest({
+    required String modelName,
+    required List<Map<String, String>> messages,
+    required String apiKey,
+  }) async {
+    try {
+      final Map<String, dynamic> requestBody = {
+        'model': modelName,
+        'messages': messages,
+        'api_key': apiKey,
+      };
+      
+      final response = await http.post(
+        Uri.parse('$baseUrl/gemini/chat/completions'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Failed to get Gemini completion: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error getting Gemini completion: $e');
+      throw Exception('Network error: $e');
+    }
+  }
 }

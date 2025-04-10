@@ -189,6 +189,34 @@ class Chat
           throw Exception('Invalid Anthropic response format: missing choices array');
         }
       }
+      else if (type == "Gemini") {
+        final apiKey = metadata.geminiKey;
+        
+        if (apiKey.isEmpty) {
+          throw Exception('Gemini API key is not set');
+        }
+        
+        response = await metadata.backendService.geminiCompletionRequest(
+          modelName: modelName,
+          messages: formattedMessages,
+          apiKey: apiKey,
+        );
+        
+        if (response.containsKey('error')) {
+          throw Exception('Gemini API error: ${response['error']}');
+        }
+        
+        if (response.containsKey('choices') && 
+            response['choices'] is List && 
+            response['choices'].isNotEmpty &&
+            response['choices'][0]['message'] != null &&
+            response['choices'][0]['message']['content'] != null) {
+          
+          content = response['choices'][0]['message']['content'];
+        } else {
+          throw Exception('Invalid Gemini response format');
+        }
+      }
       else {
         throw Exception('Unsupported model provider: $type');
       }

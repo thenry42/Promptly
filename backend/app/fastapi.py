@@ -59,6 +59,12 @@ class AnthropicChatCompletionRequest(BaseModel):
     max_tokens: int = 4096
     stream: bool = False
 
+class GeminiChatCompletionRequest(BaseModel):
+    model: str
+    messages: list
+    api_key: str
+    stream: bool = False
+
 @app.get("/")
 def read_root():
     return {"message": "Hello, World!"}
@@ -349,6 +355,51 @@ def anthropic_chat_completion(request: AnthropicChatCompletionRequest):
                 "usage": {}  # Omit usage info rather than causing an error
             }
         
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
+
+@app.post("/gemini/chat/completions")
+def gemini_chat_completion(request: GeminiChatCompletionRequest):
+    try:
+        from google import genai
+        
+        # Initialize Gemini client with API key
+        client = genai.Client(api_key=request.api_key)
+        
+        # Format messages for Gemini API
+        contents = []
+        for message in request.messages:
+            role = message.get("role", "").lower()
+            content = message.get("content", "")
+            
+            # Add the message content to the contents list
+            contents.append(content)
+        
+        # Generate content using the model specified in the request
+        response = client.models.generate_content(
+            model=request.model,
+            contents=contents
+        )
+        
+        # Return in the format expected by frontend
+        return {
+            "id": f"gemini-{int(time.time())}",
+            "object": "chat.completion",
+            "created": int(time.time()),
+            "model": request.model,
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {
+                        "role": "assistant",
+                        "content": response.text
+                    },
+                    "finish_reason": "stop"
+                }
+            ]
+        }
     except Exception as e:
         import traceback
         traceback.print_exc()
