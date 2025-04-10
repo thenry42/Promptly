@@ -8,6 +8,7 @@ from app.gemini_ import gemini_list_models
 from app.deepseek_ import deepseek_list_models
 from pydantic import BaseModel
 import time
+import ftfy  # You'll need to install this: pip install ftfy
 
 app = FastAPI()
 
@@ -200,23 +201,33 @@ def deepseek_chat_completion(request: DeepSeekChatCompletionRequest):
             base_url="https://api.deepseek.com"
         )
         
-        # Simplified request parameters
-        params = {
-            "model": request.model,
-            "messages": request.messages,
-            "stream": request.stream
-        }
-        
         # Call DeepSeek API
-        response = client.chat.completions.create(**params)
+        response = client.chat.completions.create(
+            model=request.model,
+            messages=request.messages,
+            stream=request.stream
+        )
         
         # Convert the response to a dict
         if hasattr(response, 'model_dump'):
             response_dict = response.model_dump()
         else:
-            # For backwards compatibility with older versions
             import json
             response_dict = json.loads(json.dumps(response, default=lambda o: o.__dict__))
+        
+        # Fix text encoding issues in the response
+        if ('choices' in response_dict and 
+            len(response_dict['choices']) > 0 and 
+            'message' in response_dict['choices'][0] and 
+            'content' in response_dict['choices'][0]['message']):
+            
+            # Get the content
+            content = response_dict['choices'][0]['message']['content']
+            
+            # Fix text encoding using ftfy if content exists
+            if content:
+                fixed_content = ftfy.fix_text(content)
+                response_dict['choices'][0]['message']['content'] = fixed_content
         
         return response_dict
     except Exception as e:

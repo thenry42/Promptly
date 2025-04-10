@@ -66,7 +66,7 @@ class Chat
   Future<void> generateMessageRequest({required Singleton metadata}) async {
     final index = metadata.selectedChatIndex;
     final messageList = metadata.chatList[metadata.selectedChatIndex].messages;
-    final maxTokens = metadata.chatList[metadata.selectedChatIndex].max_output_tokens ?? 4096;
+    final maxTokens = metadata.chatList[metadata.selectedChatIndex].max_output_tokens;
 
     isSendingRequest = true;
 
@@ -82,11 +82,23 @@ class Chat
       Map<String, dynamic> response;
       String content = "";
 
+      // Ollama Works
       if (type == "Ollama") {
         response = await metadata.backendService.ollamaCompletionRequest(
           modelName: modelName,
           messages: formattedMessages,
         );
+        
+        // Extract content from Ollama response
+        if (response.containsKey('choices') && 
+            response['choices'] is List && 
+            response['choices'].isNotEmpty) {
+          
+          final messageObj = response['choices'][0]['message'];
+          if (messageObj != null && messageObj.containsKey('content')) {
+            content = messageObj['content'];
+          }
+        }
       } 
       else if (type == "OpenAI") {
         final apiKey = metadata.openAIKey;
@@ -100,7 +112,18 @@ class Chat
           messages: formattedMessages,
           apiKey: apiKey,
         );
-      }
+        
+        // Extract content from OpenAI response
+        if (response.containsKey('choices') && 
+            response['choices'] is List && 
+            response['choices'].isNotEmpty) {
+          
+          final messageObj = response['choices'][0]['message'];
+          if (messageObj != null && messageObj.containsKey('content')) {
+            content = messageObj['content'];
+          }
+        }
+      } // DeepSeek Works but char not displayed properly
       else if (type == "DeepSeek") {
         final apiKey = metadata.deepseekKey;
         
@@ -113,9 +136,18 @@ class Chat
           messages: formattedMessages,
           apiKey: apiKey,
         );
-
-        print(response);
-      }
+        
+        // Extract content from DeepSeek response
+        if (response.containsKey('choices') && 
+            response['choices'] is List && 
+            response['choices'].isNotEmpty) {
+          
+          final messageObj = response['choices'][0]['message'];
+          if (messageObj != null && messageObj.containsKey('content')) {
+            content = messageObj['content'];
+          }
+        }
+      } // Mistral Works
       else if (type == "Mistral") {
         final apiKey = metadata.mistralKey;
         
@@ -129,29 +161,17 @@ class Chat
           apiKey: apiKey,
         );
         
-        // Print the full response for debugging
-        print("Full Mistral response: $response");
-        
-        // Check for error in response
-        if (response.containsKey('error')) {
-          throw Exception('Mistral API error: ${response['error']}');
-        }
-        
         // Extract content from Mistral response
         if (response.containsKey('choices') && 
             response['choices'] is List && 
             response['choices'].isNotEmpty) {
           
-          final assistantMessage = response['choices'][0]['message'];
-          if (assistantMessage != null && assistantMessage.containsKey('content')) {
-            content = assistantMessage['content'];
-          } else {
-            throw Exception('Invalid Mistral response format: missing message content');
+          final messageObj = response['choices'][0]['message'];
+          if (messageObj != null && messageObj.containsKey('content')) {
+            content = messageObj['content'];
           }
-        } else {
-          throw Exception('Invalid Mistral response format: missing choices array');
         }
-      }
+      } // Anthropic Works
       else if (type == "Anthropic") {
         final apiKey = metadata.anthropicKey;
         
@@ -163,32 +183,20 @@ class Chat
           modelName: modelName,
           messages: formattedMessages,
           apiKey: apiKey,
-          maxTokens: maxTokens,
+          maxTokens: maxTokens ?? 4096,
         );
-        
-        // Print the full response for debugging
-        print("Full Anthropic response: $response");
-        
-        // Check for error in response
-        if (response.containsKey('error')) {
-          throw Exception('Anthropic API error: ${response['error']}');
-        }
         
         // Extract content from Anthropic response
         if (response.containsKey('choices') && 
             response['choices'] is List && 
             response['choices'].isNotEmpty) {
           
-          final assistantMessage = response['choices'][0]['message'];
-          if (assistantMessage != null && assistantMessage.containsKey('content')) {
-            content = assistantMessage['content'];
-          } else {
-            throw Exception('Invalid Anthropic response format: missing message content');
+          final messageObj = response['choices'][0]['message'];
+          if (messageObj != null && messageObj.containsKey('content')) {
+            content = messageObj['content'];
           }
-        } else {
-          throw Exception('Invalid Anthropic response format: missing choices array');
         }
-      }
+      } // Gemini Works
       else if (type == "Gemini") {
         final apiKey = metadata.geminiKey;
         
@@ -202,36 +210,35 @@ class Chat
           apiKey: apiKey,
         );
         
-        if (response.containsKey('error')) {
-          throw Exception('Gemini API error: ${response['error']}');
-        }
-        
+        // Extract content from Gemini response
         if (response.containsKey('choices') && 
             response['choices'] is List && 
-            response['choices'].isNotEmpty &&
-            response['choices'][0]['message'] != null &&
-            response['choices'][0]['message']['content'] != null) {
+            response['choices'].isNotEmpty) {
           
-          content = response['choices'][0]['message']['content'];
-        } else {
-          throw Exception('Invalid Gemini response format');
+          final messageObj = response['choices'][0]['message'];
+          if (messageObj != null && messageObj.containsKey('content')) {
+            content = messageObj['content'];
+          }
         }
       }
       else {
         throw Exception('Unsupported model provider: $type');
       }
       
-      // We've extracted the content, now add it to the chat
-      if (content.isNotEmpty) {
-        addChatMessage(ChatMessage(
-          sender: 'assistant',
-          message: content,
-          timestamp: DateTime.now(),
-          rawMessage: response,
-        ));
-      } else {
+      // Check if we were able to extract content
+      if (content.isEmpty) {
+        // Print the response for debugging
+        print("Could not extract content from response: $response");
         throw Exception('Failed to extract content from response');
       }
+      
+      // Add the response to the chat
+      addChatMessage(ChatMessage(
+        sender: 'assistant',
+        message: content,
+        timestamp: DateTime.now(),
+        rawMessage: response,
+      ));
       
     } catch (e) {
       print('Error generating message request: $e');
