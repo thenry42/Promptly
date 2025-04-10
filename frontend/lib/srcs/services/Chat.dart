@@ -66,6 +66,7 @@ class Chat
   Future<void> generateMessageRequest({required Singleton metadata}) async {
     final index = metadata.selectedChatIndex;
     final messageList = metadata.chatList[metadata.selectedChatIndex].messages;
+    final maxTokens = metadata.chatList[metadata.selectedChatIndex].max_output_tokens ?? 4096;
 
     isSendingRequest = true;
 
@@ -149,6 +150,43 @@ class Chat
           }
         } else {
           throw Exception('Invalid Mistral response format: missing choices array');
+        }
+      }
+      else if (type == "Anthropic") {
+        final apiKey = metadata.anthropicKey;
+        
+        if (apiKey.isEmpty) {
+          throw Exception('Anthropic API key is not set');
+        }
+        
+        response = await metadata.backendService.anthropicCompletionRequest(
+          modelName: modelName,
+          messages: formattedMessages,
+          apiKey: apiKey,
+          maxTokens: maxTokens,
+        );
+        
+        // Print the full response for debugging
+        print("Full Anthropic response: $response");
+        
+        // Check for error in response
+        if (response.containsKey('error')) {
+          throw Exception('Anthropic API error: ${response['error']}');
+        }
+        
+        // Extract content from Anthropic response
+        if (response.containsKey('choices') && 
+            response['choices'] is List && 
+            response['choices'].isNotEmpty) {
+          
+          final assistantMessage = response['choices'][0]['message'];
+          if (assistantMessage != null && assistantMessage.containsKey('content')) {
+            content = assistantMessage['content'];
+          } else {
+            throw Exception('Invalid Anthropic response format: missing message content');
+          }
+        } else {
+          throw Exception('Invalid Anthropic response format: missing choices array');
         }
       }
       else {

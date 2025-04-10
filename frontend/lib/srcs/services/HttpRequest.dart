@@ -266,4 +266,46 @@ class BackendService {
       throw Exception('Network error: $e');
     }
   }
+
+  Future<Map<String, dynamic>> anthropicCompletionRequest({
+    required String modelName,
+    required List<Map<String, String>> messages,
+    required String apiKey,
+    int maxTokens = 4096,
+    bool stream = false,
+  }) async {
+    try {
+      if (apiKey.isEmpty) {
+        throw Exception('Anthropic API key is empty');
+      }
+      
+      final Map<String, dynamic> requestBody = {
+        'model': modelName,
+        'messages': messages,
+        'api_key': apiKey,
+        'max_tokens': maxTokens,
+        'stream': stream,
+      };
+      
+      final body = jsonEncode(requestBody);
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/anthropic/chat/completions'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to get Anthropic completion: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      print('Error getting Anthropic completion: $e');
+      throw Exception('Network error: $e');
+    }
+  }
 }

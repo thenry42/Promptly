@@ -52,6 +52,13 @@ class MistralChatCompletionRequest(BaseModel):
     api_key: str
     stream: bool = False
 
+class AnthropicChatCompletionRequest(BaseModel):
+    model: str
+    messages: list
+    api_key: str
+    max_tokens: int = 4096
+    stream: bool = False
+
 @app.get("/")
 def read_root():
     return {"message": "Hello, World!"}
@@ -274,6 +281,74 @@ def mistral_chat_completion(request: MistralChatCompletionRequest):
         }
         
         return formatted_response
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
+
+@app.post("/anthropic/chat/completions")
+def anthropic_chat_completion(request: AnthropicChatCompletionRequest):
+    try:
+        from anthropic import Anthropic
+        
+        # Initialize Anthropic client with API key
+        client = Anthropic(api_key=request.api_key)
+        
+        # Make the API call to Anthropic
+        response = client.messages.create(
+            model=request.model,
+            max_tokens=request.max_tokens,
+            messages=request.messages,
+        )
+        
+        # Convert the response to a dictionary if possible
+        try:
+            import json
+            response_dict = json.loads(json.dumps(response, default=lambda o: o.__dict__))
+            print("Serialized response:", response_dict)
+            
+            # Format as OpenAI-like response
+            formatted_response = {
+                "id": response_dict.get("id", f"anthropic-{int(time.time())}"),
+                "object": "chat.completion",
+                "created": int(time.time()),
+                "model": request.model,
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {
+                            "role": "assistant",
+                            "content": response_dict.get("content", [{}])[0].get("text", "")
+                        },
+                        "finish_reason": "stop"
+                    }
+                ],
+                "usage": response_dict.get("usage", {})
+            }
+            
+            return formatted_response
+        except Exception as serialize_error:
+            print(f"Error serializing response: {serialize_error}")
+            
+            # Fallback to accessing specific properties directly
+            return {
+                "id": getattr(response, "id", f"anthropic-{int(time.time())}"),
+                "object": "chat.completion",
+                "created": int(time.time()),
+                "model": request.model,
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {
+                            "role": "assistant",
+                            "content": response.content[0].text
+                        },
+                        "finish_reason": "stop"
+                    }
+                ],
+                "usage": {}  # Omit usage info rather than causing an error
+            }
+        
     except Exception as e:
         import traceback
         traceback.print_exc()
