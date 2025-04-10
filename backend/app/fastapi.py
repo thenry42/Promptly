@@ -162,3 +162,44 @@ def openai_chat_completion(request: OpenAIChatCompletionRequest):
         import traceback
         traceback.print_exc()
         return {"error": str(e)}
+
+class DeepSeekChatCompletionRequest(BaseModel):
+    model: str
+    messages: list
+    api_key: str
+    stream: bool = False
+
+@app.post("/deepseek/chat/completions")
+def deepseek_chat_completion(request: DeepSeekChatCompletionRequest):
+    try:
+        from openai import OpenAI
+        
+        # Initialize OpenAI client with DeepSeek's base URL
+        client = OpenAI(
+            api_key=request.api_key,
+            base_url="https://api.deepseek.com"
+        )
+        
+        # Simplified request parameters
+        params = {
+            "model": request.model,
+            "messages": request.messages,
+            "stream": request.stream
+        }
+        
+        # Call DeepSeek API
+        response = client.chat.completions.create(**params)
+        
+        # Convert the response to a dict
+        if hasattr(response, 'model_dump'):
+            response_dict = response.model_dump()
+        else:
+            # For backwards compatibility with older versions
+            import json
+            response_dict = json.loads(json.dumps(response, default=lambda o: o.__dict__))
+        
+        return response_dict
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}

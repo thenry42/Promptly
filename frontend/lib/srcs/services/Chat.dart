@@ -66,7 +66,6 @@ class Chat
   Future<void> generateMessageRequest({required Singleton metadata}) async {
     final index = metadata.selectedChatIndex;
     final messageList = metadata.chatList[metadata.selectedChatIndex].messages;
-    final maxTokens = metadata.chatList[metadata.selectedChatIndex].max_output_tokens;
 
     isSendingRequest = true;
 
@@ -79,50 +78,55 @@ class Chat
         });
       }
 
+      Map<String, dynamic> response;
+
       if (type == "Ollama") {
-        final response = await metadata.backendService.ollamaCompletionRequest(
+        response = await metadata.backendService.ollamaCompletionRequest(
           modelName: modelName,
           messages: formattedMessages,
         );
-        
-        // Process Ollama response
-        if (response.containsKey('choices') && 
-            response['choices'] is List && 
-            response['choices'].isNotEmpty) {
-          
-          final assistantMessage = response['choices'][0]['message'];
-          if (assistantMessage != null && assistantMessage.containsKey('content')) {
-            final content = assistantMessage['content'];
-            
-            // Add the assistant's response to the chat
-            addChatMessage(ChatMessage(
-              sender: 'assistant',
-              message: content,
-              timestamp: DateTime.now(),
-              rawMessage: response,
-            ));
-          } else {
-            throw Exception('Invalid response format: missing message content');
-          }
-        } else {
-          throw Exception('Invalid response format: missing choices array');
-        }
-      }
-      // Add other model providers here (OpenAI, Anthropic, etc.)
+      } 
       else if (type == "OpenAI") {
-        final response = await metadata.backendService.openaiCompletionRequest(
+        final apiKey = metadata.openAIKey;
+        
+        if (apiKey.isEmpty) {
+          throw Exception('OpenAI API key is not set');
+        }
+        
+        response = await metadata.backendService.openaiCompletionRequest(
           modelName: modelName,
           messages: formattedMessages,
-          apiKey: metadata.openAIKey,
+          apiKey: apiKey,
+        );
+      }
+      else if (type == "DeepSeek") {
+        final apiKey = metadata.deepseekKey;
+        
+        if (apiKey.isEmpty) {
+          throw Exception('DeepSeek API key is not set');
+        }
+        
+        response = await metadata.backendService.deepseekCompletionRequest(
+          modelName: modelName,
+          messages: formattedMessages,
+          apiKey: apiKey,
         );
 
-        // Process OpenAI response
-        if (response.containsKey('choices') && 
-            response['choices'] is List && 
-            response['choices'].isNotEmpty) {
-          final assistantMessage = response['choices'][0]['message'];
-          final content = assistantMessage['content'];
+        print(response);
+      }
+      else {
+        throw Exception('Unsupported model provider: $type');
+      }
+      
+      // Process response
+      if (response.containsKey('choices') && 
+          response['choices'] is List && 
+          response['choices'].isNotEmpty) {
         
+        final assistantMessage = response['choices'][0]['message'];
+        if (assistantMessage != null && assistantMessage.containsKey('content')) {
+          final content = assistantMessage['content'];
+          
           // Add the assistant's response to the chat
           addChatMessage(ChatMessage(
             sender: 'assistant',
@@ -131,12 +135,12 @@ class Chat
             rawMessage: response,
           ));
         } else {
-          throw Exception('Invalid response format: missing choices array');
-        } 
+          throw Exception('Invalid response format: missing message content');
+        }
+      } else {
+        throw Exception('Invalid response format: missing choices array');
       }
-      // Add other model providers here (Anthropic, etc.)
-      else if (type == "Anthropic") {
-      }
+      
     } catch (e) {
       print('Error generating message request: $e');
       addChatMessage(ChatMessage(
