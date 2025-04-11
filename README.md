@@ -49,7 +49,7 @@ This simple project provides a convenient way to communicate with various AI lan
 
 > This app is currently in development on Linux (Nobara 40). I'm working on adding support for other platforms, but it's not ready yet. I have not tested the app on any other platforms.
 
-### Install Flutter
+### Install Flutter & Docker
 
 1. Install [Flutter/Dart](https://docs.flutter.dev/get-started/install)
 2. Run `flutter doctor` and install the missing dependencies for your device if any.
@@ -59,9 +59,23 @@ This simple project provides a convenient way to communicate with various AI lan
 ### Install Promptly
 
 1. Clone the repository
-2. Run `cd promptly_app`
-3. Run `./run.sh` to start the application
-4. Alternatively, you can run Makefile commands to start/stop/clean the application (Optimal for development)
+
+```bash
+git clone https://github.com/thenry42/Promptly.git
+cd Promptly
+```
+
+2. Install dependencies
+
+```bash
+cd frontend && flutter pub get
+```
+
+3. Run the application
+
+```bash
+cd .. && ./run.sh
+```
 
 > **Note:** You can add the desktop file to your applications menu to start the application faster. You need to adjust the Exec path to match your local path.
 
