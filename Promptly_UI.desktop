@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Promptly
+Name=Promptly_UI
 Comment=AI Chat Application for multiple providers
-Exec=/bin/bash -c "cd /home/tibzer/Portfolio/Promptly && ./run.sh"
+Exec=/bin/bash -c "cd /home/tibzer/Portfolio/Promptly_UI && ./run.sh"
 Icon=/home/tibzer/Portfolio/Promptly/promptly-logo.png
 Terminal=true
