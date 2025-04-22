@@ -237,7 +237,7 @@ class Chat
         sender: 'assistant',
         message: content,
         timestamp: DateTime.now(),
-        rawMessage: response,
+        rawMessage: response.toString(),
       ));
       
     } catch (e) {
@@ -246,7 +246,7 @@ class Chat
         sender: 'system',
         message: 'Error: Could not generate a response. $e',
         timestamp: DateTime.now(),
-        rawMessage: {'error': e.toString()},
+        rawMessage: e.toString(),
       ));
     } finally {
       isSendingRequest = false;

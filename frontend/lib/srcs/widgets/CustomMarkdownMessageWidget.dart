@@ -1,54 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:promptly_app/srcs/services/ChatMessage.dart';
 import 'package:promptly_app/srcs/services/Singleton.dart';
-import 'package:promptly_app/srcs/widgets/CustomMarkdownMessageWidget.dart';
+import 'package:promptly_app/srcs/widgets/CustomMarkdown.dart';
 
-class ChatMessageWidget extends StatefulWidget {
-  final ChatMessage message;
-  
-  const ChatMessageWidget({
-    Key? key,
-    required this.message,
-  }) : super(key: key);
-
-  @override
-  State<ChatMessageWidget> createState() => _ChatMessageWidgetState();
-}
-
-class _ChatMessageWidgetState extends State<ChatMessageWidget> {
-  @override
-  Widget build(BuildContext context) {
-    // Ensure message has the correct format set
-    if (!widget.message.useRaw && !widget.message.usePlainText && !widget.message.useCustomMarkdown) {
-      widget.message.useCustomMarkdown = true;
-    }
-    
-    if (widget.message.useRaw) {
-      return RawMessageWidget(message: widget.message, onFormatChange: _handleFormatChange);
-    } else if (widget.message.usePlainText) {
-      return PlainTextMessageWidget(message: widget.message, onFormatChange: _handleFormatChange);
-    } else {
-      // Default to custom markdown for all markdown content
-      return CustomMarkdownMessageWidget(message: widget.message, onFormatChange: _handleFormatChange);
-    }
-  }
-
-  void _handleFormatChange(String format) {
-    setState(() {
-      widget.message.setFormat(format);
-      
-      // Save the updated chat settings
-      final metadata = Singleton();
-      metadata.saveChats();
-    });
-  }
-}
-
-class PlainTextMessageWidget extends StatelessWidget {
+class CustomMarkdownMessageWidget extends StatelessWidget {
   final ChatMessage message;
   final Function(String) onFormatChange;
-  
-  const PlainTextMessageWidget({
+
+  const CustomMarkdownMessageWidget({
     Key? key,
     required this.message,
     required this.onFormatChange,
@@ -56,11 +15,10 @@ class PlainTextMessageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final metadata = Singleton();
-    return _buildMessageContainer(context, SelectableText(message.message, style: TextStyle(fontSize: metadata.fontSize, fontFamily: metadata.fontFamily)));
+    return buildMessageContainer(context);
   }
 
-  Widget _buildMessageContainer(BuildContext context, Widget content) {
+  Widget buildMessageContainer(BuildContext context) {
     final isUser = message.sender == "User";
     final metadata = Singleton();
     
@@ -107,25 +65,25 @@ class PlainTextMessageWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          content,
+          CustomMarkdownMessage(message: message.message),
           const SizedBox(height: 8),
-          _buildFormatButtons(context),
+          buildFormatButtons(context),
         ],
       ),
     );
   }
 
-  Widget _buildFormatButtons(BuildContext context) {
+  Widget buildFormatButtons(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          _FormatButton(label: 'Code', isActive: message.useCustomMarkdown, onPressed: () => onFormatChange('custom')),
+          FormatButton(label: 'Code', isActive: message.useCustomMarkdown, onPressed: () => onFormatChange('custom')),
           const SizedBox(width: 8),
-          _FormatButton(label: 'Raw', isActive: message.useRaw, onPressed: () => onFormatChange('raw')),
+          FormatButton(label: 'Raw', isActive: message.useRaw, onPressed: () => onFormatChange('raw')),
           const SizedBox(width: 8),
-          _FormatButton(label: 'Plain', isActive: message.usePlainText, onPressed: () => onFormatChange('plain')),
+          FormatButton(label: 'Plain', isActive: message.usePlainText, onPressed: () => onFormatChange('plain')),
         ],
       ),
     );
@@ -136,37 +94,17 @@ class PlainTextMessageWidget extends StatelessWidget {
   }
 }
 
-class RawMessageWidget extends PlainTextMessageWidget {
-  const RawMessageWidget({
-    Key? key,
-    required ChatMessage message,
-    required Function(String) onFormatChange,
-  }) : super(key: key, message: message, onFormatChange: onFormatChange);
-
-  @override
-  Widget build(BuildContext context) {
-    final metadata = Singleton();
-    
-    return _buildMessageContainer(
-      context,
-      SelectableText(
-        message.rawMessage.toString(),
-        style: TextStyle(fontFamily: metadata.fontFamily, fontSize: metadata.fontSize),
-      ),
-    );
-  }
-}
-
-class _FormatButton extends StatelessWidget {
+class FormatButton extends StatelessWidget {
   final String label;
   final bool isActive;
   final VoidCallback onPressed;
 
-  const _FormatButton({
+  const FormatButton({
+    Key? key,
     required this.label,
     required this.isActive,
     required this.onPressed,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -194,4 +132,4 @@ class _FormatButton extends StatelessWidget {
       ),
     );
   }
-}
+} 

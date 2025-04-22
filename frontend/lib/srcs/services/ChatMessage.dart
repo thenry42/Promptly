@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class ChatMessage
 {
   // ATTRIBUTES -------------------------------------------
@@ -5,9 +7,9 @@ class ChatMessage
   final String sender;
   final String message;
   final DateTime timestamp;
-  final Object rawMessage;
+  final String rawMessage;
   
-  bool useMarkdown = true;
+  bool useCustomMarkdown = true;  // Default to custom markdown
   bool useRaw = false;
   bool usePlainText = false;
 
@@ -19,25 +21,39 @@ class ChatMessage
     required this.timestamp,
     required this.rawMessage
   }) {
-    // Set default formatting based on sender
-    if (sender.toLowerCase() == 'user') {
-      useMarkdown = false;
-      usePlainText = true;
-    } else if (sender.toLowerCase() == 'assistant') {
-      useMarkdown = true;
-      usePlainText = false;
-    }
+    // Always default to custom markdown (code) mode regardless of sender
+    useCustomMarkdown = true;
+    useRaw = false;
+    usePlainText = false;
   }
 
   // METHODS ----------------------------------------------
+
+  void setFormat(String format) {
+    useCustomMarkdown = false;
+    useRaw = false;
+    usePlainText = false;
+
+    switch (format) {
+      case 'custom':
+        useCustomMarkdown = true;
+        break;
+      case 'raw':
+        useRaw = true;
+        break;
+      case 'plain':
+        usePlainText = true;
+        break;
+    }
+  }
 
   Map<String, dynamic> toJson() {
     return {
       'sender': sender,
       'message': message,
-      'timestamp': timestamp.toIso8601String(),
-      'rawMessage': rawMessage.toString(),
-      'useMarkdown': useMarkdown,
+      'timestamp': timestamp.millisecondsSinceEpoch,
+      'rawMessage': rawMessage,
+      'useCustomMarkdown': useCustomMarkdown,
       'useRaw': useRaw,
       'usePlainText': usePlainText,
     };
@@ -47,11 +63,12 @@ class ChatMessage
     return ChatMessage(
       sender: json['sender'],
       message: json['message'],
-      timestamp: DateTime.parse(json['timestamp']),
+      timestamp: DateTime.fromMillisecondsSinceEpoch(json['timestamp']),
       rawMessage: json['rawMessage'],
     )
-    ..useMarkdown = json['useMarkdown'] ?? true
-    ..useRaw = json['useRaw'] ?? false
-    ..usePlainText = json['usePlainText'] ?? false;
+    // Force custom markdown to be true by default, ignoring saved values
+    ..useCustomMarkdown = true
+    ..useRaw = false
+    ..usePlainText = false;
   }
 }
