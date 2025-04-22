@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';  // Add this import for keyboard handling
+// Import the necessary classes for keyboard events
+import 'package:flutter/services.dart' show KeyEvent, KeyDownEvent, LogicalKeyboardKey, HardwareKeyboard;
 import 'package:promptly_app/srcs/services/ChatMessage.dart';
 import 'package:promptly_app/srcs/services/Singleton.dart';
 import 'package:promptly_app/srcs/services/Chat.dart';
@@ -175,29 +178,40 @@ class _ChattingAreaState extends State<ChattingArea> {
                     color: Colors.grey.withOpacity(0.3),
                   ),
                 ),
-                child: TextFormField(
-                  controller: _textController,
-                  enabled: isInputEnabled,
-                  maxLines: 30,
-                  minLines: 1,
-                  keyboardType: TextInputType.multiline,
-                  style: TextStyle(
-                    fontFamily: metadata.fontFamily,
-                    fontSize: metadata.fontSize,
-                  ),
-                  scrollPhysics: const BouncingScrollPhysics(),
-                  decoration: InputDecoration(
-                    hintText: isInputEnabled ? 'Type a message...' : 'Select a chat to start messaging',
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.only(
-                      left: 16, // Reduced padding
-                      right: 48, // Reduced padding, but keep space for send button
-                      top: 12, // Reduced padding
-                      bottom: 12, // Reduced padding
+                child: Focus(
+                  onKeyEvent: (FocusNode node, KeyEvent event) {
+                    if (isInputEnabled && 
+                        event is KeyDownEvent && 
+                        event.logicalKey == LogicalKeyboardKey.enter && 
+                        !(HardwareKeyboard.instance.isShiftPressed || HardwareKeyboard.instance.isControlPressed)) {
+                      _sendMessage();
+                      return KeyEventResult.handled;
+                    }
+                    return KeyEventResult.ignored;
+                  },
+                  child: TextFormField(
+                    controller: _textController,
+                    enabled: isInputEnabled,
+                    maxLines: 30,
+                    minLines: 1,
+                    keyboardType: TextInputType.multiline,
+                    style: TextStyle(
+                      fontFamily: metadata.fontFamily,
+                      fontSize: metadata.fontSize,
                     ),
-                    isCollapsed: false,
+                    scrollPhysics: const BouncingScrollPhysics(),
+                    decoration: InputDecoration(
+                      hintText: isInputEnabled ? 'Type a message...' : 'Select a chat to start messaging',
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.only(
+                        left: 16, // Reduced padding
+                        right: 48, // Reduced padding, but keep space for send button
+                        top: 12, // Reduced padding
+                        bottom: 12, // Reduced padding
+                      ),
+                      isCollapsed: false,
+                    ),
                   ),
-                  onFieldSubmitted: isInputEnabled ? (_) => _sendMessage : null,
                 ),
               ),
               Positioned(
