@@ -71,9 +71,7 @@ class PlainTextMessageWidget extends StatelessWidget {
         right: isUser ? 18.0 : 150.0,
       ),
       decoration: BoxDecoration(
-        color: isUser 
-          ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-          : Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
