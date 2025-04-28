@@ -29,6 +29,15 @@ void main() async {
     setWindowTitle('Promptly');
     setWindowMinSize(const Size(720, 720)); // 720, 720 safe
     setWindowMaxSize(const Size(2560, 1440));
+    
+    // Get screen size and set app to launch in full screen
+    final screenSize = await getWindowInfo();
+    setWindowFrame(Rect.fromLTWH(
+      0, 
+      0, 
+      screenSize.frame.width, 
+      screenSize.frame.height
+    ));
   }
 
   runApp(const MyApp());
