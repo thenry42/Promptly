@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Promptly
+Comment=AI Chat Interface
+Exec=/path/to/Promptly/run.sh
+Icon=/path/to/Promptly/assets/logo.png
+Terminal=true
+Categories=Utility;Development;AI;
+StartupNotify=true
+StartupWMClass=Promptly
