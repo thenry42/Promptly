@@ -1,0 +1,26 @@
+[server]
+# Enable gzip compression for lower latency and faster load times
+enableCORS = false
+enableXsrfProtection = true
+maxUploadSize = 10
+
+[browser]
+# Reduce server weight by decreasing UI updates
+serverAddress = "localhost"
+gatherUsageStats = false
+
+[runner]
+# More efficient memory usage and faster response times
+magicEnabled = true
+installTracer = false
+fixMatplotlib = true
+fastReruns = true
+
+[theme]
+# Dark theme for better viewing experience
+base = "dark"
+primaryColor = "#4B8BF5"
+backgroundColor = "#1E1E1E"
+secondaryBackgroundColor = "#252526"
+textColor = "#FAFAFA"
+font = "sans serif" 
