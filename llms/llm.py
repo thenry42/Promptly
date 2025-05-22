@@ -7,13 +7,12 @@ from typing import List, Dict, Any, Optional, Tuple, Callable
 
 
 # Import provider modules
-from .providers.llm_ollama import check_ollama, get_available_models_ollama, ollama_chat
-from .providers.llm_deepseek import check_deepseek, get_available_models_deepseek, deepseek_chat
-from .providers.llm_mistral import check_mistral, get_available_models_mistral, mistral_chat
-from .providers.llm_anthropic import check_anthropic, get_available_models_anthropic, anthropic_chat
-from .providers.llm_openai import check_openai, get_available_models_openai, openai_chat
-from .providers.llm_gemini import check_gemini, get_available_models_gemini, gemini_chat
-
+from .providers.llm_ollama import check_ollama, get_available_models_ollama, ollama_chat, get_ollama_streaming
+from .providers.llm_deepseek import check_deepseek, get_available_models_deepseek, deepseek_chat, get_deepseek_streaming
+from .providers.llm_mistral import check_mistral, get_available_models_mistral, mistral_chat, get_mistral_streaming
+from .providers.llm_anthropic import check_anthropic, get_available_models_anthropic, anthropic_chat, get_anthropic_streaming
+from .providers.llm_openai import check_openai, get_available_models_openai, openai_chat, get_openai_streaming
+from .providers.llm_gemini import check_gemini, get_available_models_gemini, gemini_chat, get_gemini_streaming
 
 # Define provider mappings for cleaner code
 PROVIDER_CONFIGS = {
@@ -22,6 +21,7 @@ PROVIDER_CONFIGS = {
         "check_func": check_ollama,
         "models_func": get_available_models_ollama,
         "chat_func": ollama_chat,
+        "streaming_func": get_ollama_streaming,
         "requires_key": False,  # Ollama just needs a port, not an API key
     },
     "Deepseek": {
@@ -29,6 +29,7 @@ PROVIDER_CONFIGS = {
         "check_func": check_deepseek,
         "models_func": get_available_models_deepseek,
         "chat_func": deepseek_chat,
+        "streaming_func": get_deepseek_streaming,
         "requires_key": True,
     },
     "Mistral": {
@@ -36,6 +37,7 @@ PROVIDER_CONFIGS = {
         "check_func": check_mistral,
         "models_func": get_available_models_mistral,
         "chat_func": mistral_chat,
+        "streaming_func": get_mistral_streaming,
         "requires_key": True,
     },
     "Anthropic": {
@@ -43,6 +45,7 @@ PROVIDER_CONFIGS = {
         "check_func": check_anthropic,
         "models_func": get_available_models_anthropic,
         "chat_func": anthropic_chat,
+        "streaming_func": get_anthropic_streaming,
         "requires_key": True,
     },
     "OpenAI": {
@@ -50,6 +53,7 @@ PROVIDER_CONFIGS = {
         "check_func": check_openai,
         "models_func": get_available_models_openai,
         "chat_func": openai_chat,
+        "streaming_func": get_openai_streaming,
         "requires_key": True,
     },
     "Gemini": {
@@ -57,6 +61,7 @@ PROVIDER_CONFIGS = {
         "check_func": check_gemini,
         "models_func": get_available_models_gemini,
         "chat_func": gemini_chat,
+        "streaming_func": get_gemini_streaming,
         "requires_key": True,
     }
 }
@@ -250,12 +255,12 @@ def get_llm_response_streaming(
         
     config = PROVIDER_CONFIGS[provider]
     key_name = config["key_name"]
-    chat_func = config["chat_func"]
+    streaming_func = config["streaming_func"]
     api_key = api_keys[key_name]
     
     try:
         # Get the full response first (this is a temporary solution)
-        full_response = chat_func(model, messages, api_key)
+        full_response = streaming_func(model, messages, api_key)
         
         # Break it into chunks to simulate streaming
         # In a real implementation, we would use the actual streaming APIs

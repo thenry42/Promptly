@@ -2,10 +2,14 @@ import streamlit as st
 import toml
 import os
 from pathlib import Path
+from state.state_manager import initialize_session_state
 
 
 def show_settings():
     """Show the settings page with a header and API key settings."""
+    # Initialize session state
+    initialize_session_state()
+    
     st.header("Settings")
     
     # Create a container with a dark-friendly style
