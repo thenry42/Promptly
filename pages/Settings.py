@@ -55,36 +55,54 @@ def show_settings():
             key="ollama_input",
         )
 
+        # App Settings section
+        st.subheader("App Settings")
+        
+        # Add streaming toggle
+        st.session_state.app_settings['use_streaming'] = st.toggle(
+            "Enable streaming responses",
+            value=st.session_state.app_settings.get('use_streaming', False),
+            help="When enabled, responses will stream in real-time instead of waiting for complete responses",
+            key="streaming_toggle"
+        )
+
         col1, col2 = st.columns(2)
         
         with col1:
-            if st.button("Save API Keys", key="save_keys", use_container_width=True, type="primary"):
+            if st.button("Save Settings", key="save_keys", use_container_width=True, type="primary"):
                 # Update secrets file (in development environment)
-                update_secrets_file(st.session_state.api_keys)
+                update_secrets_file(st.session_state.api_keys, st.session_state.app_settings)
                 # Clear any caches that depend on API keys
                 if 'cached_get_available_providers' in globals():
                     globals()['cached_get_available_providers'].clear()
                 if 'cached_get_available_models' in globals():
                     globals()['cached_get_available_models'].clear()
-                st.success("API keys saved successfully!")
+                st.success("Settings saved successfully!")
         
         with col2:
-            if st.button("Clear All Keys", key="clear_keys", use_container_width=True):
+            if st.button("Reset to Defaults", key="clear_keys", use_container_width=True):
                 for key in st.session_state.api_keys:
                     st.session_state.api_keys[key] = '' if key != 'ollama' else '11434'
-                update_secrets_file(st.session_state.api_keys)
+                st.session_state.app_settings['use_streaming'] = False
+                update_secrets_file(st.session_state.api_keys, st.session_state.app_settings)
                 # Clear any caches that depend on API keys
                 if 'cached_get_available_providers' in globals():
                     globals()['cached_get_available_providers'].clear()
                 if 'cached_get_available_models' in globals():
                     globals()['cached_get_available_models'].clear()
-                st.success("All API keys cleared!")
+                st.success("Settings reset to defaults!")
                 st.rerun()
         
 
 @st.cache_data(ttl=60)  # Cache writes to the secrets file to prevent frequent disk I/O
-def update_secrets_file(api_keys):
-    """Update the .streamlit/secrets.toml file with new API keys"""
+def update_secrets_file(api_keys, app_settings):
+    """
+    Update the .streamlit/secrets.toml file with new settings
+    
+    Args:
+        api_keys: Dictionary of API keys
+        app_settings: Dictionary of app settings
+    """
     # Only do this in development, not in production
     if not os.environ.get("STREAMLIT_DEPLOYMENT"):
         secrets_dir = Path(".streamlit")
@@ -107,6 +125,12 @@ def update_secrets_file(api_keys):
         secrets["api_keys"]["mistral"] = api_keys["mistral"]
         secrets["api_keys"]["deepseek"] = api_keys["deepseek"]
         secrets["api_keys"]["ollama"] = api_keys["ollama"]
+        
+        # Update app settings
+        if "app_settings" not in secrets:
+            secrets["app_settings"] = {}
+            
+        secrets["app_settings"]["use_streaming"] = app_settings["use_streaming"]
         
         # Write back to file
         with open(secrets_file, "w") as f:
