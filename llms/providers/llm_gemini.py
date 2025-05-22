@@ -2,6 +2,7 @@ from google import genai
 
 
 def check_gemini(api_key):
+    """ Check if the Gemini API key is valid """
     try:
         client = genai.Client(api_key=api_key)
         models = client.models.list()
@@ -15,6 +16,7 @@ def check_gemini(api_key):
 
 
 def get_available_models_gemini(api_key):
+    """ Get the available models for the Gemini API """
     try:
         client = genai.Client(api_key=api_key)
         models = client.models.list()
@@ -22,7 +24,9 @@ def get_available_models_gemini(api_key):
     except Exception as e:
         return []
 
+
 def gemini_chat(model, message, api_key):
+    """ Send a chat request to Gemini and get the response WITHOUT streaming """
     try:
         client = genai.Client(api_key=api_key)
 
@@ -51,3 +55,8 @@ def gemini_chat(model, message, api_key):
         return response.text
     except Exception as e:
         return "Error: " + str(e)
+
+
+def get_gemini_streaming(model, message, api_key):
+    """Get a streaming response from the specified LLM provider and model."""
+    return []

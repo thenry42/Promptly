@@ -1,12 +1,12 @@
-import streamlit as st
-from llms.llm import get_available_providers, get_available_models, get_llm_response
-import time
 import gc
-import psutil
 import os
+import time
+import psutil
+import streamlit as st
 from history.history import load_chats, save_chats, add_message
+from llms.llm import get_available_providers, get_available_models, get_llm_response
 
-# Set page configuration with dark theme - MUST be first Streamlit command
+
 st.set_page_config(
     page_title="Promptly",
     page_icon="💬",
@@ -17,36 +17,43 @@ st.set_page_config(
     }
 )
 
-# Add caching for expensive operations
-@st.cache_data(ttl=300)  # Cache available providers for 5 minutes
+
+@st.cache_data(ttl=300)
 def cached_get_available_providers(api_keys):
+    """Cached version of get_available_providers to reduce API calls"""
     return get_available_providers(api_keys)
 
-@st.cache_data(ttl=300)  # Cache available models for 5 minutes
+
+@st.cache_data(ttl=300)
 def cached_get_available_models(provider, api_keys):
+    """Cached version of get_available_models to reduce API calls"""
     return get_available_models(provider, api_keys)
 
-@st.cache_data(ttl=60)  # Cache chat history for 1 minute
+
+@st.cache_data(ttl=60)
 def cached_load_chats():
     """Cached version of load_chats to reduce disk I/O"""
     return load_chats()
+
 
 def clean_memory():
     """Perform garbage collection to free memory"""
     gc.collect()
 
-@st.cache_data(ttl=5)  # Cache chat rendering for 5 seconds
+
+@st.cache_data(ttl=5)
 def render_message(role, content):
     """Render a chat message with appropriate styling"""
     return {"role": role, "content": content}
 
-@st.cache_data(ttl=3)  # Cache the chat header rendering for 3 seconds
+
+@st.cache_data(ttl=3)
 def render_chat_header(provider, model):
     """Render the chat header with styling"""
     return f"<h3 style='color:#FAFAFA; background-color:#484955; padding:10px; border-radius:10px'>{provider} - {model}</h3>"
 
-# Cache the chat list data with shorter TTL to reduce stale data issues
-@st.cache_data(ttl=1)  # Reduce TTL even further to 1 second to prevent stale data
+
+@st.cache_data(ttl=1)
 def get_chat_list_data():
     """Get the list of chats data without any UI elements"""
     # Make a deep copy of the data to avoid modifying the original
@@ -62,7 +69,7 @@ def get_chat_list_data():
         return chat_id
     return sorted(chat_items, key=sort_key)
 
-# New function to handle chat selection without forcing a rerun
+
 def select_chat(chat_id):
     """Select a chat without forcing a complete rerun"""
     # If we're switching from a chat that's currently processing
@@ -78,6 +85,7 @@ def select_chat(chat_id):
     st.session_state.active_chat_id = chat_id
     # Clear the chat list cache to ensure fresh data
     get_chat_list_data.clear()
+
 
 def show_chat():
     # Initialize chat state variables if they don't exist
@@ -275,7 +283,7 @@ def show_chat():
             # Force a rerun to display the new message and start processing
             st.rerun()
 
-# Modify the sidebar render function to use the session state directly
+
 def render_sidebar():
     """Render the sidebar with chat list"""
     st.title("Chat Management")
@@ -352,7 +360,7 @@ def render_sidebar():
             if st.button("🗑️", key=delete_button_key, help="Delete this chat", on_click=create_delete_callback(chat_id)):
                 pass  # The callback handles the deletion
 
-# Cache the data
+
 @st.cache_data(ttl=5)
 def get_visible_messages(active_chat):
     """Get the visible messages from the chat with caching"""
@@ -360,7 +368,7 @@ def get_visible_messages(active_chat):
     visible_messages = active_chat["messages"][-MAX_VISIBLE_MESSAGES:] if len(active_chat["messages"]) > MAX_VISIBLE_MESSAGES else active_chat["messages"]
     return visible_messages
 
-# Don't cache the UI display
+
 def display_messages(messages):
     """Display the message UI - this can't be cached as it contains widgets"""
     for message in messages:
@@ -370,7 +378,7 @@ def display_messages(messages):
                 rendered_message = render_message(message["role"], message["content"])
                 st.markdown(rendered_message["content"])
 
-# Remove caching from model selection since it contains widgets
+
 def render_model_selection(active_chat):
     """Render the model selection UI"""
     st.title("Create New Chat")
@@ -456,6 +464,10 @@ def main():
             'mistral': st.secrets.get("api_keys", {}).get("mistral", ""),
             'deepseek': st.secrets.get("api_keys", {}).get("deepseek", ""),
             'ollama': st.secrets.get("api_keys", {}).get("ollama", "11434")
+        }
+    if 'app_settings' not in st.session_state:
+        st.session_state.app_settings = {
+            'use_streaming': False
         }
 
     # Show the chat interface on the main page

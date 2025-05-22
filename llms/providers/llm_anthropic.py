@@ -1,6 +1,8 @@
 import anthropic
 
+
 def check_anthropic(api_key):
+    """ Check if the Anthropic API key is valid """
     try:
         client = anthropic.Anthropic(api_key=api_key)
         models = client.models.list()
@@ -12,7 +14,9 @@ def check_anthropic(api_key):
     except Exception as e:
         return False
 
+
 def get_available_models_anthropic(api_key):
+    """ Get the available models for the Anthropic API """
     try:
         client = anthropic.Anthropic(api_key=api_key)
         models = client.models.list()
@@ -20,7 +24,9 @@ def get_available_models_anthropic(api_key):
     except Exception as e:
         return []
 
+
 def anthropic_chat(model, message, api_key):
+    """ Send a chat request to Anthropic and get the response WITHOUT streaming """
     try:
         client = anthropic.Anthropic(api_key=api_key)
         
@@ -42,3 +48,8 @@ def anthropic_chat(model, message, api_key):
         return response.content[0].text
     except Exception as e:
         return "Error: " + str(e)
+
+
+def get_anthropic_streaming(model, message, api_key):
+    """Get a streaming response from the specified LLM provider and model."""
+    return []

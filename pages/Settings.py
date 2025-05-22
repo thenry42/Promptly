@@ -3,8 +3,9 @@ import toml
 import os
 from pathlib import Path
 
-# Instead of caching the entire page, we'll cache specific components
+
 def show_settings():
+    """Show the settings page with a header and API key settings."""
     st.header("Settings")
     
     # Create a container with a dark-friendly style
@@ -54,7 +55,6 @@ def show_settings():
             key="ollama_input",
         )
 
-        # Add save and clear buttons in a column layout with better styling
         col1, col2 = st.columns(2)
         
         with col1:
@@ -111,6 +111,7 @@ def update_secrets_file(api_keys):
         # Write back to file
         with open(secrets_file, "w") as f:
             toml.dump(secrets, f)
+
 
 # Show settings page
 show_settings()

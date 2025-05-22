@@ -1,6 +1,8 @@
 import openai
 
+
 def check_deepseek(api_key):
+    """ Check if the Deepseek API key is valid """
     try:
         res = []
         client = openai.OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
@@ -13,7 +15,9 @@ def check_deepseek(api_key):
     except Exception as e:
         return False
 
+
 def get_available_models_deepseek(api_key):
+    """ Get the available models for the Deepseek API """
     res = []
     try:
         client = openai.OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
@@ -23,7 +27,9 @@ def get_available_models_deepseek(api_key):
         return []
     return res
 
+
 def deepseek_chat(model, message, api_key):
+    """ Send a chat request to Deepseek and get the response WITHOUT streaming """
     try:
         client = openai.OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
         
@@ -44,3 +50,8 @@ def deepseek_chat(model, message, api_key):
         return response.choices[0].message.content
     except Exception as e:
         return "Error: " + str(e)
+
+
+def get_deepseek_streaming(model, message, api_key):
+    """Get a streaming response from the specified LLM provider and model."""
+    return []

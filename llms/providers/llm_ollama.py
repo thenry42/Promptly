@@ -4,10 +4,7 @@ import requests
 
 
 def check_ollama(port):
-    """
-    Check if Ollama is running and accessible on the specified port.
-    Returns True if available, False otherwise.
-    """
+    """ Check if Ollama is running and accessible on the specified port """
     if not port:
         return False
         
@@ -25,10 +22,7 @@ def check_ollama(port):
 
 
 def get_available_models_ollama(port):
-    """
-    Get available Ollama models.
-    Returns a list of model names or empty list if error occurs.
-    """
+    """ Get available Ollama models """
     if not port:
         return []
         
@@ -46,10 +40,7 @@ def get_available_models_ollama(port):
 
 
 def ollama_chat(model, messages, port):
-    """
-    Send a chat request to Ollama and get the response.
-    Handles errors and timeouts gracefully.
-    """
+    """ Send a chat request to Ollama and get the response WITHOUT streaming """
     if not port:
         return "Error: Ollama port is not specified"
         
@@ -87,3 +78,8 @@ def ollama_chat(model, messages, port):
         return "Error: Failed to connect to Ollama. Please check if Ollama is running."
     except Exception as e:
         return f"Error: {str(e)}"
+
+
+def get_ollama_streaming(model, message, api_key):
+    """Get a streaming response from the specified LLM provider and model."""
+    return []
