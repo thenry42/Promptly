@@ -80,6 +80,52 @@ def ollama_chat(model, messages, port):
         return f"Error: {str(e)}"
 
 
-def get_ollama_streaming(model, message, api_key):
+def get_ollama_streaming(model, message, port):
     """Get a streaming response from the specified LLM provider and model."""
-    return []
+    try:
+        client = ollama.Client(host=f"http://localhost:{port}")
+        
+        # Filter out 'id' field from messages to prevent API errors
+        filtered_messages = []
+        for msg in message:
+            filtered_msg = {
+                "role": msg["role"],
+                "content": msg["content"]
+            }
+            filtered_messages.append(filtered_msg)
+        
+        stream = client.chat(
+            model=model,
+            messages=filtered_messages,
+            stream=True
+        )
+        
+        # Internal buffering mechanism for smoother streaming
+        buffer = ""
+        min_yield_size = 5  # Only yield when we have at least 5 characters
+        last_yield_time = time.time()
+        max_buffer_time = 0.1  # Yield at least every 100ms even if buffer is small
+        
+        # Process each chunk with buffering logic
+        for chunk in stream:
+            if "message" in chunk and "content" in chunk["message"]:
+                buffer += chunk["message"]["content"]
+            elif "response" in chunk:
+                buffer += chunk["response"]
+            current_time = time.time()
+            time_since_last_yield = current_time - last_yield_time
+            
+            # Yield when buffer reaches threshold OR if max time has passed since last yield
+            if len(buffer) >= min_yield_size or time_since_last_yield >= max_buffer_time:
+                yield buffer
+                buffer = ""
+                last_yield_time = current_time
+        
+        # Yield any remaining text in buffer
+        if buffer:
+            yield buffer
+
+    except Exception as e:
+        error_msg = f"Error with Ollama streaming: {str(e)}"
+        print(error_msg)  # Log the error
+        yield error_msg
