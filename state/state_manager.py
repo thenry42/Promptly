@@ -5,7 +5,7 @@ import hashlib
 from typing import Dict, List, Any, Tuple, Optional, Callable
 
 from history.history import load_chats, save_chats, add_message
-from llms.llm import cached_llm_response, cached_get_llm_response_streaming
+from llms.llm import cached_llm_response, get_llm_response_streaming
 
 
 def initialize_session_state() -> None:
@@ -228,34 +228,13 @@ def process_assistant_response() -> bool:
             st.session_state.processing_chat_id = None
             return False
         
-        # Get response from the selected LLM - use streaming if enabled
-        use_streaming = st.session_state.app_settings.get('use_streaming', False)
-        
-        if use_streaming:
-            # Initialize an empty response
-            response = ""
-            # Get streaming response chunks
-            for chunk in cached_get_llm_response_streaming(
-                active_chat["selected_provider"], 
-                active_chat["selected_model"], 
-                active_chat["messages"], 
-                st.session_state.api_keys
-            ):
-                # Append the chunk to the full response
-                response += chunk
-                # Update the UI with the current response
-                # This will be handled by the Chat.py which displays the placeholder
-                
-                # You could potentially add the ability to set a temporary response here
-                # that would be updated during streaming, but we'll keep it simple
-        else:
-            # Get the full response at once (non-streaming)
-            response = cached_llm_response(
-                active_chat["selected_provider"], 
-                active_chat["selected_model"], 
-                active_chat["messages"], 
-                st.session_state.api_keys
-            )
+        # Get the full response at once (non-streaming)
+        response = cached_llm_response(
+            active_chat["selected_provider"], 
+            active_chat["selected_model"], 
+            active_chat["messages"], 
+            st.session_state.api_keys
+        )
         
         # Add assistant response to history
         message_id = time.time()  # Use timestamp as a unique message ID

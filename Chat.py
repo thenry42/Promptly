@@ -24,7 +24,7 @@ from llms.llm import (
     get_available_providers,
     get_available_models,
     cached_llm_response,
-    cached_get_llm_response_streaming
+    get_llm_response_streaming
 )
 from history.history import save_chats
 
@@ -142,10 +142,21 @@ def show_chat():
         # Message container for better scrolling
         message_container = st.container()
         
+        # First display all existing messages
         with message_container:
-            # Get messages and display them
-            messages = get_visible_messages(active_chat)
-            display_messages(messages)
+            # Get all messages except the one being processed (if streaming)
+            messages_to_display = get_visible_messages(active_chat)
+            # If we're processing a streaming response, don't display the last assistant message here
+            # since it will be displayed in the streaming section
+            if st.session_state.processing and st.session_state.processing_chat_id == st.session_state.active_chat_id:
+                if st.session_state.app_settings.get('use_streaming', False):
+                    # Filter out any potential incomplete assistant message at the end (last message should be user)
+                    messages_to_display = [msg for msg in messages_to_display 
+                                          if not (msg["role"] == "assistant" and 
+                                                 msg == messages_to_display[-1])]
+            
+            # Display all the messages
+            display_messages(messages_to_display)
 
         # Process the assistant's response if needed
         if st.session_state.processing and st.session_state.processing_chat_id == st.session_state.active_chat_id:
@@ -180,7 +191,7 @@ def show_chat():
                             current_response = ""
                             
                             # Get streaming response generator
-                            streaming_generator = cached_get_llm_response_streaming(
+                            streaming_generator = get_llm_response_streaming(
                                 active_chat["selected_provider"],
                                 active_chat["selected_model"],
                                 active_chat["messages"],
@@ -191,8 +202,10 @@ def show_chat():
                             for chunk in streaming_generator:
                                 # Add new chunk to current response
                                 current_response += chunk
-                                # Update the placeholder with current content
+                                # Update the placeholder with current content (use markdown for formatting)
                                 response_placeholder.markdown(current_response)
+                                # Small delay to ensure UI updates properly
+                                time.sleep(0.01)  # 10ms delay to allow UI to refresh
                             
                             # Add the complete response to chat history
                             message_id = time.time()

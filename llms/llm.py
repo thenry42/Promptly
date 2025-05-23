@@ -246,12 +246,8 @@ def get_llm_response_streaming(
     Returns:
         List[str]: List of response chunks
     """
-    # For now, implement a basic simulation of streaming
-    # In a real implementation, we would use the streaming APIs of each provider
-    
     if provider not in PROVIDER_CONFIGS:
-        yield f"Error: Unknown provider {provider}"
-        return
+        return [f"Error: Unknown provider {provider}"]
         
     config = PROVIDER_CONFIGS[provider]
     key_name = config["key_name"]
@@ -259,37 +255,17 @@ def get_llm_response_streaming(
     api_key = api_keys[key_name]
     
     try:
-        # Get the full response first (this is a temporary solution)
-        full_response = streaming_func(model, messages, api_key)
+        # Add logging for debugging streaming issues
+        print(f"Starting streaming response from {provider} with model {model}")
         
-        # Break it into chunks to simulate streaming
-        # In a real implementation, we would use the actual streaming APIs
-        # This is just for demonstration purposes
-        chunk_size = 10  # Characters per chunk
-        
-        for i in range(0, len(full_response), chunk_size):
-            chunk = full_response[i:i+chunk_size]
+        # Get the streaming generator and yield each chunk directly
+        # Each provider implements its own streaming logic, including any necessary buffering
+        response_generator = streaming_func(model, messages, api_key)
+        for chunk in response_generator:
             yield chunk
-            time.sleep(0.05)  # Small delay to simulate streaming
             
     except Exception as e:
         error_message = f"Error: {str(e)}"
         print(f"LLM streaming error with {provider} ({model}): {error_message}")
         yield error_message
 
-
-# Add a cached version for use from the UI
-@st.cache_data(ttl=15, show_spinner=False)
-def cached_get_llm_response_streaming(
-    provider: str, 
-    model: str, 
-    messages: List[Dict[str, Any]], 
-    api_keys: Dict[str, str]
-):
-    """
-    Cached version of get_llm_response_streaming to improve performance.
-    
-    Note: We can't directly cache a generator, so we'll return the generator itself.
-    """
-    # Generators can't be cached directly, so we'll return the generator function
-    return get_llm_response_streaming(provider, model, messages, api_keys)
