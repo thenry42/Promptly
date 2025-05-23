@@ -1,5 +1,8 @@
 import streamlit as st
 from typing import List, Dict, Any, Callable
+from pathlib import Path
+import base64
+
 
 @st.cache_data(ttl=5)
 def render_message(role: str, content: str) -> Dict[str, str]:
@@ -120,7 +123,9 @@ def render_sidebar(
         on_new_chat: Callback when creating a new chat
         on_delete_chat: Callback when deleting a chat
     """
-    st.title("Chat Management")
+    st.markdown("""
+    <h1 style='text-align: center;'>LLM Chats</h1>
+    """, unsafe_allow_html=True)
     
     # Create a new chat button
     if st.button("New Chat", use_container_width=True, type="secondary"):
@@ -172,4 +177,29 @@ def apply_theme() -> None:
         color: #FAFAFA;
     }
     </style>
-    """, unsafe_allow_html=True) 
+    """, unsafe_allow_html=True)
+
+
+def render_chat_header():
+    # Function to convert image to base64
+    def img_to_base64(img_path):
+        with open(img_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode('utf-8')
+    
+    # Get the base64 encoded image
+    img_path = Path("assets/logo.png")
+    img_base64 = img_to_base64(img_path)
+    # CSS to add the centered logo to the sidebar header
+    css = f"""
+    <style>
+        [data-testid="stSidebarHeader"] {{
+            background-image: url("data:image/png;base64,{img_base64}");
+            background-repeat: no-repeat;
+            background-position: center 10px;  /* Center horizontally, 10px from top */
+            background-size: 100px auto;
+            padding-top: 60px;  /* Adjust as needed to create space under the logo */
+        }}
+    </style>
+    """
+    # Insert CSS at the beginning of your app
+    st.markdown(css, unsafe_allow_html=True)

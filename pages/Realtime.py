@@ -1,4 +1,7 @@
 import streamlit as st
+from ui.components import render_chat_header
+
+render_chat_header()
 
 # Remove caching from the main page function to avoid conflicts with page config
 def show_realtime():

@@ -1,5 +1,7 @@
 import streamlit as st
+from ui.components import render_chat_header
 
+render_chat_header()
 
 def show_file_input():
     """Show a file input widget and handle the uploaded file."""

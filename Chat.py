@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+from ui.components import render_chat_header
 
 # Import modules from our refactored structure
 from ui.components import (
@@ -28,10 +29,11 @@ from llms.llm import (
 )
 from history.history import save_chats
 
+
 # Set up Streamlit page configuration
 st.set_page_config(
     page_title="Promptly",
-    page_icon="💬",
+    page_icon="assets/logo.png",
     layout="wide",
     initial_sidebar_state="auto",
     menu_items={
@@ -41,6 +43,9 @@ st.set_page_config(
 
 # Apply custom CSS theme
 apply_theme()
+
+# Apply the logo to the sidebar header
+render_chat_header()
 
 # Define cached versions of provider and model lookup functions
 @st.cache_data(ttl=300)
@@ -135,9 +140,8 @@ def show_chat():
     
     # If chat has started, show the chat interface
     else:
-        # Display chat header
-        st.markdown(render_chat_header(active_chat['selected_provider'], active_chat['selected_model']), unsafe_allow_html=True)
-        st.write("")
+        # Display chat name and model in a cool way
+        # to do: add a logo to the chat header
 
         # Message container for better scrolling
         message_container = st.container()
