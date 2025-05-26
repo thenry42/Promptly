@@ -4,7 +4,6 @@ from pathlib import Path
 import base64
 
 
-@st.cache_data(ttl=5)
 def render_message(role: str, content: str) -> Dict[str, str]:
     """
     Render a chat message with appropriate styling.
@@ -34,19 +33,26 @@ def render_chat_header(provider: str, model: str) -> str:
     return f"<h3 style='color:#FAFAFA; background-color:#484955; padding:10px; border-radius:10px'>{provider} - {model}</h3>"
 
 
-def display_messages(messages: List[Dict[str, Any]]) -> None:
+def display_messages(messages: List[Dict[str, Any]], exclude_last_assistant: bool = False) -> None:
     """
     Display a list of chat messages in the UI.
     
     Args:
         messages: List of message dictionaries with role, content, and id
+        exclude_last_assistant: If True, exclude the last assistant message (used during streaming)
     """
-    for message in messages:
+    # Filter messages if needed
+    messages_to_show = messages.copy()
+    
+    if exclude_last_assistant and messages_to_show:
+        # Remove the last message if it's from assistant
+        if messages_to_show[-1]["role"] == "assistant":
+            messages_to_show = messages_to_show[:-1]
+    
+    for message in messages_to_show:
         if message["role"] != "system":
-            # Streamlit's chat_message doesn't support keys in this version
             with st.chat_message(message["role"]):
-                rendered_message = render_message(message["role"], message["content"])
-                st.markdown(rendered_message["content"])
+                st.markdown(message["content"])
 
 
 def render_model_selection(

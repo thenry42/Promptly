@@ -96,6 +96,6 @@ def get_deepseek_streaming(model, message, api_key):
             yield buffer
 
     except Exception as e:
-        error_msg = f"Error with Anthropic streaming: {str(e)}"
+        error_msg = f"Error with Deepseek streaming: {str(e)}"
         print(error_msg)  # Log the error
         yield error_msg

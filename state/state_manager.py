@@ -276,7 +276,6 @@ def process_assistant_response() -> bool:
             st.session_state.processing_chat_id = None
 
 
-@st.cache_data(ttl=1)
 def get_chat_list_data() -> List[Tuple[str, Dict]]:
     """
     Get the list of chats data without any UI elements.
@@ -300,10 +299,9 @@ def get_chat_list_data() -> List[Tuple[str, Dict]]:
     return sorted(chat_items, key=sort_key)
 
 
-@st.cache_data(ttl=5)
 def get_visible_messages(active_chat: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
-    Get the visible messages from the chat with caching.
+    Get the visible messages from the chat.
     
     Args:
         active_chat: The active chat data
@@ -312,5 +310,7 @@ def get_visible_messages(active_chat: Dict[str, Any]) -> List[Dict[str, Any]]:
         List[Dict[str, Any]]: List of visible messages
     """
     MAX_VISIBLE_MESSAGES = 20
-    visible_messages = active_chat["messages"][-MAX_VISIBLE_MESSAGES:] if len(active_chat["messages"]) > MAX_VISIBLE_MESSAGES else active_chat["messages"]
-    return visible_messages 
+    messages = active_chat.get("messages", [])
+    if len(messages) > MAX_VISIBLE_MESSAGES:
+        return messages[-MAX_VISIBLE_MESSAGES:]
+    return messages 
