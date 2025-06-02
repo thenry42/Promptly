@@ -63,6 +63,7 @@ streamlit run Chat.py
 3. Run `chmod +x ~/.local/share/applications/promptly.desktop` to make the file executable.
 4. Reboot (probably not necessary, but just in case)
 5. The app should now be available in your applications menu, and you can run it from there and pin it to your desktop dashboard.
+6. If you want to see the commands running in the terminal, you can put `Terminal=true` in the `promptly.desktop` file.
 
 ### Configuration
 
