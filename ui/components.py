@@ -1,49 +1,21 @@
-import streamlit as st
-from typing import List, Dict, Any, Callable
-from pathlib import Path
 import base64
+import streamlit as st
+from pathlib import Path
+from typing import List, Dict, Any, Callable
 
 
 def render_message(role: str, content: str) -> Dict[str, str]:
-    """
-    Render a chat message with appropriate styling.
-    
-    Args:
-        role: The role of the message sender (user or assistant)
-        content: The message content
-        
-    Returns:
-        Dict: A dictionary with role and content
-    """
+    """ Render a chat message with appropriate styling """
     return {"role": role, "content": content}
 
 
-@st.cache_data(ttl=3)
-def render_chat_header(provider: str, model: str) -> str:
-    """
-    Render the chat header with styling.
+def display_messages(
+    messages: List[Dict[str, Any]],
+    exclude_last_assistant: bool = False
+) -> None:
+    """ Display a list of chat messages in the UI """
     
-    Args:
-        provider: The name of the provider
-        model: The name of the model
-        
-    Returns:
-        str: HTML-formatted header
-    """
-    return f"<h3 style='color:#FAFAFA; background-color:#484955; padding:10px; border-radius:10px'>{provider} - {model}</h3>"
-
-
-def display_messages(messages: List[Dict[str, Any]], exclude_last_assistant: bool = False) -> None:
-    """
-    Display a list of chat messages in the UI.
-    
-    Args:
-        messages: List of message dictionaries with role, content, and id
-        exclude_last_assistant: If True, exclude the last assistant message (used during streaming)
-    """
-    # Filter messages if needed
     messages_to_show = messages.copy()
-    
     if exclude_last_assistant and messages_to_show:
         # Remove the last message if it's from assistant
         if messages_to_show[-1]["role"] == "assistant":
@@ -61,17 +33,8 @@ def render_model_selection(
     get_models_func: Callable[[str], List[str]],
     on_start_chat: Callable[[str, str], None]
 ) -> None:
-    """
-    Render the model selection UI for starting a new chat.
-    
-    Args:
-        active_chat: The active chat data
-        available_providers: List of available providers
-        get_models_func: Function to get models for a provider
-        on_start_chat: Callback function when starting a chat
-    """
+    """ Render the model selection UI for starting a new chat """
     st.title("Create New Chat")
-    
     try:
         if not available_providers:
             st.error("No AI providers available. Please check your API keys in Settings.")
@@ -119,16 +82,7 @@ def render_sidebar(
     on_new_chat: Callable[[], None],
     on_delete_chat: Callable[[str], None]
 ) -> None:
-    """
-    Render the sidebar with chat list and management buttons.
-    
-    Args:
-        chats: Dictionary of all chats
-        active_chat_id: ID of the active chat
-        on_select_chat: Callback when selecting a chat
-        on_new_chat: Callback when creating a new chat
-        on_delete_chat: Callback when deleting a chat
-    """
+    """ Render the sidebar with chat list and management buttons """
     st.markdown("""
     <h1 style='text-align: center;'>LLM Chats</h1>
     """, unsafe_allow_html=True)
@@ -151,17 +105,20 @@ def render_sidebar(
         if match:
             return int(match.group(1))
         return chat_id
-        
+    
     chat_items = sorted(chats.items(), key=sort_key)
     
-    # Display chat list
     for chat_id, chat_data in chat_items:
         col1, col2 = st.columns([4, 1])
         
         # Chat title and selection
         with col1:
             button_color = "primary" if active_chat_id == chat_id else "secondary"
-            if st.button(chat_data["title"], key=f"select_{chat_id}", use_container_width=True, type=button_color):
+            title = chat_data["title"]
+            
+            # Use CSS to handle text overflow instead of manual truncation
+            if st.button(title, key=f"select_{chat_id}", 
+                        use_container_width=True, type=button_color):
                 on_select_chat(chat_id)
         
         # Delete button
@@ -176,6 +133,10 @@ def apply_theme() -> None:
     <style>
     .stButton button {
         border-radius: 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
     }
 
     /* Minimal styling for dark theme compatibility */
@@ -187,25 +148,21 @@ def apply_theme() -> None:
 
 
 def render_chat_header():
-    # Function to convert image to base64
-    def img_to_base64(img_path):
+    """ Render the chat header with the raccoon logo """
+    def img_to_base64(img_path: str) -> str:
         with open(img_path, "rb") as img_file:
             return base64.b64encode(img_file.read()).decode('utf-8')
-    
-    # Get the base64 encoded image
     img_path = Path("assets/logo.png")
     img_base64 = img_to_base64(img_path)
-    # CSS to add the centered logo to the sidebar header
     css = f"""
     <style>
         [data-testid="stSidebarHeader"] {{
             background-image: url("data:image/png;base64,{img_base64}");
             background-repeat: no-repeat;
-            background-position: center 10px;  /* Center horizontally, 10px from top */
+            background-position: center 10px;
             background-size: 100px auto;
-            padding-top: 60px;  /* Adjust as needed to create space under the logo */
+            padding-top: 60px;
         }}
     </style>
     """
-    # Insert CSS at the beginning of your app
     st.markdown(css, unsafe_allow_html=True)
