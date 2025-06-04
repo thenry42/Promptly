@@ -12,3 +12,6 @@ toml
 psutil
 requests
 pyinstaller
+ebooklib
+bs4
+beautifulsoup4
