@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 import re
 import tempfile
 import os
+import time
+from llms.providers.llm_gemini import generate_book_summary_gemini
 
 
 render_chat_header()
@@ -71,7 +73,6 @@ def show_file_input():
             # Generate summary if requested
             if st.session_state.get('generate_summary', False):
                 generate_book_summary(st.session_state.final_chapters)
-                st.session_state.generate_summary = False
 
 
 def generate_book_summary(chapters):
@@ -80,7 +81,6 @@ def generate_book_summary(chapters):
     
     Args:
         chapters: List of (title, content) tuples for included chapters
-        length: Desired summary length
     """
     st.subheader("Book Summary")
     
@@ -91,22 +91,74 @@ def generate_book_summary(chapters):
     total_words = sum(len(content.split()) for _, content in chapters)
     target_summary_words = total_words // 15  # Summary 15x smaller than original
     
-    prompt = f"""
+    default_prompt = f"""You are a helpful assistant that summarizes books. 
     Please summarize the following book content into approximately {target_summary_words} words.
     This should be about 15 times shorter than the original text.
     Focus on the main themes, key events, and important character developments.
-    
-    {book_content}
+    The summary should be in the same language as the book content.
+    Keep the vibe of the book, don't be too formal.
+    Don't invent anything that is not in the book.
+    Generate the summary as a Markdown document with chapter titles and content.
+    This summary will be used in my Obsidian vault.
+    Separate the chapters with a horizontal rule.
+    Don't hesitate to use colors and others formatting to make the summary more readable.
     """
     
-    # Here you would call your LLM API with the prompt
-    # For now, we'll just display a placeholder
     st.info(f"The original text is approximately {total_words} words. The summary will be about {target_summary_words} words.")
     
-    st.text_area("LLM Prompt", prompt, height=200)
+    # Let the user edit the prompt
+    if 'edited_prompt' not in st.session_state:
+        st.session_state.edited_prompt = default_prompt
     
-    # Placeholder for the summary
-    st.write("Summary will appear here after processing by an LLM.")
+    edited_prompt = st.text_area("Edit Prompt (optional)", value=st.session_state.edited_prompt, height=230)
+    st.session_state.edited_prompt = edited_prompt
+    
+    # Store the book content separately
+    if 'book_content' not in st.session_state:
+        st.session_state.book_content = book_content
+    
+    # Create full prompt with book content
+    full_prompt = edited_prompt + f"\n\nHere is the book content:\n{st.session_state.book_content}"
+    
+    # Initialize summary state
+    if 'summary' not in st.session_state:
+        st.session_state.summary = None
+    
+    # Button to generate summary
+    if st.button("Generate Summary with LLM"):
+        # Show loading indicator
+        with st.spinner("Processing summary with LLM..."):
+            # Here you would call your LLM API with the full prompt
+            
+            # Call the LLM API with the full prompt
+            response = generate_book_summary_gemini(full_prompt, st.secrets["api_keys"]["gemini"])
+            st.session_state.summary = response
+        
+        st.success("Summary generated successfully!")
+    
+    # Display and allow download if summary exists
+    if st.session_state.summary:
+        st.markdown("### Generated Summary")
+        st.write(st.session_state.summary)
+        
+        # Create data directory if it doesn't exist
+        data_dir = "data"
+        os.makedirs(data_dir, exist_ok=True)
+        
+        # Create a downloadable summary in the data directory
+        summary_file = os.path.join(data_dir, "summary.md")
+        with open(summary_file, "w") as f:
+            f.write(st.session_state.summary)
+        
+        st.info(f"Summary saved to: {summary_file}")
+        
+        # Provide download button for the user
+        st.download_button(
+            label="Download Summary",
+            data=st.session_state.summary,
+            file_name="book_summary.md",
+            mime="text/markdown"
+        )
 
 
 def extract_chapters(file):

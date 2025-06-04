@@ -3,6 +3,7 @@
 
 # Message history
 data/*.json
+data/*.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

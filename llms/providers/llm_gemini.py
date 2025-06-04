@@ -1,5 +1,6 @@
 from google import genai
 import time
+import os
 
 
 def check_gemini(api_key):
@@ -104,3 +105,16 @@ def get_gemini_streaming(model, message, api_key):
         error_msg = f"Error with Gemini streaming: {str(e)}"
         print(error_msg)  # Log the error
         yield error_msg 
+
+
+def generate_book_summary_gemini(full_prompt, api_key):
+    """Generate a book summary using the Gemini API"""
+    try:
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model="models/gemini-1.5-pro-latest",
+            contents=full_prompt,
+        )
+        return response.text
+    except Exception as e:
+        return "Error: " + str(e)
