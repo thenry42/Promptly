@@ -30,6 +30,18 @@ def show_file_input():
             
             st.write("Select chapters to include and edit their titles:")
             
+            # Edit the book title
+            if 'book_title' not in st.session_state:
+                st.session_state.book_title = "Unknown"
+            book_title = st.text_input("Book Title", value=st.session_state.book_title)
+            st.session_state.book_title = book_title
+
+            # Edit the book author
+            if 'book_author' not in st.session_state:
+                st.session_state.book_author = "Unknown"
+            book_author = st.text_input("Book Author", value=st.session_state.book_author)
+            st.session_state.book_author = book_author
+
             for i, (title, content) in enumerate(st.session_state.chapters):
                 col1, col2 = st.columns([4, 1])
                 
