@@ -112,7 +112,7 @@ def generate_book_summary_gemini(full_prompt, api_key):
     try:
         client = genai.Client(api_key=api_key)
         response = client.models.generate_content(
-            model="models/gemini-1.5-pro-latest",
+            model="models/gemini-2.5-pro-preview-05-06",
             contents=full_prompt,
         )
         return response.text

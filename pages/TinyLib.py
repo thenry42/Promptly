@@ -55,7 +55,7 @@ def show_file_input():
                     if not include:
                         chapters_to_remove.append(i)
                 
-                with st.expander(f"Preview: {title}"):
+                with st.expander(f"Preview: {title}", expanded=True):
                     st.write(content[:500] + "..." if len(content) > 500 else content)
                 
                 edited_chapters.append((new_title, content))
@@ -89,19 +89,19 @@ def generate_book_summary(chapters):
     
     # Calculate total word count
     total_words = sum(len(content.split()) for _, content in chapters)
-    target_summary_words = total_words // 15  # Summary 15x smaller than original
+    target_summary_words = total_words // 20  # Summary 15x smaller than original
     
     default_prompt = f"""You are a helpful assistant that summarizes books. 
     Please summarize the following book content into approximately {target_summary_words} words.
-    This should be about 15 times shorter than the original text.
+    This should be about 20 times shorter than the original text.
     Focus on the main themes, key events, and important character developments.
     The summary should be in the same language as the book content.
     Keep the vibe of the book, don't be too formal.
     Don't invent anything that is not in the book.
     Generate the summary as a Markdown document with chapter titles and content.
-    This summary will be used in my Obsidian vault.
+    Try to follow the structure of the book (chapters, sections, etc.)
     Separate the chapters with a horizontal rule.
-    Don't hesitate to use colors and others formatting to make the summary more readable.
+    Don't hesitate to use italic, bold, and others formatting to make the summary more readable.
     """
     
     st.info(f"The original text is approximately {total_words} words. The summary will be about {target_summary_words} words.")
@@ -128,13 +128,40 @@ def generate_book_summary(chapters):
     if st.button("Generate Summary with LLM"):
         # Show loading indicator
         with st.spinner("Processing summary with LLM..."):
-            # Here you would call your LLM API with the full prompt
+            # Create a loop to regenerate the summary until it's within ±10% of target length
+            max_attempts = 10
+            attempt = 0
+            current_prompt = full_prompt
             
-            # Call the LLM API with the full prompt
-            response = generate_book_summary_gemini(full_prompt, st.secrets["api_keys"]["gemini"])
-            st.session_state.summary = response
-        
-        st.success("Summary generated successfully!")
+            while attempt < max_attempts:
+                # Call the LLM API with the current prompt
+                response = generate_book_summary_gemini(current_prompt, st.secrets["api_keys"]["gemini"])
+                st.session_state.summary = response
+                
+                # Check the length of the summary
+                summary_words = len(st.session_state.summary.split())
+                
+                # Check if the summary is within ±10% of target length
+                if summary_words > target_summary_words * 1.1:
+                    # Too long, ask for shorter summary and include the previous summary
+                    current_prompt = f"The previous summary was too long ({summary_words} words). Please make it shorter, closer to {target_summary_words} words.\n\nHere is your previous summary that needs to be shortened:\n{st.session_state.summary}\n\n{current_prompt}"
+                    attempt += 1
+                    if attempt < max_attempts:
+                        st.info(f"Summary too long ({summary_words} words). Regenerating... (Attempt {attempt+1}/{max_attempts})")
+                elif summary_words < target_summary_words * 0.9:
+                    # Too short, ask for longer summary and include the previous summary
+                    current_prompt = f"The previous summary was too short ({summary_words} words). Please make it longer, closer to {target_summary_words} words.\n\nHere is your previous summary that needs to be expanded:\n{st.session_state.summary}\n\n{current_prompt}"
+                    attempt += 1
+                    if attempt < max_attempts:
+                        st.info(f"Summary too short ({summary_words} words). Regenerating... (Attempt {attempt+1}/{max_attempts})")
+                else:
+                    # Just right
+                    st.success(f"Summary generated successfully! ({summary_words} words)")
+                    break
+            
+            # Display final attempt message if we couldn't get within the target range
+            if attempt == max_attempts and (summary_words > target_summary_words * 1.1 or summary_words < target_summary_words * 0.9):
+                st.warning(f"After {max_attempts} attempts, the best summary is {summary_words} words (target was {target_summary_words})")
     
     # Display and allow download if summary exists
     if st.session_state.summary:
