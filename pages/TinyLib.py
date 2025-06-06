@@ -83,26 +83,47 @@ def generate_book_summary(chapters):
         chapters: List of (title, content) tuples for included chapters
     """
     st.subheader("Book Summary")
+
+    # Need to Summarize each chapter separately
+
+
+    # Generate a summary for each chapter in a loop to get the target length of each chapter
+    # target_len_chapter = word_in_chapter / 15
+    # target_len_chapter = 2500 / nb_chapters
+
     
     # Create input for the LLM
     book_content = "\n\n".join([f"## {title}\n{content}" for title, content in chapters])
     
     # Calculate total word count
     total_words = sum(len(content.split()) for _, content in chapters)
-    target_summary_words = total_words // 20  # Summary 15x smaller than original
+    target_summary_words = max(total_words // 15, 3000)  # Summary 15x smaller than original, minimum 3000 words
     
     default_prompt = f"""You are a helpful assistant that summarizes books. 
-    Please summarize the following book content into approximately {target_summary_words} words.
-    This should be about 20 times shorter than the original text.
-    Focus on the main themes, key events, and important character developments.
-    The summary should be in the same language as the book content.
-    Keep the vibe of the book, don't be too formal.
-    Don't invent anything that is not in the book.
-    Generate the summary as a Markdown document with chapter titles and content.
-    Try to follow the structure of the book (chapters, sections, etc.)
-    Separate the chapters with a horizontal rule.
-    Don't hesitate to use italic, bold, and others formatting to make the summary more readable.
-    """
+
+CRITICAL LENGTH REQUIREMENT: Your summary must be EXACTLY {target_summary_words} words (±10% words tolerance).
+
+STRUCTURE GUIDELINES:
+- Divide your summary into sections or chapters
+- Use chapter titles as section headers
+- Separate chapters with horizontal rules (---)
+
+CONTENT GUIDELINES:
+- Focus on main themes, key events, and important character developments
+- Keep the original book's tone and style
+- Write in the same language as the book content
+- Don't invent anything not in the book
+- Use markdown formatting (italic, bold) for readability
+
+LENGTH CONTROL TECHNIQUES:
+- For longer content: Focus on major plot points, skip minor details
+- For shorter content: Include character motivations, detailed descriptions, subplot summaries
+- Monitor your word count as you write each section
+
+WORD COUNT TRACKING:
+- Target: {target_summary_words} words total
+- Check your progress after each section
+"""
     
     st.info(f"The original text is approximately {total_words} words. The summary will be about {target_summary_words} words.")
     
@@ -110,62 +131,130 @@ def generate_book_summary(chapters):
     if 'edited_prompt' not in st.session_state:
         st.session_state.edited_prompt = default_prompt
     
-    edited_prompt = st.text_area("Edit Prompt (optional)", value=st.session_state.edited_prompt, height=230)
+    # Store the current default for comparison
+    st.session_state.default_prompt = default_prompt
+    
+    # Always show the default prompt as editable
+    st.subheader("Prompt")
+    st.info("You can edit the prompt below to customize how the summary is generated:")
+    
+    # Let user edit the prompt
+    edited_prompt = st.text_area("Edit Prompt", value=st.session_state.edited_prompt, height=300)
     st.session_state.edited_prompt = edited_prompt
+    
+    # Button to reset to default
+    if st.button("Reset to Default Prompt"):
+        st.session_state.edited_prompt = default_prompt
+        st.experimental_rerun()
     
     # Store the book content separately
     if 'book_content' not in st.session_state:
         st.session_state.book_content = book_content
     
-    # Create full prompt with book content
-    full_prompt = edited_prompt + f"\n\nHere is the book content:\n{st.session_state.book_content}"
-    
-    # Initialize summary state
+    # Initialize summary state and stop flag
     if 'summary' not in st.session_state:
         st.session_state.summary = None
     
+    # Display current summary if exists
+    if st.session_state.summary:
+        st.markdown("### Current Summary (Last Generated)")
+        with st.expander("View Current Summary", expanded=False):
+            st.write(st.session_state.summary)
+        
+        summary_words = len(st.session_state.summary.split())
+        st.info(f"Current summary: {summary_words} words")
+    
+    generate_clicked = st.button("Generate Summary with LLM")
+    
     # Button to generate summary
-    if st.button("Generate Summary with LLM"):
+    if generate_clicked:
         # Show loading indicator
         with st.spinner("Processing summary with LLM..."):
-            # Create a loop to regenerate the summary until it's within ±10% of target length
-            max_attempts = 10
+            # Improved iterative refinement with adaptive prompts
+            max_attempts = 3
             attempt = 0
-            current_prompt = full_prompt
             
             while attempt < max_attempts:
-                # Call the LLM API with the current prompt
-                response = generate_book_summary_gemini(current_prompt, st.secrets["api_keys"]["gemini"])
-                st.session_state.summary = response
+                st.info(f"Generating summary... (Attempt {attempt + 1}/{max_attempts})")
                 
-                # Check the length of the summary
-                summary_words = len(st.session_state.summary.split())
-                
-                # Check if the summary is within ±10% of target length
-                if summary_words > target_summary_words * 1.1:
-                    # Too long, ask for shorter summary and include the previous summary
-                    current_prompt = f"The previous summary was too long ({summary_words} words). Please make it shorter, closer to {target_summary_words} words.\n\nHere is your previous summary that needs to be shortened:\n{st.session_state.summary}\n\n{current_prompt}"
-                    attempt += 1
-                    if attempt < max_attempts:
-                        st.info(f"Summary too long ({summary_words} words). Regenerating... (Attempt {attempt+1}/{max_attempts})")
-                elif summary_words < target_summary_words * 0.9:
-                    # Too short, ask for longer summary and include the previous summary
-                    current_prompt = f"The previous summary was too short ({summary_words} words). Please make it longer, closer to {target_summary_words} words.\n\nHere is your previous summary that needs to be expanded:\n{st.session_state.summary}\n\n{current_prompt}"
-                    attempt += 1
-                    if attempt < max_attempts:
-                        st.info(f"Summary too short ({summary_words} words). Regenerating... (Attempt {attempt+1}/{max_attempts})")
+                # Use the edited prompt for first attempt, adaptive prompts for refinements
+                if attempt == 0:
+                    # First attempt - use the edited prompt with full book content
+                    current_prompt = f"{st.session_state.edited_prompt}\n\nHere is the book content:\n{st.session_state.book_content}"
                 else:
-                    # Just right
-                    st.success(f"Summary generated successfully! ({summary_words} words)")
+                    # Refinement attempts - optimize based on summary length
+                    previous_word_count = len(st.session_state.summary.split())
+                    
+                    if previous_word_count > target_summary_words:
+                        # Summary is too long - send only the summary for trimming
+                        st.info("📝 Trimming existing summary (more efficient - no need to re-read book)")
+                        adaptive_prompt = create_adaptive_prompt(
+                            chapters, 
+                            target_summary_words, 
+                            attempt=attempt,
+                            previous_summary=st.session_state.summary,
+                            previous_word_count=previous_word_count
+                        )
+                        current_prompt = adaptive_prompt  # Only the summary, not the book content
+                    else:
+                        # Summary is too short - generate fresh with full content
+                        st.info("📚 Generating new summary with full book content (summary too short)")
+                        adaptive_prompt = create_adaptive_prompt(
+                            chapters, 
+                            target_summary_words, 
+                            attempt=attempt,
+                            previous_summary=None,  # Don't include previous summary for fresh generation
+                            previous_word_count=previous_word_count
+                        )
+                        current_prompt = adaptive_prompt + f"\n\nHere is the book content:\n{st.session_state.book_content}"
+                
+                # Call the LLM API with the current prompt
+                try:
+                    response = generate_book_summary_gemini(current_prompt, st.secrets["api_keys"]["gemini"])
+                    st.session_state.summary = response
+                    
+                    # Check the length of the summary
+                    summary_words = len(st.session_state.summary.split())
+                    
+                    # Tighter tolerance for exact targeting
+                    tolerance = 0.1
+                    min_words = int(target_summary_words * (1 - tolerance))
+                    max_words = int(target_summary_words * (1 + tolerance))
+                    
+                    if min_words <= summary_words <= max_words:
+                        # Success!
+                        accuracy = abs(summary_words - target_summary_words) / target_summary_words * 100
+                        st.success(f"Summary generated successfully! ({summary_words} words, target: {target_summary_words}, accuracy: {100-accuracy:.1f}%)")
+                        break
+                    else:
+                        if attempt == max_attempts - 1:
+                            # Last attempt, show what we got
+                            st.warning(f"Best result after {max_attempts} attempts: {summary_words} words (target: {target_summary_words})")
+                        else:
+                            # Continue with next attempt
+                            if summary_words > max_words:
+                                st.info(f"Summary too long ({summary_words} words). Applying targeted reduction... (Attempt {attempt+2}/{max_attempts})")
+                            else:
+                                st.info(f"Summary too short ({summary_words} words). Applying targeted expansion... (Attempt {attempt+2}/{max_attempts})")
+                    
+                    attempt += 1
+                        
+                except Exception as e:
+                    st.error(f"Error generating summary: {str(e)}")
                     break
             
-            # Display final attempt message if we couldn't get within the target range
-            if attempt == max_attempts and (summary_words > target_summary_words * 1.1 or summary_words < target_summary_words * 0.9):
-                st.warning(f"After {max_attempts} attempts, the best summary is {summary_words} words (target was {target_summary_words})")
+            # Display final messages with helpful feedback
+            if st.session_state.summary:
+                final_summary_words = len(st.session_state.summary.split())
+                if not (min_words <= final_summary_words <= max_words):
+                    st.info("💡 **Tips for better results:**")
+                    st.info("• Try adjusting the target word count (currently based on 1/15th of original)")
+                    st.info("• Modify the prompt to emphasize specific aspects you want covered")
+                    st.info("• Consider the book's complexity - technical books may need different approaches")
     
-    # Display and allow download if summary exists
+    # Display and allow download if summary exists (always available)
     if st.session_state.summary:
-        st.markdown("### Generated Summary")
+        st.markdown("### Final Summary")
         st.write(st.session_state.summary)
         
         # Create data directory if it doesn't exist
@@ -233,6 +322,184 @@ def extract_chapters(file):
     except Exception as e:
         st.error(f"Error processing EPUB file: {str(e)}")
         return []
+
+
+def create_adaptive_prompt(chapters, target_words, attempt=0, previous_summary=None, previous_word_count=None):
+    """
+    Create an adaptive prompt based on content characteristics and previous attempts.
+    
+    Args:
+        chapters: List of (title, content) tuples
+        target_words: Target word count for summary
+        attempt: Current attempt number (0 for first attempt)
+        previous_summary: Previous summary if this is a refinement
+        previous_word_count: Word count of previous summary
+    
+    Returns:
+        str: Optimized prompt for the LLM
+    """
+    avg_words_per_chapter = target_words // len(chapters)
+    
+    # Analyze content characteristics
+    total_chars = sum(len(content) for _, content in chapters)
+    avg_chars_per_word = total_chars / sum(len(content.split()) for _, content in chapters)
+    
+    # Determine content complexity
+    if avg_chars_per_word > 6:
+        complexity = "high"  # Technical or complex vocabulary
+    elif avg_chars_per_word > 5:
+        complexity = "medium"
+    else:
+        complexity = "low"  # Simple vocabulary
+    
+    # Base prompt with adaptive elements
+    if attempt == 0:
+        # First attempt - comprehensive instructions
+        prompt = f"""You are an expert book summarizer. Create a summary that is EXACTLY {target_words} words.
+
+CRITICAL REQUIREMENTS:
+✓ EXACT word count: {target_words} words (not approximately, but exactly)
+✓ Structure: {len(chapters)} chapter sections of ~{avg_words_per_chapter} words each
+✓ Use chapter titles as headers with markdown formatting
+
+WRITING STRATEGY (for {complexity} complexity content):"""
+        
+        if complexity == "high":
+            prompt += f"""
+- Simplify technical concepts while preserving meaning
+- Focus on key insights and main arguments
+- Use clear, accessible language"""
+        elif complexity == "medium":
+            prompt += f"""
+- Balance detail with conciseness
+- Include important context and relationships
+- Maintain original tone and style"""
+        else:
+            prompt += f"""
+- Preserve storytelling elements and emotional tone
+- Include character development and plot progression
+- Keep engaging narrative flow"""
+        
+        prompt += f"""
+
+SECTION BREAKDOWN:
+- Each chapter section: exactly {avg_words_per_chapter} words
+- Include main themes, key events, character development
+- Separate sections with "---"
+
+QUALITY CHECKS:
+- Count words as you write each section
+- Verify total = {target_words} words
+- Ensure balanced coverage across all chapters
+
+Remember: EXACTLY {target_words} words total."""
+        
+    else:
+        # Refinement attempt - focused corrections
+        if previous_word_count > target_words:
+            excess = previous_word_count - target_words
+            prompt = f"""REFINEMENT TASK: Reduce summary from {previous_word_count} to EXACTLY {target_words} words.
+
+REDUCTION TARGETS (remove {excess} words total):
+- Cut {excess // len(chapters)} words per chapter section
+- Remove: Redundant phrases, minor details, excessive adjectives
+- Preserve: Core plot, main themes, character arcs
+
+STRATEGY:
+1. Go through each section systematically
+2. Identify non-essential content to remove
+3. Ensure each section hits ~{avg_words_per_chapter} words
+4. Final count must be exactly {target_words} words
+
+PREVIOUS SUMMARY TO REVISE:
+{previous_summary}"""
+        else:
+            missing = target_words - previous_word_count
+            prompt = f"""REFINEMENT TASK: Expand summary from {previous_word_count} to EXACTLY {target_words} words.
+
+EXPANSION TARGETS (add {missing} words total):
+- Add {missing // len(chapters)} words per chapter section
+- Include: Character motivations, scene details, thematic depth
+- Maintain: Existing structure and quality
+
+STRATEGY:
+1. Identify areas needing more detail
+2. Add meaningful content (not filler)
+3. Ensure each section reaches ~{avg_words_per_chapter} words
+4. Final count must be exactly {target_words} words
+
+PREVIOUS SUMMARY TO EXPAND:
+{previous_summary}"""
+    
+    return prompt
+
+
+def create_strategy_prompt(chapters, target_words, strategy_type):
+    """
+    Create prompts for different summarization strategies.
+    
+    Args:
+        chapters: List of (title, content) tuples
+        target_words: Target word count
+        strategy_type: "concise", "detailed", or "academic"
+    
+    Returns:
+        str: Strategy-specific prompt
+    """
+    avg_words_per_chapter = target_words // len(chapters)
+    
+    base_requirements = f"""You are an expert book summarizer. Create a summary that is EXACTLY {target_words} words.
+
+CRITICAL REQUIREMENTS:
+✓ EXACT word count: {target_words} words
+✓ Structure: {len(chapters)} chapter sections of ~{avg_words_per_chapter} words each
+✓ Use chapter titles as headers with markdown formatting
+✓ Separate sections with "---"
+"""
+    
+    if strategy_type == "concise":
+        return base_requirements + f"""
+CONCISE STRATEGY:
+- Focus ONLY on major plot points and key events
+- Minimal character details (names and primary roles only)
+- Skip subplots and minor details
+- Use clear, direct language
+- Prioritize main narrative arc
+
+WRITING APPROACH:
+- Each chapter: {avg_words_per_chapter} words covering essential plot progression
+- Eliminate: Descriptions, backstory, minor characters
+- Include: Core conflicts, resolutions, major turning points"""
+
+    elif strategy_type == "detailed":
+        return base_requirements + f"""
+DETAILED STRATEGY:
+- Include character development and motivations
+- Cover important subplots and relationships
+- Add context and world-building details
+- Use descriptive, engaging language
+- Preserve emotional tone and atmosphere
+
+WRITING APPROACH:
+- Each chapter: {avg_words_per_chapter} words with rich detail
+- Include: Character arcs, setting descriptions, relationship dynamics
+- Maintain: Original style and emotional depth"""
+
+    elif strategy_type == "academic":
+        return base_requirements + f"""
+ACADEMIC STRATEGY:
+- Emphasize themes, symbols, and literary analysis
+- Use formal, analytical language
+- Focus on structure and narrative techniques
+- Include cultural/historical context when relevant
+- Discuss character development in analytical terms
+
+WRITING APPROACH:
+- Each chapter: {avg_words_per_chapter} words with analytical depth
+- Include: Thematic analysis, literary devices, significance
+- Tone: Scholarly but accessible"""
+    
+    return base_requirements
 
 
 # Initialize session state variables
